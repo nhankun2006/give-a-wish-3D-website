@@ -5,13 +5,79 @@ import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import gsap from 'gsap';
 
+// === CÁC COMPONENT SINH VẬT BIỂN ===
+const bubbles = [
+  { left: '10%', size: 12 }, { left: '20%', size: 18 }, { left: '30%', size: 10 },
+  { left: '54%', size: 14 }, { left: '78%', size: 16 }, { left: '88%', size: 10 },
+];
+
+const creatures = [
+  { type: 'fish', left: '12%', top: '20%', size: '120px', variant: 'blue' },
+  { type: 'fish', left: '68%', top: '15%', size: '96px', variant: 'pink' },
+  { type: 'fish', left: '35%', top: '65%', size: '85px', variant: 'blue' },
+  { type: 'fish', left: '85%', top: '50%', size: '105px', variant: 'pink' },
+  { type: 'jellyfish', left: '25%', top: '40%', size: '100px' },
+  { type: 'jellyfish', left: '78%', top: '25%', size: '80px' },
+  { type: 'jellyfish', left: '50%', top: '20%', size: '120px' },
+  { type: 'starfish', left: '15%', top: '85%', size: '60px' },
+  { type: 'starfish', left: '75%', top: '82%', size: '70px' },
+  { type: 'crab', left: '30%', top: '88%', size: '65px' },
+  { type: 'crab', left: '60%', top: '86%', size: '55px' },
+];
+
+function Fish({ style, variant }) {
+  const gradient = variant === 'pink' ? ['#ff8db8', '#ffb3d6'] : ['#64d9ff', '#4ae7ff'];
+  return (
+    <div className="creature" style={{ position: 'absolute', ...style }}>
+      <svg viewBox="0 0 140 80" width="100%" height="100%">
+        <defs><linearGradient id={`fishGrad${variant}`}><stop offset="0%" stopColor={gradient[0]} /><stop offset="100%" stopColor={gradient[1]} /></linearGradient></defs>
+        <path d="M18 36 C34 16 90 14 116 32 C92 50 34 48 18 36 Z" fill={`url(#fishGrad${variant})`} /><path d="M112 30 L132 18 L130 38 Z" fill="#ffd3e8" /><circle cx="38" cy="28" r="4" fill="#021428" />
+      </svg>
+    </div>
+  );
+}
+
+function Jellyfish({ style }) {
+  return (
+    <div className="creature" style={{ position: 'absolute', ...style }}>
+      <svg viewBox="0 0 100 120" width="100%" height="100%">
+        <path d="M10 60 C10 10 90 10 90 60 Q80 70 70 60 Q60 70 50 60 Q40 70 30 60 Q20 70 10 60 Z" fill="#ffb3d6" opacity="0.8" />
+        <path d="M30 60 Q20 90 35 110 M50 60 Q50 90 50 115 M70 60 Q80 90 65 110" stroke="#a1eeff" strokeWidth="4" fill="none" opacity="0.6" strokeLinecap="round" />
+      </svg>
+    </div>
+  );
+}
+
+function Starfish({ style }) {
+  return (
+    <div className="creature" style={{ position: 'absolute', ...style }}>
+      <svg viewBox="0 0 100 100" width="100%" height="100%">
+        <path d="M50 10 L60 40 L90 40 L65 60 L75 90 L50 70 L25 90 L35 60 L10 40 L40 40 Z" fill="#ff8db8" />
+        <circle cx="40" cy="45" r="3" fill="#021428" /><circle cx="60" cy="45" r="3" fill="#021428" />
+        <path d="M45 55 Q50 60 55 55" stroke="#021428" strokeWidth="2" fill="none" strokeLinecap="round" />
+      </svg>
+    </div>
+  );
+}
+
+function Crab({ style }) {
+  return (
+    <div className="creature" style={{ position: 'absolute', ...style }}>
+      <svg viewBox="0 0 100 80" width="100%" height="100%">
+        <ellipse cx="50" cy="50" rx="30" ry="20" fill="#ff70a6" />
+        <path d="M25 40 Q10 20 20 10 M75 40 Q90 20 80 10" stroke="#ff70a6" strokeWidth="6" fill="none" strokeLinecap="round" />
+        <circle cx="20" cy="10" r="5" fill="#ff70a6" /><circle cx="80" cy="10" r="5" fill="#ff70a6" />
+        <circle cx="40" cy="45" r="3" fill="#021428" /><circle cx="60" cy="45" r="3" fill="#021428" />
+      </svg>
+    </div>
+  );
+}
+
 function CameraController({ activeTab }) {
   const groupRef = useRef();
   useFrame((state) => {
     const targetRotation = activeTab * (Math.PI / 2);
-    if (groupRef.current) {
-      groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotation, 0.05);
-    }
+    if (groupRef.current) groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotation, 0.05);
   });
   return (
     <group ref={groupRef}>
@@ -29,6 +95,14 @@ export default function Home() {
   const [showSurprise, setShowSurprise] = useState(false);
   const pageRef = useRef(null);
 
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.to('.bubble', { yPercent: -120, opacity: 0, duration: 10, repeat: -1, stagger: 1.2 });
+      gsap.to('.creature', { y: "random(-25, 25)", x: "random(-15, 15)", rotation: "random(-8, 8)", duration: "random(5, 8)", yoyo: true, repeat: -1, repeatRefresh: true, ease: "sine.inOut" });
+    }, pageRef);
+    return () => ctx.revert();
+  }, []);
+
   const handleNextTab = () => setActiveTab((prev) => (prev + 1) % 4);
   const handlePrevTab = () => setActiveTab((prev) => (prev === 0 ? 3 : prev - 1));
 
@@ -41,6 +115,17 @@ export default function Home() {
   return (
     <main ref={pageRef} className="ocean-page relative w-full h-screen overflow-hidden" style={{ background: 'radial-gradient(circle at 50% 0%, #a1eeff 0%, #0c5c9e 35%, #021428 100%)' }}>
       
+      <div className="absolute inset-0 pointer-events-none z-0 mix-blend-screen">
+        {bubbles.map((b, i) => (<div key={i} className="bubble absolute bg-white/30 rounded-full shadow-[0_0_10px_#a1eeff]" style={{ left: b.left, width: b.size, height: b.size, bottom: '-10%' }} />))}
+        {creatures.map((item, i) => {
+          if (item.type === 'fish') return <Fish key={i} style={{ left: item.left, top: item.top, width: item.size }} variant={item.variant} />;
+          if (item.type === 'jellyfish') return <Jellyfish key={i} style={{ left: item.left, top: item.top, width: item.size }} />;
+          if (item.type === 'starfish') return <Starfish key={i} style={{ left: item.left, top: item.top, width: item.size }} />;
+          if (item.type === 'crab') return <Crab key={i} style={{ left: item.left, top: item.top, width: item.size }} />;
+          return null; 
+        })}
+      </div>
+
       <div className={`absolute inset-0 z-10 transition-opacity duration-1000 ${isLanding ? 'opacity-0' : 'opacity-100'}`}>
         <Canvas><ambientLight intensity={0.7} /><directionalLight position={[3, 5, 2]} intensity={0.6} color="#ff99c4" /><directionalLight position={[-3, -5, -2]} intensity={0.4} color="#64d9ff" /><CameraController activeTab={activeTab} /></Canvas>
       </div>
