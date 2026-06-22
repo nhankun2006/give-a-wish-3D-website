@@ -1,41 +1,41 @@
-<<<<<<< HEAD
-# give-a-wish-3D-website
-a dynamic, well-designed and coloredful website for everyone give you or someone wishes with 3D interaction integrated
-=======
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+#  Happy Birthday Website - 3D Ocean Experience
 
-## Getting Started
+##  Brief Description
+Dự án là một trang web tương tác 3D sống động mang chủ đề đại dương, được thiết kế đặc biệt như một món quà sinh nhật bất ngờ dành cho chị Tam Triều Dâng. Trải nghiệm người dùng đi từ một màn hình chờ (Landing Page) lấp lánh ánh sáng biển sâu, cho đến khi "lặn xuống" không gian 3D xoay 360 độ chứa đựng các kỷ niệm, hành trình sự nghiệp, rạp chiếu phim mini và khu vực gửi lời chúc bí mật của fan hâm mộ.
 
-First, run the development server:
+##  Tech Stack
+Dự án được xây dựng dựa trên các công nghệ Front-end hiện đại nhất để đảm bảo hiệu năng và trải nghiệm mượt mà:
+* **Next.js (App Router):** Framework React tối ưu hóa hiệu suất, SEO và cấu trúc routing.
+* **React Three Fiber & Three.js:** Cốt lõi xây dựng không gian 3D, xử lý ánh sáng và hệ thống Camera điều hướng.
+* **GSAP (GreenSock):** Thư viện animation mạnh mẽ xử lý các chuyển động tự nhiên, ngẫu nhiên cho hệ thống sinh vật biển.
+* **Tailwind CSS:** Thiết kế giao diện nhanh chóng, linh hoạt với phong cách Glassmorphism (hiệu ứng kính mờ) hiện đại.
 
+##  Noticeable Features
+* **Cinematic Landing Page Tách Biệt:** Màn hình chào mừng độc lập với hiệu ứng nền `radial-gradient` mô phỏng ánh sáng rọi xuống mặt nước, cùng nút "Lặn Xuống" tích hợp hiệu ứng sóng âm lôi cuốn.
+* **Trải nghiệm 3D 360 Độ:** Hệ thống chuyển Tab độc quyền thông qua việc xoay camera góc 90 độ trong không gian Three.js, tạo cảm giác người dùng đang bơi vòng tròn dưới đáy biển.
+* **Hệ sinh thái đại dương sinh động:** Hàng loạt loài sinh vật biển (Cá, Sứa, Cua, Sao biển) được gắn animation GSAP để di chuyển lơ lửng, lắc lư tự nhiên theo các chu kỳ thời gian ngẫu nhiên.
+* **Giao diện 4 Khu vực chức năng (Tabs):**
+  * *Góc Nhỏ Của Dâng:* Layout Album ảnh kỷ niệm.
+  * *Hành Trình Sự Nghiệp:* Timeline các cột mốc nổi bật thả nổi.
+  * *Rạp Phim Đại Dương:* Video Modal tích hợp nút mở quà pháo hoa bất ngờ.
+  * *Khu Vực Fan:* Bảo vệ bằng Passcode khóa bảo mật (Mật khẩu: 1007) để lại lời chúc.
+
+## Demo and Screenshots
+* [Demo .vercel.app](https://give-a-wish-3d-website-git-demo-guthib.vercel.app/)
+* [tamtrieudang28th.tech](https://tamtrieudang28th.tech/)
+
+##  How to Manual Build and Deploy
+
+### Yêu cầu môi trường
+* Node.js (> 18.x)
+* npm hoặc yarn
+
+### 1. Chạy ở môi trường Development (Môi trường dev)
+install Dependencies:
+```bash
+npm install
+```
+build ở môi trường dev:
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
->>>>>>> dda93e2 (Initial commit from Create Next App)
