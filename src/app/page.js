@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import { useEffect, useRef, useState } from 'react';
+
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import gsap from 'gsap';
@@ -145,6 +146,7 @@ export default function Home() {
   const [passcode, setPasscode] = useState('');
   const [showSurprise, setShowSurprise] = useState(false);
   
+  const [selectedImage, setSelectedImage] = useState(null);
   const pageRef = useRef(null);
 
   useEffect(() => {
@@ -257,25 +259,34 @@ export default function Home() {
             <h1 className="text-4xl font-bold text-[#ff99c4] mb-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">Góc Nhỏ Của Dâng</h1>
             <p className="text-lg text-[#64d9ff] font-medium mb-8">Những mảnh ghép kỷ niệm lấp lánh dưới đáy đại dương.</p>
             
-            {/* Khung chứa các hình ảnh */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
-              {/* Hình Đại Diện Chính */}
-              <div className="md:col-span-3 flex justify-center mb-2">
-                <div className="w-40 h-40 bg-gradient-to-tr from-[#64d9ff]/30 to-[#ff99c4]/30 rounded-full flex items-center justify-center border-4 border-[#ff99c4] shadow-[0_0_20px_#ff99c4] hover:scale-105 transition-transform overflow-hidden">
-                  <span className="text-[#ff99c4] font-semibold text-sm">[Ảnh Chính]</span>
-                </div>
-              </div>
+            {/* Khung chứa các hình ảnh (Gallery 8 tấm) */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5 mb-4 px-2">
+              {[
+                'IMG_0166.JPG', 'IMG_1008.JPG', 'IMG_1824.JPG', 'IMG_3536.JPG', 
+                'IMG_3779.JPG', 'IMG_4246.JPG', 'IMG_4247.JPG', 'IMG_9281.jpeg'
+              ].map((imgName, index) => (
 
-              {/* 3 Khung hình nhỏ phụ */}
-              <div className="aspect-[4/3] bg-white/10 rounded-xl border border-[#64d9ff]/50 flex items-center justify-center hover:scale-105 hover:border-[#ff99c4] transition-all cursor-pointer shadow-md overflow-hidden group">
-                 <span className="text-[#64d9ff] text-sm font-medium group-hover:scale-110 transition-transform">[Hình 1]</span>
-              </div>
-              <div className="aspect-[4/3] bg-white/10 rounded-xl border border-[#64d9ff]/50 flex items-center justify-center hover:scale-105 hover:border-[#ff99c4] transition-all cursor-pointer shadow-md overflow-hidden group">
-                 <span className="text-[#64d9ff] text-sm font-medium group-hover:scale-110 transition-transform">[Hình 2]</span>
-              </div>
-              <div className="aspect-[4/3] bg-white/10 rounded-xl border border-[#64d9ff]/50 flex items-center justify-center hover:scale-105 hover:border-[#ff99c4] transition-all cursor-pointer shadow-md overflow-hidden group">
-                 <span className="text-[#64d9ff] text-sm font-medium group-hover:scale-110 transition-transform">[Hình 3]</span>
-              </div>
+                <div 
+                  key={index} 
+                  onClick={() => setSelectedImage(imgName)}
+                  className="aspect-square bg-[#0a192f]/40 rounded-xl border border-[#64d9ff]/40 flex items-center justify-center hover:scale-105 hover:border-[#ff99c4] shadow-md hover:shadow-[0_0_20px_rgba(255,153,196,0.5)] transition-all duration-300 cursor-pointer overflow-hidden group relative"
+                >
+                  {/* Hiển thị ảnh thực tế */}
+                  <img 
+                    src={`/image/${imgName}`} 
+                    alt={`Kỷ niệm ${index + 1}`} 
+                    className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700" 
+                  />
+                  
+                  {/* Lớp phủ mờ và chữ 'Xem' hiện lên khi di chuột (Tạo cảm giác pro) */}
+                  <div className="absolute inset-0 bg-[#021428]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <span className="text-[#ff99c4] font-bold text-sm border-2 border-[#ff99c4]/50 px-4 py-1.5 rounded-full backdrop-blur-md">
+                      Xem
+                    </span>
+                  </div>
+                </div>
+              ))}
+              
             </div>
           </div>
         </div>
@@ -348,6 +359,22 @@ export default function Home() {
         <button onClick={handleNextTab} className="text-[#64d9ff] hover:text-[#ff99c4] hover:scale-125 transition-all px-2 font-bold">▶</button>
       </div>
 
+      {/* DÁN CỤC POPUP VÀO ĐÂY (NẰM BÊN TRONG MAIN) */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md cursor-zoom-out"
+          onClick={() => setSelectedImage(null)}
+        >
+          <img 
+            src={`/image/${selectedImage}`} 
+            className="max-w-[90%] max-h-[90vh] rounded-2xl border-4 border-[#ff99c4] shadow-[0_0_40px_#ff99c4]" 
+            alt="Phóng to" 
+          />
+          <button className="absolute top-6 right-8 text-white text-5xl hover:text-[#ff99c4] transition-colors">×</button>
+        </div>
+      )}
+
     </main>
+    
   );
 }
