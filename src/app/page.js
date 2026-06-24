@@ -1,10 +1,11 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useRef, useState } from 'react';
 
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import gsap from 'gsap';
+import Tab4Wishes from '@/components/tabs/Tab4Wishes';
 
 // === CÁC COMPONENT SINH VẬT BIỂN ===
 const bubbles = [
@@ -152,7 +153,6 @@ export default function Home() {
   const [isLanding, setIsLanding] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const [passcode, setPasscode] = useState('');
   const [showSurprise, setShowSurprise] = useState(false);
   
   const [selectedImage, setSelectedImage] = useState(null);
@@ -212,15 +212,6 @@ export default function Home() {
 
   const handleNextTab = () => setActiveTab((prev) => (prev + 1) % 4);
   const handlePrevTab = () => setActiveTab((prev) => (prev === 0 ? 3 : prev - 1));
-
-  const checkPasscode = (e) => {
-    e.preventDefault();
-    if (passcode === '1007') {
-      setIsUnlocked(true);
-    } else {
-      alert('Mật khẩu không đúng! Gợi ý: Ngày sinh nhật (1007)');
-    }
-  };
 
   return (
     <main 
@@ -373,24 +364,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Tab 4: Passcode */}
-        <div className={`transition-all duration-1000 absolute ${activeTab === 3 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-          {!isUnlocked ? (
-            <form onSubmit={checkPasscode} className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border-2 border-[#ff99c4]/50 text-center shadow-[0_0_20px_rgba(255,153,196,0.2)]">
-              <h2 className="text-2xl font-bold text-[#64d9ff] mb-4 drop-shadow-sm">Khu Vực Dành Riêng Cho Fan</h2>
-              <p className="mb-6 text-white font-medium">Nhập mật khẩu để xem thư</p>
-              <input type="password" value={passcode} onChange={(e) => setPasscode(e.target.value)} placeholder="Nhập Passcode..." className="px-4 py-3 rounded-xl bg-black/40 border-2 border-[#64d9ff]/50 text-[#ff99c4] focus:border-[#ff99c4] font-bold text-center outline-none mb-6 block w-full transition-colors" />
-              <button type="submit" className="px-6 py-3 bg-gradient-to-r from-[#64d9ff] to-[#ff99c4] text-black font-bold rounded-xl w-full hover:scale-105 transition-transform">
-                Mở Khóa 🔓
-              </button>
-            </form>
-          ) : (
-            <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border-2 border-[#64d9ff]/50 w-[500px] shadow-[0_0_30px_rgba(100,217,255,0.2)]">
-              <h2 className="text-2xl font-bold text-[#64d9ff] mb-6 text-center drop-shadow-sm">Lời Chúc Tới Dâng</h2>
-              <textarea placeholder="Viết lời chúc của bạn..." className="w-full p-4 rounded-xl bg-black/40 border-2 border-[#ff99c4]/40 text-white focus:border-[#64d9ff] outline-none mb-4 transition-colors" rows="3" />
-              <button className="px-6 py-3 bg-gradient-to-r from-[#ff99c4] to-[#64d9ff] text-black font-bold rounded-xl w-full hover:scale-105 transition-transform">Gửi Lời Chúc 💌</button>
-            </div>
-          )}
+        {/* Tab 4: Wishes (via Tab4Wishes component) */}
+        <div className={`transition-all duration-1000 absolute inset-0 ${activeTab === 3 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          <Tab4Wishes isUnlocked={isUnlocked} setIsUnlocked={setIsUnlocked} />
         </div>
       </div>
 
