@@ -14,6 +14,15 @@ const bubbles = [
   { left: '54%', size: 14, delay: 0.9, duration: 10 },
   { left: '78%', size: 16, delay: 3.4, duration: 11 },
   { left: '88%', size: 10, delay: 1.7, duration: 8.5 },
+
+  { left: '15%', size: 15, delay: 3.0, duration: 6 },
+  { left: '40%', size: 12, delay: 0.5, duration: 9 },
+  { left: '65%', size: 20, delay: 1.5, duration: 7.5 },
+  { left: '82%', size: 14, delay: 2.8, duration: 8 },
+  { left: '5%',  size: 16, delay: 4.1, duration: 10 },
+  { left: '95%', size: 11, delay: 0.2, duration: 6.5 },
+  { left: '45%', size: 18, delay: 2.5, duration: 8.5 },
+  { left: '72%', size: 13, delay: 1.0, duration: 7 },
 ];
 
 const creatures = [
@@ -151,23 +160,55 @@ export default function Home() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Bong bóng nước nổi lên
-      gsap.to('.bubble', { yPercent: -120, opacity: 0, duration: 10, repeat: -1, stagger: 1.2 });
-      
-      // NÂNG CẤP: Sinh vật biển trôi nổi mượt và tự nhiên hơn
-      gsap.to('.creature', {
-        y: "random(-25, 25)",       // Nhấp nhô lên xuống ngẫu nhiên xa hơn
-        x: "random(-15, 15)",       // Trôi nhẹ sang trái phải
-        rotation: "random(-8, 8)",  // Lắc lư nghiêng qua lại chút xíu cho cute
-        duration: "random(5, 8)",   // Mỗi con bơi một tốc độ khác nhau (5-8 giây)
-        yoyo: true,                 // Bơi đi rồi bơi về
-        repeat: -1,                 // Lặp lại vô tận
-        repeatRefresh: true,        // Tự động tạo hướng bơi mới sau mỗi lần lặp
-        ease: "sine.inOut",         // Hiệu ứng mượt, trớn nước êm ái
+      // 1. Bong bóng dâng lên nhộn nhịp xuyên suốt
+      // 1. Bong bóng dâng lên nhộn nhịp xuyên suốt (Đã tăng độ cao và chỉnh thời gian)
+      gsap.to('.bubble', { 
+        y: "-120vh",       // TOẠ ĐỘ BAY CAO: Đổi thành -120vh để ép bong bóng bay một mạch từ đáy lên vượt quá đỉnh màn hình luôn
+        opacity: 0, 
+        duration: 6,       // THỜI GIAN BAY (GIÂY): Số này chính là thời gian nổi. Muốn bong bóng bay nhanh hơn thì giảm xuống (6 hoặc 8), muốn bay chậm rề rề nghệ thuật hơn thì tăng lên (12 hoặc 15)
+        repeat: -1, 
+        stagger: 0.3       // ĐỘ DÀY BONG BÓNG: Giảm số này xuống (ví dụ 0.3 hoặc 0.4) thì bong bóng sẽ sủi lên liên tục và dày hơn nữa
+      });
+
+      // 2. VỪA VÀO LINK: Toàn bộ trang web giật từ trên cao rơi rớt xuống nước
+      gsap.fromTo(pageRef.current, 
+        { y: "-100vh" },
+        { y: "0", duration: 1.5, ease: "power3.inOut" }
+      );
+
+      // 3. VỪA CHẠM NƯỚC: Tỏa 5 lớp sóng liên tiếp lan rộng ra
+      gsap.fromTo('.ripple', 
+        { width: 0, height: 0, opacity: 1, borderWidth: "15px" },
+        { width: "250vw", height: "250vw", borderWidth: "1px", opacity: 0, duration: 3, stagger: 0.15, ease: "power2.out", delay: 1.0 }
+      );
+
+      // 4. VỪA TỎA SÓNG XONG: Cá và sinh vật biển từ 2 bên rìa lao nhanh ra rồi đứng nhấp nhô
+      gsap.fromTo('.creature', {
+          x: (index, target) => parseFloat(target.style.left) < 50 ? -1500 : 1500,
+          opacity: 0
+        }, {
+          x: 0,
+          opacity: 1,
+          duration: 1.2,
+          stagger: 0.1,
+          ease: "power3.out",
+          delay: 1.3,
+          onComplete: () => {
+            // Lao ra vị trí xong thì chốt chặn đứng yên tại chỗ và nhấp nhô nhẹ
+            gsap.to('.creature', {
+              y: "+=15",
+              rotation: "random(-4, 4)",
+              duration: "random(2, 4)",
+              yoyo: true,
+              repeat: -1,
+              ease: "sine.inOut",
+            });
+          }
       });
     }, pageRef);
+    
     return () => ctx.revert();
-  }, []);
+  }, []); // <--- Để mảng rỗng để kích hoạt NGAY LẬP TỨC khi vừa nhấn vào link 
 
   const handleNextTab = () => setActiveTab((prev) => (prev + 1) % 4);
   const handlePrevTab = () => setActiveTab((prev) => (prev === 0 ? 3 : prev - 1));
@@ -194,6 +235,13 @@ export default function Home() {
           <div key={i} className="bubble absolute bg-white/30 rounded-full shadow-[0_0_10px_#64d9ff]" 
                style={{ left: b.left, width: b.size, height: b.size, bottom: '-10%' }} />
         ))}
+        
+      {/* Hiệu ứng 5 gợn sóng lan tỏa liên tiếp khi rơi chạm nước */}
+      <div className="ripple absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-[15px] border-[#a1eeff]/80 z-10" style={{ width: 0, height: 0 }}></div>
+      <div className="ripple absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-[10px] border-[#ff99c4]/60 z-10" style={{ width: 0, height: 0 }}></div>
+      <div className="ripple absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-[8px] border-[#64d9ff]/50 z-10" style={{ width: 0, height: 0 }}></div>
+      <div className="ripple absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-[5px] border-[#ffb3d6]/40 z-10" style={{ width: 0, height: 0 }}></div>
+      <div className="ripple absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-[2px] border-white/30 z-10" style={{ width: 0, height: 0 }}></div>
         {creatures.map((item, i) => {
           if (item.type === 'fish') return <Fish key={i} style={{ left: item.left, top: item.top, width: item.size }} variant={item.variant} />;
           if (item.type === 'jellyfish') return <Jellyfish key={i} style={{ left: item.left, top: item.top, width: item.size }} />;
