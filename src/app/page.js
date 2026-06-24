@@ -1,9 +1,11 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useRef, useState } from 'react';
+
 import { Canvas, useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 import gsap from 'gsap';
+import Tab4Wishes from '@/components/tabs/Tab4Wishes';
 
 // === CÁC COMPONENT SINH VẬT BIỂN ===
 const bubbles = [
@@ -13,6 +15,15 @@ const bubbles = [
   { left: '54%', size: 14, delay: 0.9, duration: 10 },
   { left: '78%', size: 16, delay: 3.4, duration: 11 },
   { left: '88%', size: 10, delay: 1.7, duration: 8.5 },
+
+  { left: '15%', size: 15, delay: 3.0, duration: 6 },
+  { left: '40%', size: 12, delay: 0.5, duration: 9 },
+  { left: '65%', size: 20, delay: 1.5, duration: 7.5 },
+  { left: '82%', size: 14, delay: 2.8, duration: 8 },
+  { left: '5%',  size: 16, delay: 4.1, duration: 10 },
+  { left: '95%', size: 11, delay: 0.2, duration: 6.5 },
+  { left: '45%', size: 18, delay: 2.5, duration: 8.5 },
+  { left: '72%', size: 13, delay: 1.0, duration: 7 },
 ];
 
 const creatures = [
@@ -142,42 +153,65 @@ export default function Home() {
   const [isLanding, setIsLanding] = useState(true);
   const [activeTab, setActiveTab] = useState(0);
   const [isUnlocked, setIsUnlocked] = useState(false);
-  const [passcode, setPasscode] = useState('');
   const [showSurprise, setShowSurprise] = useState(false);
   
+  const [selectedImage, setSelectedImage] = useState(null);
   const pageRef = useRef(null);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Bong bóng nước nổi lên
-      gsap.to('.bubble', { yPercent: -120, opacity: 0, duration: 10, repeat: -1, stagger: 1.2 });
-      
-      // NÂNG CẤP: Sinh vật biển trôi nổi mượt và tự nhiên hơn
-      gsap.to('.creature', {
-        y: "random(-25, 25)",       // Nhấp nhô lên xuống ngẫu nhiên xa hơn
-        x: "random(-15, 15)",       // Trôi nhẹ sang trái phải
-        rotation: "random(-8, 8)",  // Lắc lư nghiêng qua lại chút xíu cho cute
-        duration: "random(5, 8)",   // Mỗi con bơi một tốc độ khác nhau (5-8 giây)
-        yoyo: true,                 // Bơi đi rồi bơi về
-        repeat: -1,                 // Lặp lại vô tận
-        repeatRefresh: true,        // Tự động tạo hướng bơi mới sau mỗi lần lặp
-        ease: "sine.inOut",         // Hiệu ứng mượt, trớn nước êm ái
+      // 1. Bong bóng dâng lên nhộn nhịp xuyên suốt
+      // 1. Bong bóng dâng lên nhộn nhịp xuyên suốt (Đã tăng độ cao và chỉnh thời gian)
+      gsap.to('.bubble', { 
+        y: "-120vh",       // TOẠ ĐỘ BAY CAO: Đổi thành -120vh để ép bong bóng bay một mạch từ đáy lên vượt quá đỉnh màn hình luôn
+        opacity: 0, 
+        duration: 6,       // THỜI GIAN BAY (GIÂY): Số này chính là thời gian nổi. Muốn bong bóng bay nhanh hơn thì giảm xuống (6 hoặc 8), muốn bay chậm rề rề nghệ thuật hơn thì tăng lên (12 hoặc 15)
+        repeat: -1, 
+        stagger: 0.3       // ĐỘ DÀY BONG BÓNG: Giảm số này xuống (ví dụ 0.3 hoặc 0.4) thì bong bóng sẽ sủi lên liên tục và dày hơn nữa
+      });
+
+      // 2. VỪA VÀO LINK: Toàn bộ trang web giật từ trên cao rơi rớt xuống nước
+      gsap.fromTo(pageRef.current, 
+        { y: "-100vh" },
+        { y: "0", duration: 1.5, ease: "power3.inOut" }
+      );
+
+      // 3. VỪA CHẠM NƯỚC: Tỏa 5 lớp sóng liên tiếp lan rộng ra
+      gsap.fromTo('.ripple', 
+        { width: 0, height: 0, opacity: 1, borderWidth: "15px" },
+        { width: "250vw", height: "250vw", borderWidth: "1px", opacity: 0, duration: 3, stagger: 0.15, ease: "power2.out", delay: 1.0 }
+      );
+
+      // 4. VỪA TỎA SÓNG XONG: Cá và sinh vật biển từ 2 bên rìa lao nhanh ra rồi đứng nhấp nhô
+      gsap.fromTo('.creature', {
+          x: (index, target) => parseFloat(target.style.left) < 50 ? -1500 : 1500,
+          opacity: 0
+        }, {
+          x: 0,
+          opacity: 1,
+          duration: 1.2,
+          stagger: 0.1,
+          ease: "power3.out",
+          delay: 1.3,
+          onComplete: () => {
+            // Lao ra vị trí xong thì chốt chặn đứng yên tại chỗ và nhấp nhô nhẹ
+            gsap.to('.creature', {
+              y: "+=15",
+              rotation: "random(-4, 4)",
+              duration: "random(2, 4)",
+              yoyo: true,
+              repeat: -1,
+              ease: "sine.inOut",
+            });
+          }
       });
     }, pageRef);
+    
     return () => ctx.revert();
-  }, []);
+  }, []); // <--- Để mảng rỗng để kích hoạt NGAY LẬP TỨC khi vừa nhấn vào link 
 
   const handleNextTab = () => setActiveTab((prev) => (prev + 1) % 4);
   const handlePrevTab = () => setActiveTab((prev) => (prev === 0 ? 3 : prev - 1));
-
-  const checkPasscode = (e) => {
-    e.preventDefault();
-    if (passcode === '1007') {
-      setIsUnlocked(true);
-    } else {
-      alert('Mật khẩu không đúng! Gợi ý: Ngày sinh nhật (1007)');
-    }
-  };
 
   return (
     <main 
@@ -192,6 +226,13 @@ export default function Home() {
           <div key={i} className="bubble absolute bg-white/30 rounded-full shadow-[0_0_10px_#64d9ff]" 
                style={{ left: b.left, width: b.size, height: b.size, bottom: '-10%' }} />
         ))}
+        
+      {/* Hiệu ứng 5 gợn sóng lan tỏa liên tiếp khi rơi chạm nước */}
+      <div className="ripple absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-[15px] border-[#a1eeff]/80 z-10" style={{ width: 0, height: 0 }}></div>
+      <div className="ripple absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-[10px] border-[#ff99c4]/60 z-10" style={{ width: 0, height: 0 }}></div>
+      <div className="ripple absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-[8px] border-[#64d9ff]/50 z-10" style={{ width: 0, height: 0 }}></div>
+      <div className="ripple absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-[5px] border-[#ffb3d6]/40 z-10" style={{ width: 0, height: 0 }}></div>
+      <div className="ripple absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-[2px] border-white/30 z-10" style={{ width: 0, height: 0 }}></div>
         {creatures.map((item, i) => {
           if (item.type === 'fish') return <Fish key={i} style={{ left: item.left, top: item.top, width: item.size }} variant={item.variant} />;
           if (item.type === 'jellyfish') return <Jellyfish key={i} style={{ left: item.left, top: item.top, width: item.size }} />;
@@ -257,25 +298,34 @@ export default function Home() {
             <h1 className="text-4xl font-bold text-[#ff99c4] mb-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">Góc Nhỏ Của Dâng</h1>
             <p className="text-lg text-[#64d9ff] font-medium mb-8">Những mảnh ghép kỷ niệm lấp lánh dưới đáy đại dương.</p>
             
-            {/* Khung chứa các hình ảnh */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-4">
-              {/* Hình Đại Diện Chính */}
-              <div className="md:col-span-3 flex justify-center mb-2">
-                <div className="w-40 h-40 bg-gradient-to-tr from-[#64d9ff]/30 to-[#ff99c4]/30 rounded-full flex items-center justify-center border-4 border-[#ff99c4] shadow-[0_0_20px_#ff99c4] hover:scale-105 transition-transform overflow-hidden">
-                  <span className="text-[#ff99c4] font-semibold text-sm">[Ảnh Chính]</span>
-                </div>
-              </div>
+            {/* Khung chứa các hình ảnh (Gallery 8 tấm) */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5 mb-4 px-2">
+              {[
+                'IMG_0166.JPG', 'IMG_1008.JPG', 'IMG_1824.JPG', 'IMG_3536.JPG', 
+                'IMG_3779.JPG', 'IMG_4246.JPG', 'IMG_4247.JPG', 'IMG_9281.jpeg'
+              ].map((imgName, index) => (
 
-              {/* 3 Khung hình nhỏ phụ */}
-              <div className="aspect-[4/3] bg-white/10 rounded-xl border border-[#64d9ff]/50 flex items-center justify-center hover:scale-105 hover:border-[#ff99c4] transition-all cursor-pointer shadow-md overflow-hidden group">
-                 <span className="text-[#64d9ff] text-sm font-medium group-hover:scale-110 transition-transform">[Hình 1]</span>
-              </div>
-              <div className="aspect-[4/3] bg-white/10 rounded-xl border border-[#64d9ff]/50 flex items-center justify-center hover:scale-105 hover:border-[#ff99c4] transition-all cursor-pointer shadow-md overflow-hidden group">
-                 <span className="text-[#64d9ff] text-sm font-medium group-hover:scale-110 transition-transform">[Hình 2]</span>
-              </div>
-              <div className="aspect-[4/3] bg-white/10 rounded-xl border border-[#64d9ff]/50 flex items-center justify-center hover:scale-105 hover:border-[#ff99c4] transition-all cursor-pointer shadow-md overflow-hidden group">
-                 <span className="text-[#64d9ff] text-sm font-medium group-hover:scale-110 transition-transform">[Hình 3]</span>
-              </div>
+                <div 
+                  key={index} 
+                  onClick={() => setSelectedImage(imgName)}
+                  className="aspect-square bg-[#0a192f]/40 rounded-xl border border-[#64d9ff]/40 flex items-center justify-center hover:scale-105 hover:border-[#ff99c4] shadow-md hover:shadow-[0_0_20px_rgba(255,153,196,0.5)] transition-all duration-300 cursor-pointer overflow-hidden group relative"
+                >
+                  {/* Hiển thị ảnh thực tế */}
+                  <img 
+                    src={`/image/${imgName}`} 
+                    alt={`Kỷ niệm ${index + 1}`} 
+                    className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700" 
+                  />
+                  
+                  {/* Lớp phủ mờ và chữ 'Xem' hiện lên khi di chuột (Tạo cảm giác pro) */}
+                  <div className="absolute inset-0 bg-[#021428]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <span className="text-[#ff99c4] font-bold text-sm border-2 border-[#ff99c4]/50 px-4 py-1.5 rounded-full backdrop-blur-md">
+                      Xem
+                    </span>
+                  </div>
+                </div>
+              ))}
+              
             </div>
           </div>
         </div>
@@ -314,24 +364,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Tab 4: Passcode */}
-        <div className={`transition-all duration-1000 absolute ${activeTab === 3 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-          {!isUnlocked ? (
-            <form onSubmit={checkPasscode} className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border-2 border-[#ff99c4]/50 text-center shadow-[0_0_20px_rgba(255,153,196,0.2)]">
-              <h2 className="text-2xl font-bold text-[#64d9ff] mb-4 drop-shadow-sm">Khu Vực Dành Riêng Cho Fan</h2>
-              <p className="mb-6 text-white font-medium">Nhập mật khẩu để xem thư</p>
-              <input type="password" value={passcode} onChange={(e) => setPasscode(e.target.value)} placeholder="Nhập Passcode..." className="px-4 py-3 rounded-xl bg-black/40 border-2 border-[#64d9ff]/50 text-[#ff99c4] focus:border-[#ff99c4] font-bold text-center outline-none mb-6 block w-full transition-colors" />
-              <button type="submit" className="px-6 py-3 bg-gradient-to-r from-[#64d9ff] to-[#ff99c4] text-black font-bold rounded-xl w-full hover:scale-105 transition-transform">
-                Mở Khóa 🔓
-              </button>
-            </form>
-          ) : (
-            <div className="bg-white/10 backdrop-blur-md p-8 rounded-3xl border-2 border-[#64d9ff]/50 w-[500px] shadow-[0_0_30px_rgba(100,217,255,0.2)]">
-              <h2 className="text-2xl font-bold text-[#64d9ff] mb-6 text-center drop-shadow-sm">Lời Chúc Tới Dâng</h2>
-              <textarea placeholder="Viết lời chúc của bạn..." className="w-full p-4 rounded-xl bg-black/40 border-2 border-[#ff99c4]/40 text-white focus:border-[#64d9ff] outline-none mb-4 transition-colors" rows="3" />
-              <button className="px-6 py-3 bg-gradient-to-r from-[#ff99c4] to-[#64d9ff] text-black font-bold rounded-xl w-full hover:scale-105 transition-transform">Gửi Lời Chúc 💌</button>
-            </div>
-          )}
+        {/* Tab 4: Wishes (via Tab4Wishes component) */}
+        <div className={`transition-all duration-1000 absolute inset-0 ${activeTab === 3 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          <Tab4Wishes isUnlocked={isUnlocked} setIsUnlocked={setIsUnlocked} />
         </div>
       </div>
 
@@ -348,6 +383,22 @@ export default function Home() {
         <button onClick={handleNextTab} className="text-[#64d9ff] hover:text-[#ff99c4] hover:scale-125 transition-all px-2 font-bold">▶</button>
       </div>
 
+      {/* DÁN CỤC POPUP VÀO ĐÂY (NẰM BÊN TRONG MAIN) */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md cursor-zoom-out"
+          onClick={() => setSelectedImage(null)}
+        >
+          <img 
+            src={`/image/${selectedImage}`} 
+            className="max-w-[90%] max-h-[90vh] rounded-2xl border-4 border-[#ff99c4] shadow-[0_0_40px_#ff99c4]" 
+            alt="Phóng to" 
+          />
+          <button className="absolute top-6 right-8 text-white text-5xl hover:text-[#ff99c4] transition-colors">×</button>
+        </div>
+      )}
+
     </main>
+    
   );
 }

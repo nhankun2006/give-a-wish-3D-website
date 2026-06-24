@@ -1,23 +1,42 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Unlock, Send, ImagePlus } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
 export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
   const [passcode, setPasscode] = useState('');
   const [attempts, setAttempts] = useState(0);
   const [hint, setHint] = useState('');
   
-  const [wishes, setWishes] = useState([
-    { id: 1, name: "Fan 1", message: "Always shining bright!", img: null },
-    { id: 2, name: "Fan 2", message: "Love your acting so much.", img: null },
-  ]);
-  const [newWishName, setNewWishName] = useState('');
+  const [wishes, setWishes] = useState([]);
   const [newWishMsg, setNewWishMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const correctPasscode = "sunlight"; // Placeholder
+
+  useEffect(() => {
+    if (isUnlocked) {
+      fetchWishes();
+    }
+  }, [isUnlocked]);
+
+  const fetchWishes = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('wishes')
+        .select('*')
+        // .eq('is_approved', true) // Uncomment this line to hide unapproved wishes
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      if (data) setWishes(data);
+    } catch (error) {
+      console.error('Error fetching wishes:', error.message);
+    }
+  };
 
   const handleUnlock = (e) => {
     e.preventDefault();
@@ -50,10 +69,10 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
     return sanitized;
   };
 
-  const handleSubmitWish = (e) => {
+  const handleSubmitWish = async (e) => {
     e.preventDefault();
-    if (!newWishName.trim() || !newWishMsg.trim()) {
-      setErrorMsg("Please fill in both name and message.");
+    if (!newWishMsg.trim()) {
+      setErrorMsg("Please fill in a message.");
       return;
     }
     if (newWishMsg.length > 250) {
@@ -62,10 +81,33 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
     }
 
     const sanitizedMsg = filterBadWords(newWishMsg);
-    setWishes([{ id: Date.now(), name: newWishName, message: sanitizedMsg, img: null }, ...wishes]);
-    setNewWishName('');
-    setNewWishMsg('');
-    setErrorMsg('');
+    setIsLoading(true);
+
+    try {
+      const { data, error } = await supabase
+        .from('wishes')
+        .insert([
+          { 
+            name: "Fan ẩn danh", 
+            message: sanitizedMsg, 
+            image_url: null,
+            is_approved: false
+          }
+        ])
+        .select();
+
+      if (error) throw error;
+
+      await fetchWishes();
+      
+      setNewWishMsg('');
+      setErrorMsg('');
+    } catch (error) {
+      console.error('Error submitting wish:', error.message);
+      setErrorMsg("Failed to send wish. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -148,8 +190,8 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                 >
                   {/* Polaroid Photo area */}
                   <div className="w-full aspect-square bg-sky-50 mb-4 flex items-center justify-center border border-gray-100 overflow-hidden">
-                    {wish.img ? (
-                       <img src={wish.img} alt="Fan upload" className="w-full h-full object-cover" />
+                    {wish.image_url ? (
+                       <img src={wish.image_url} alt="Fan upload" className="w-full h-full object-cover" />
                     ) : (
                        <span className="text-sky-200 font-bold text-4xl opacity-50">♥</span>
                     )}
@@ -167,22 +209,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
               </h3>
               
               <form onSubmit={handleSubmitWish} className="space-y-4">
-                <div className="flex gap-4 flex-col sm:flex-row">
-                  <input 
-                    type="text" 
-                    value={newWishName}
-                    onChange={(e) => setNewWishName(e.target.value)}
-                    placeholder="Your Name"
-                    className="flex-1 px-4 py-3 rounded-xl bg-white/50 border border-white focus:outline-none focus:ring-2 focus:ring-sky-400 text-sky-900"
-                  />
-                  <div className="relative flex-1">
-                    <input type="file" id="file-upload" className="hidden" accept="image/*" />
-                    <label htmlFor="file-upload" className="flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white/50 border border-white focus:outline-none focus:ring-2 focus:ring-sky-400 text-sky-900 cursor-pointer hover:bg-white/80 transition-colors h-full">
-                      <ImagePlus className="w-5 h-5 text-sky-500" /> Upload Photo
-                    </label>
-                  </div>
-                </div>
-                
+
                 <div className="relative">
                   <textarea 
                     value={newWishMsg}
@@ -200,9 +227,10 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
 
                 <button 
                   type="submit"
-                  className="w-full py-4 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl shadow-[0_4px_14px_0_rgba(14,165,233,0.39)] transition-all active:scale-95 text-lg"
+                  disabled={isLoading}
+                  className={`w-full py-4 ${isLoading ? 'bg-sky-400 cursor-not-allowed' : 'bg-sky-500 hover:bg-sky-600'} text-white font-bold rounded-xl shadow-[0_4px_14px_0_rgba(14,165,233,0.39)] transition-all active:scale-95 text-lg`}
                 >
-                  Send Wish
+                  {isLoading ? 'Đang gửi...' : 'Gửi Lời Chúc'}
                 </button>
               </form>
             </div>
