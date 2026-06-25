@@ -71,6 +71,12 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
       return;
     }
 
+    const longWord = newWishMsg.split(/\s+/).find(word => word.length > 16);
+    if (longWord) {
+      setErrorMsg(`Word too long: "${longWord.slice(0, 16)}..." — each word must be 16 characters or fewer.`);
+      return;
+    }
+
     const sanitizedMsg = filterBadWords(newWishMsg);
     setIsLoading(true);
 
