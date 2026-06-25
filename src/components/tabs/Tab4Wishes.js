@@ -11,6 +11,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
   const [hint, setHint] = useState('');
   
   const [wishes, setWishes] = useState([]);
+  const [newWishName, setNewWishName] = useState('');
   const [newWishMsg, setNewWishMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -78,7 +79,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
         .from('wishes')
         .insert([
           { 
-            name: "Fan ẩn danh", 
+            name: newWishName.trim() || "Fan ẩn danh", 
             message: sanitizedMsg, 
             image_url: null,
             is_approved: false
@@ -90,6 +91,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
 
       await fetchWishes();
       
+      setNewWishName('');
       setNewWishMsg('');
       setErrorMsg('');
     } catch (error) {
@@ -199,6 +201,20 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
               </h3>
               
               <form onSubmit={handleSubmitWish} className="space-y-4">
+
+                <div>
+                  <label className="block text-sm font-semibold text-sky-800 mb-1">
+                    Your Name <span className="text-sky-500/60 font-normal">(optional — defaults to "Fan ẩn danh")</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newWishName}
+                    onChange={(e) => setNewWishName(e.target.value)}
+                    placeholder="Enter your name..."
+                    maxLength={50}
+                    className="w-full px-4 py-3 rounded-xl bg-white/50 border border-white focus:outline-none focus:ring-2 focus:ring-sky-400 text-sky-900 placeholder-sky-900/30"
+                  />
+                </div>
 
                 <div className="relative">
                   <textarea 
