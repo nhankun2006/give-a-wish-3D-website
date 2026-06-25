@@ -312,7 +312,7 @@ export default function Home() {
                 >
                   {/* Hiển thị ảnh thực tế */}
                   <img 
-                    src={`/image/${imgName}`} 
+                    src={`/images_tab1/${imgName}`} 
                     alt={`Kỷ niệm ${index + 1}`} 
                     className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700" 
                   />

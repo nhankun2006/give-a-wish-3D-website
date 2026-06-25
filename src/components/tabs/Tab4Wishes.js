@@ -15,7 +15,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
   const [errorMsg, setErrorMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const correctPasscode = "sunlight"; // Placeholder
+  const correctPasscode = "1007";
 
   useEffect(() => {
     if (isUnlocked) {
@@ -45,18 +45,8 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
       return;
     }
 
-    const newAttempts = attempts + 1;
-    setAttempts(newAttempts);
-
-    if (newAttempts === 1) {
-      setHint("Vague Hint: It's what the ocean needs to sparkle.");
-    } else if (newAttempts === 2) {
-      setHint("Explicit Hint: Starts with 'sun' and ends with 'light'.");
-    } else if (newAttempts >= 3) {
-      setPasscode(correctPasscode);
-      setHint("Auto-unlocked! (Too many attempts)");
-      setTimeout(() => setIsUnlocked(true), 1000);
-    }
+    setAttempts(prev => prev + 1);
+    setHint("Hint: Try a 4-digit number 🔢");
   };
 
   const filterBadWords = (text) => {
@@ -140,7 +130,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                 type="text" 
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
-                placeholder="Enter passcode..."
+                placeholder="Enter 4-digit passcode..."
                 className="w-full px-4 py-3 rounded-xl bg-white/50 border border-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 text-sky-900 placeholder-sky-900/40 text-center font-bold tracking-wider"
               />
               <button 
