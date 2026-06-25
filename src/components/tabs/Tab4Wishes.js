@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Unlock, Send, ImagePlus } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -15,6 +15,8 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
   const [newWishMsg, setNewWishMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [cooldownLeft, setCooldownLeft] = useState(0);
+  const lastSubmitRef = useRef(null);
 
   const correctPasscode = "1007";
 
@@ -62,6 +64,12 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
 
   const handleSubmitWish = async (e) => {
     e.preventDefault();
+
+    if (cooldownLeft > 0) {
+      setErrorMsg(`Please wait ${cooldownLeft}s before sending another wish.`);
+      return;
+    }
+
     if (!newWishMsg.trim()) {
       setErrorMsg("Please fill in a message.");
       return;
@@ -100,6 +108,21 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
       setNewWishName('');
       setNewWishMsg('');
       setErrorMsg('');
+
+      // Start 20-second cooldown
+      const COOLDOWN = 20;
+      setCooldownLeft(COOLDOWN);
+      lastSubmitRef.current = Date.now();
+      const interval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - lastSubmitRef.current) / 1000);
+        const remaining = COOLDOWN - elapsed;
+        if (remaining <= 0) {
+          setCooldownLeft(0);
+          clearInterval(interval);
+        } else {
+          setCooldownLeft(remaining);
+        }
+      }, 500);
     } catch (error) {
       console.error('Error submitting wish:', error.message);
       setErrorMsg("Failed to send wish. Please try again.");
@@ -239,10 +262,18 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
 
                 <button 
                   type="submit"
-                  disabled={isLoading}
-                  className={`w-full py-4 ${isLoading ? 'bg-sky-400 cursor-not-allowed' : 'bg-sky-500 hover:bg-sky-600'} text-white font-bold rounded-xl shadow-[0_4px_14px_0_rgba(14,165,233,0.39)] transition-all active:scale-95 text-lg`}
+                  disabled={isLoading || cooldownLeft > 0}
+                  className={`w-full py-4 ${
+                    isLoading || cooldownLeft > 0
+                      ? 'bg-sky-300 cursor-not-allowed'
+                      : 'bg-sky-500 hover:bg-sky-600'
+                  } text-white font-bold rounded-xl shadow-[0_4px_14px_0_rgba(14,165,233,0.39)] transition-all active:scale-95 text-lg`}
                 >
-                  {isLoading ? 'Đang gửi...' : 'Gửi Lời Chúc'}
+                  {isLoading
+                    ? 'Đang gửi...'
+                    : cooldownLeft > 0
+                    ? `⏳ Wait ${cooldownLeft}s...`
+                    : 'Gửi Lời Chúc'}
                 </button>
               </form>
             </div>
