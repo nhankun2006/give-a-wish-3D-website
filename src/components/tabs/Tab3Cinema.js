@@ -1,99 +1,51 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, PlayCircle } from 'lucide-react';
-
-export default function Tab3Cinema({ showVideo, onCloseVideo }) {
-  // Deep sea light particles
-  const particles = Array.from({ length: 30 }).map((_, i) => ({
-    id: i,
-    size: Math.random() * 4 + 1,
-    left: `${Math.random() * 100}%`,
-    top: `${Math.random() * 100}%`,
-    animationDuration: `${Math.random() * 4 + 3}s`,
-    animationDelay: `${Math.random() * 2}s`
-  }));
-
+import gsap from 'gsap';
+export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise }) {
   return (
-    <motion.div 
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="absolute inset-0 pointer-events-auto flex flex-col items-center justify-center"
-      style={{
-        background: 'linear-gradient(180deg, rgba(2, 6, 23, 0.6) 0%, rgba(8, 47, 73, 0.8) 100%)',
-        backdropFilter: 'blur(4px)'
-      }}
-    >
-      {/* Floating Particles */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {particles.map(particle => (
-          <motion.div
-            key={particle.id}
-            className="absolute rounded-full bg-cyan-200/40 blur-[1px]"
-            style={{
-              width: particle.size,
-              height: particle.size,
-              left: particle.left,
-              top: particle.top,
-            }}
-            animate={{
-              y: ['-10px', '10px', '-10px'],
-              opacity: [0.2, 0.8, 0.2]
-            }}
-            transition={{
-              duration: parseFloat(particle.animationDuration),
-              repeat: Infinity,
-              ease: "easeInOut",
-              delay: parseFloat(particle.animationDelay)
-            }}
-          />
-        ))}
-      </div>
+    <div className={`transition-all duration-1000 absolute w-full max-w-5xl px-4 ${activeTab === 2 ? 'opacity-100 scale-100 z-20' : 'opacity-0 scale-110 pointer-events-none z-0'}`}>
+      <div className="bg-[#0a192f]/60 backdrop-blur-xl p-6 md:p-8 rounded-3xl border-2 border-[#64d9ff]/50 flex flex-col items-center shadow-[0_0_30px_rgba(100,217,255,0.2)] relative">
 
-      {/* Running Text */}
-      <div className="absolute top-1/4 w-full text-center z-10 pointer-events-none">
-        <motion.p 
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-          className="text-xl md:text-2xl font-light text-cyan-100 tracking-widest drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]"
-        >
-          Có một bí mật đang trôi dạt...
-        </motion.p>
-        <p className="text-sm text-cyan-300/60 mt-4 animate-pulse">
-          Click the bottle
-        </p>
-      </div>
-
-      {/* Video Popup Modal */}
-      <AnimatePresence>
-        {showVideo && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md"
+        {/* BÉ CUA ÔM NÚT BÍ MẬT */}
+        <div className={`absolute top-0 -right-40 md:-right-50 md:-top-2 z-30 flex flex-col items-center ${showSurprise ? 'hidden' : ''}`}>
+          <div className="animate-bounce flex flex-col items-center mb-1">
+            <span className="bg-white/95 text-[#ff70a6] text-sm font-black px-4 py-1.5 rounded-2xl shadow-[0_0_15px_#ff99c4] border-2 border-[#ff70a6]">
+              Psst! Em ở đây nè! 🦀
+            </span>
+            <span className="text-3xl drop-shadow-md mt-1">⬇️</span>
+          </div>
+          <button
+            onClick={() => {
+              setShowSurprise(true);
+              setTimeout(() => {
+                const tl = gsap.timeline();
+                tl.fromTo('.surprise-bg', { opacity: 0 }, { opacity: 1, duration: 1 })
+                  .fromTo('.step-1', { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 1 })
+                  .to('.step-1', { opacity: 0, duration: 0.5, delay: 3.5 }) // Tăng thời gian đọc dòng Radar lên 3.5s
+                  .fromTo('.step-2', { opacity: 0, scale: 0.2 }, { opacity: 1, scale: 1, duration: 1.5, ease: "elastic.out(1, 0.3)" });
+              }, 150);
+            }}
+            className="px-6 py-3 bg-gradient-to-r from-[#ff99c4] to-[#64d9ff] text-black rounded-full font-bold shadow-[0_0_20px_#ff99c4] hover:scale-110 transition-transform hover:rotate-3"
           >
-            <div className="relative w-full max-w-4xl aspect-video bg-slate-900 rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(34,211,238,0.3)] border border-cyan-500/30 flex items-center justify-center group">
-              
-              <button 
-                onClick={onCloseVideo}
-                className="absolute top-4 right-4 z-10 bg-black/50 hover:bg-cyan-500/50 p-2 rounded-full text-white transition-colors"
-              >
-                <X className="w-6 h-6" />
-              </button>
+            Trạm Bí Mật! 🎁
+          </button>
+        </div>
 
-              {/* Placeholder Video Player UI */}
-              <div className="text-center">
-                <PlayCircle className="w-20 h-20 text-cyan-400 mx-auto mb-4 opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all cursor-pointer" />
-                <p className="text-cyan-200 font-medium">Video Placeholder</p>
-              </div>
+        <h2 className="text-3xl md:text-4xl font-bold text-[#64d9ff] mb-6 drop-shadow-md">Rạp Chiếu Phim Đại Dương</h2>
 
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        {/* KHUNG YOUTUBE */}
+        <div className="w-full aspect-video bg-black rounded-2xl overflow-hidden border-2 border-[#ff99c4]/30 shadow-[0_0_30px_rgba(255,153,196,0.2)] relative">
+          <iframe
+            className="absolute top-0 left-0 w-full h-full"
+            src="https://www.youtube.com/embed/8sVtL0o-v7U"
+            title="YouTube video player"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          ></iframe>
+        </div>
 
-    </motion.div>
+      </div>
+    </div>
   );
 }

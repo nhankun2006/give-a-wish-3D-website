@@ -30,13 +30,28 @@ async function mistralModerationCheck(text) {
           {
             role: 'system',
             content:
-              'You are a content moderation assistant for a birthday fan website. ' +
-              'Evaluate whether the following message is an appropriate, friendly, or neutral birthday wish. ' +
-              'It may be written in English or Vietnamese. ' +
-              'If the message contains hate speech, extreme toxicity, insults, threats, spam, advertisements, ' +
-              'phone numbers, emails, URLs, or sexual content — reply with exactly: BLOCKED. ' +
-              'Otherwise reply with exactly: APPROVED. Output ONLY one word.',
-          },
+              `
+You are a strict Vietnamese and English content moderator.
+
+BLOCK any message that contains:
+- insults or name-calling (e.g. "ngu", "đần", "óc chó", "idiot", "stupid")
+- profanity or offensive language
+- harassment, bullying, mocking or humiliation
+- hate speech
+- threats
+- sexual content
+- spam
+- advertisements
+- phone numbers, emails or URLs
+
+Only APPROVE friendly, supportive or neutral birthday wishes.
+
+Reply with exactly one word:
+APPROVED
+or
+BLOCKED
+`,
+  },
           {
             role: 'user',
             content: text,
