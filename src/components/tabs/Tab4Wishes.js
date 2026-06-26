@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Unlock, Send, ImagePlus } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -11,11 +11,14 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
   const [hint, setHint] = useState('');
   
   const [wishes, setWishes] = useState([]);
+  const [newWishName, setNewWishName] = useState('');
   const [newWishMsg, setNewWishMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [cooldownLeft, setCooldownLeft] = useState(0);
+  const lastSubmitRef = useRef(null);
 
-  const correctPasscode = "sunlight"; // Placeholder
+  const correctPasscode = "1007";
 
   useEffect(() => {
     if (isUnlocked) {
@@ -28,7 +31,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
       const { data, error } = await supabase
         .from('wishes')
         .select('*')
-        // .eq('is_approved', true) // Uncomment this line to hide unapproved wishes
+        .eq('is_approved', true)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
@@ -45,32 +48,20 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
       return;
     }
 
-    const newAttempts = attempts + 1;
-    setAttempts(newAttempts);
-
-    if (newAttempts === 1) {
-      setHint("Vague Hint: It's what the ocean needs to sparkle.");
-    } else if (newAttempts === 2) {
-      setHint("Explicit Hint: Starts with 'sun' and ends with 'light'.");
-    } else if (newAttempts >= 3) {
-      setPasscode(correctPasscode);
-      setHint("Auto-unlocked! (Too many attempts)");
-      setTimeout(() => setIsUnlocked(true), 1000);
-    }
+    setAttempts(prev => prev + 1);
+    setHint("Hint: Ngày Sinh của chị Dâng!!");
   };
 
-  const filterBadWords = (text) => {
-    const badWords = ['badword1', 'badword2', 'ugly', 'hate'];
-    let sanitized = text;
-    badWords.forEach(word => {
-      const regex = new RegExp(word, 'gi');
-      sanitized = sanitized.replace(regex, '***');
-    });
-    return sanitized;
-  };
+
 
   const handleSubmitWish = async (e) => {
     e.preventDefault();
+
+    if (cooldownLeft > 0) {
+      setErrorMsg(`Please wait ${cooldownLeft}s before sending another wish.`);
+      return;
+    }
+
     if (!newWishMsg.trim()) {
       setErrorMsg("Please fill in a message.");
       return;
@@ -80,28 +71,51 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
       return;
     }
 
-    const sanitizedMsg = filterBadWords(newWishMsg);
+    const longWord = newWishMsg.split(/\s+/).find(word => word.length > 16);
+    if (longWord) {
+      setErrorMsg(`Word too long: "${longWord.slice(0, 16)}..." — each word must be 16 characters or fewer.`);
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase
-        .from('wishes')
-        .insert([
-          { 
-            name: "Fan ẩn danh", 
-            message: sanitizedMsg, 
-            image_url: null,
-            is_approved: false
-          }
-        ])
-        .select();
+      const res = await fetch('/api/wishes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newWishName.trim(),
+          message: newWishMsg.trim(),
+        }),
+      });
 
-      if (error) throw error;
+      const json = await res.json();
+
+      if (!res.ok) {
+        setErrorMsg(json.error || 'Failed to send wish. Please try again.');
+        return;
+      }
 
       await fetchWishes();
-      
+
+      setNewWishName('');
       setNewWishMsg('');
       setErrorMsg('');
+
+      // Start 20-second cooldown
+      const COOLDOWN = 20;
+      setCooldownLeft(COOLDOWN);
+      lastSubmitRef.current = Date.now();
+      const interval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - lastSubmitRef.current) / 1000);
+        const remaining = COOLDOWN - elapsed;
+        if (remaining <= 0) {
+          setCooldownLeft(0);
+          clearInterval(interval);
+        } else {
+          setCooldownLeft(remaining);
+        }
+      }, 500);
     } catch (error) {
       console.error('Error submitting wish:', error.message);
       setErrorMsg("Failed to send wish. Please try again.");
@@ -140,7 +154,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                 type="text" 
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
-                placeholder="Enter passcode..."
+                placeholder="Enter 4-digit passcode..."
                 className="w-full px-4 py-3 rounded-xl bg-white/50 border border-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 text-sky-900 placeholder-sky-900/40 text-center font-bold tracking-wider"
               />
               <button 
@@ -210,6 +224,20 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
               
               <form onSubmit={handleSubmitWish} className="space-y-4">
 
+                <div>
+                  <label className="block text-sm font-semibold text-sky-800 mb-1">
+                    Your Name <span className="text-sky-500/60 font-normal">(optional — defaults to "Fan ẩn danh")</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={newWishName}
+                    onChange={(e) => setNewWishName(e.target.value)}
+                    placeholder="Enter your name..."
+                    maxLength={50}
+                    className="w-full px-4 py-3 rounded-xl bg-white/50 border border-white focus:outline-none focus:ring-2 focus:ring-sky-400 text-sky-900 placeholder-sky-900/30"
+                  />
+                </div>
+
                 <div className="relative">
                   <textarea 
                     value={newWishMsg}
@@ -227,10 +255,18 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
 
                 <button 
                   type="submit"
-                  disabled={isLoading}
-                  className={`w-full py-4 ${isLoading ? 'bg-sky-400 cursor-not-allowed' : 'bg-sky-500 hover:bg-sky-600'} text-white font-bold rounded-xl shadow-[0_4px_14px_0_rgba(14,165,233,0.39)] transition-all active:scale-95 text-lg`}
+                  disabled={isLoading || cooldownLeft > 0}
+                  className={`w-full py-4 ${
+                    isLoading || cooldownLeft > 0
+                      ? 'bg-sky-300 cursor-not-allowed'
+                      : 'bg-sky-500 hover:bg-sky-600'
+                  } text-white font-bold rounded-xl shadow-[0_4px_14px_0_rgba(14,165,233,0.39)] transition-all active:scale-95 text-lg`}
                 >
-                  {isLoading ? 'Đang gửi...' : 'Gửi Lời Chúc'}
+                  {isLoading
+                    ? 'Đang gửi...'
+                    : cooldownLeft > 0
+                    ? `⏳ Wait ${cooldownLeft}s...`
+                    : 'Gửi Lời Chúc'}
                 </button>
               </form>
             </div>
