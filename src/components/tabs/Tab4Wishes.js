@@ -101,7 +101,11 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
       setNewWishName('');
       setNewWishMsg('');
       setErrorMsg('');
-
+    } catch (error) {
+      console.error('Error submitting wish:', error.message);
+      setErrorMsg("Failed to send wish. Please try again.");
+    } finally {
+      setIsLoading(false);
       // Start 20-second cooldown
       const COOLDOWN = 20;
       setCooldownLeft(COOLDOWN);
@@ -116,11 +120,6 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
           setCooldownLeft(remaining);
         }
       }, 500);
-    } catch (error) {
-      console.error('Error submitting wish:', error.message);
-      setErrorMsg("Failed to send wish. Please try again.");
-    } finally {
-      setIsLoading(false);
     }
   };
 
