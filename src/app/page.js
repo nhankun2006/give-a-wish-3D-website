@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useRef, useState } from 'react';
 
@@ -293,7 +293,7 @@ export default function Home() {
       <div className={`absolute inset-0 z-20 flex items-center justify-center p-8 text-white transition-opacity duration-1000 ${isLanding ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         
         {/* Tab 1: Welcome (Album Ảnh) */}
-        <div className={`transition-all duration-1000 absolute w-full max-w-4xl ${activeTab === 0 ? 'opacity-100 scale-100' : 'opacity-0 scale-90 pointer-events-none'}`}>
+        <div className={`transition-all duration-1000 absolute w-full max-w-4xl ${activeTab === 0 ? 'opacity-100 scale-100 z-20' : 'opacity-0 scale-90 pointer-events-none z-0'}`}>
           <div className="bg-[#0a192f]/50 backdrop-blur-md p-8 rounded-[2rem] border-2 border-[#ff99c4]/60 text-center w-full shadow-[0_0_30px_rgba(255,153,196,0.3)] mx-auto">
             <h1 className="text-4xl font-bold text-[#ff99c4] mb-2 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">Góc Nhỏ Của Dâng</h1>
             <p className="text-lg text-[#64d9ff] font-medium mb-8">Những mảnh ghép kỷ niệm lấp lánh dưới đáy đại dương.</p>
@@ -302,7 +302,7 @@ export default function Home() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5 mb-4 px-2">
               {[
                 'IMG_0166.JPG', 'IMG_1008.JPG', 'IMG_1824.JPG', 'IMG_3536.JPG', 
-                'IMG_3779.JPG', 'IMG_4246.JPG', 'IMG_4247.JPG', 'IMG_9281.jpeg'
+                'IMG_3779.JPG', 'IMG_4246.JPG', 'IMG_4247.JPG', 'IMG_9281.JPG'
               ].map((imgName, index) => (
 
                 <div 
@@ -331,7 +331,7 @@ export default function Home() {
         </div>
 
         {/* Tab 2: Hành trình */}
-        <div className={`transition-all duration-1000 absolute ${activeTab === 1 ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-20 pointer-events-none'}`}>
+        <div className={`transition-all duration-1000 absolute ${activeTab === 1 ? 'opacity-100 translate-x-0 z-20' : 'opacity-0 translate-x-20 pointer-events-none z-0'}`}>
           <div className="text-center">
             <h2 className="text-3xl font-bold text-[#ff99c4] mb-8 drop-shadow-md">Hành Trình Sự Nghiệp</h2>
             <div className="flex gap-6 justify-center">
@@ -345,27 +345,54 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Tab 3: Rạp chiếu phim */}
-        <div className={`transition-all duration-1000 absolute ${activeTab === 2 ? 'opacity-100 scale-100' : 'opacity-0 scale-110 pointer-events-none'}`}>
-          <div className="bg-[#0a192f]/60 backdrop-blur-xl p-6 rounded-3xl border-2 border-[#64d9ff]/50 flex flex-col items-center shadow-[0_0_30px_rgba(100,217,255,0.2)]">
-            <h2 className="text-2xl font-bold text-[#64d9ff] mb-4">Rạp Chiếu Phim Đại Dương</h2>
-            <div className="w-[600px] h-[340px] bg-black/80 rounded-xl flex items-center justify-center mb-6 border border-[#ff99c4]/30">
-               <span className="text-[#ff99c4]/70 font-semibold">[Video Lời Chúc]</span>
-            </div>
-            {!showSurprise ? (
-              <button onClick={() => setShowSurprise(true)} className="px-8 py-3 bg-gradient-to-r from-[#64d9ff] to-[#ff99c4] text-black rounded-full font-bold hover:scale-105 transition-transform shadow-[0_0_20px_rgba(255,153,196,0.5)]">
-                Mở Quà Bất Ngờ! 🎁
-              </button>
-            ) : (
-              <div className="animate-bounce text-2xl text-[#ff99c4] font-bold drop-shadow-[0_0_10px_rgba(255,153,196,0.8)]">
-                🎉 Quà từ Fan! 🎉
+        {/* Tab 3: Rạp chiếu phim (Đã khôi phục khung YouTube to) */}
+        <div className={`transition-all duration-1000 absolute w-full max-w-5xl px-4 ${activeTab === 2 ? 'opacity-100 scale-100 z-20' : 'opacity-0 scale-110 pointer-events-none z-0'}`}>
+          <div className="bg-[#0a192f]/60 backdrop-blur-xl p-6 md:p-8 rounded-3xl border-2 border-[#64d9ff]/50 flex flex-col items-center shadow-[0_0_30px_rgba(100,217,255,0.2)] relative">
+
+            {/* BÉ CUA ÔM NÚT BÍ MẬT */}
+            <div className={`absolute top-0 -right-40 md:-right-50 md:-top-2 z-30 flex flex-col items-center ${showSurprise ? 'hidden' : ''}`}>
+              <div className="animate-bounce flex flex-col items-center mb-1">
+                <span className="bg-white/95 text-[#ff70a6] text-sm font-black px-4 py-1.5 rounded-2xl shadow-[0_0_15px_#ff99c4] border-2 border-[#ff70a6]">
+                  Psst! Em ở đây nè! 🦀
+                </span>
+                <span className="text-3xl drop-shadow-md mt-1">⬇️</span>
               </div>
-            )}
+              <button 
+                onClick={() => {
+                  setShowSurprise(true);
+                  setTimeout(() => {
+                    const tl = gsap.timeline();
+                    tl.fromTo('.surprise-bg', { opacity: 0 }, { opacity: 1, duration: 1 }) 
+                      .fromTo('.step-1', { opacity: 0, scale: 0.8 }, { opacity: 1, scale: 1, duration: 1 }) 
+                      .to('.step-1', { opacity: 0, duration: 0.5, delay: 3.5 }) // Tăng thời gian đọc dòng Radar lên 3.5s
+                      .fromTo('.step-2', { opacity: 0, scale: 0.2 }, { opacity: 1, scale: 1, duration: 1.5, ease: "elastic.out(1, 0.3)" }); 
+                  }, 150);
+                }} 
+                className="px-6 py-3 bg-gradient-to-r from-[#ff99c4] to-[#64d9ff] text-black rounded-full font-bold shadow-[0_0_20px_#ff99c4] hover:scale-110 transition-transform hover:rotate-3"
+              >
+                Trạm Bí Mật! 🎁
+              </button>
+            </div>
+
+            <h2 className="text-3xl md:text-4xl font-bold text-[#64d9ff] mb-6 drop-shadow-md">Rạp Chiếu Phim Đại Dương</h2>
+            
+            {/* KHUNG YOUTUBE */}
+            <div className="w-full aspect-video bg-black rounded-2xl overflow-hidden border-2 border-[#ff99c4]/30 shadow-[0_0_30px_rgba(255,153,196,0.2)] relative">
+              <iframe 
+                className="absolute top-0 left-0 w-full h-full"
+                src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=0" 
+                title="YouTube video player" 
+                frameBorder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                allowFullScreen
+              ></iframe>
+            </div>
+
           </div>
         </div>
 
         {/* Tab 4: Wishes (via Tab4Wishes component) */}
-        <div className={`transition-all duration-1000 absolute inset-0 ${activeTab === 3 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <div className={`transition-all duration-1000 absolute inset-0 ${activeTab === 3 ? 'opacity-100 z-20' : 'opacity-0 pointer-events-none z-0'}`}>
           <Tab4Wishes isUnlocked={isUnlocked} setIsUnlocked={setIsUnlocked} />
         </div>
       </div>
@@ -383,18 +410,69 @@ export default function Home() {
         <button onClick={handleNextTab} className="text-[#64d9ff] hover:text-[#ff99c4] hover:scale-125 transition-all px-2 font-bold">▶</button>
       </div>
 
+      
       {/* DÁN CỤC POPUP VÀO ĐÂY (NẰM BÊN TRONG MAIN) */}
       {selectedImage && (
         <div 
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md cursor-zoom-out"
+          className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-md cursor-zoom-out"
+          style={{ zIndex: 99999 }}  /* Ép cứng z-index */
           onClick={() => setSelectedImage(null)}
         >
           <img 
-            src={`/image/${selectedImage}`} 
+            src={`/images_tab1/${selectedImage}`} 
             className="max-w-[90%] max-h-[90vh] rounded-2xl border-4 border-[#ff99c4] shadow-[0_0_40px_#ff99c4]" 
             alt="Phóng to" 
+            onClick={(e) => e.stopPropagation()}  /* Chặn lỗi click nhầm */
           />
-          <button className="absolute top-6 right-8 text-white text-5xl hover:text-[#ff99c4] transition-colors">×</button>
+          <button 
+            className="absolute top-4 right-6 md:top-6 md:right-8 text-white text-5xl hover:text-[#ff99c4] transition-colors"
+            onClick={() => setSelectedImage(null)}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+        {/* LỚP MÀN HÌNH ĐEN CHE TOÀN BỘ WEB KHI KÍCH HOẠT QUÀ TẶNG */}
+      {showSurprise && (
+        <div className="surprise-bg opacity-0 fixed inset-0 z-[9999] bg-[#020a14] flex flex-col items-center justify-center overflow-hidden backdrop-blur-3xl">
+          
+          <button 
+            onClick={() => setShowSurprise(false)}
+            className="absolute top-6 left-6 z-50 px-5 py-2.5 bg-white/10 backdrop-blur-md border-2 border-[#64d9ff]/50 rounded-full text-[#64d9ff] font-bold hover:bg-[#64d9ff] hover:text-black hover:scale-105 transition-all flex items-center gap-2 shadow-[0_0_15px_rgba(100,217,255,0.3)]"
+          >
+            ◀ Quay Lại Rạp
+          </button>
+
+          {/* BƯỚC 1: RADAR QUÉT (Concept Bảo vật) */}
+          <div className="step-1 absolute flex flex-col items-center px-4 w-full">
+            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-[#ff99c4] border-t-transparent animate-spin mb-8 shadow-[0_0_30px_#ff99c4]"></div>
+            <p className="text-[#64d9ff] text-xl md:text-3xl font-mono animate-pulse tracking-widest text-center leading-relaxed">
+              🚨 BÁO ĐỘNG TỪ ĐÁY BIỂN 🚨<br/><br/>
+              <span className="text-white">Phát hiện một "bảo vật" siêu cấp đáng yêu<br/>đang ngồi ngay trước màn hình...</span>
+            </p>
+          </div>
+
+          {/* BƯỚC 2: BÙNG NỔ LỜI KÊU GỌI (Concept Thủy tề) */}
+          <div className="step-2 absolute opacity-0 flex flex-col items-center px-4 w-full">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#ff99c4_0%,transparent_60%)] opacity-40 animate-ping pointer-events-none"></div>
+            
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-[#ff99c4] drop-shadow-[0_0_50px_#ff99c4] mb-8 leading-tight text-center relative z-10">
+              CHÍNH LÀ DÂNG CHỨ AI!!! 💖
+            </h1>
+            
+            <div className="bg-white/10 backdrop-blur-md px-8 py-6 rounded-3xl border-2 border-[#64d9ff] shadow-[0_0_40px_#64d9ff] relative z-10 text-center">
+              <p className="text-3xl md:text-4xl font-bold text-white mb-3">🧜‍♀️ LỆNH TỪ THỦY TỀ:</p>
+              <p className="text-2xl md:text-4xl font-extrabold text-[#64d9ff] animate-pulse">
+                ĐỘI TIÊN CÁ ĐÂU, TIẾN LÊN TẶNG QUÀ NÀO!!! 🏃‍♀️🎁
+              </p>
+            </div>
+            
+            <div className="mt-12 text-5xl md:text-7xl animate-bounce flex gap-8 relative z-10">
+              🦀 🌊 🎂 🌊 🧜‍♀️
+            </div>
+          </div>
+
         </div>
       )}
 
