@@ -31,7 +31,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
       const { data, error } = await supabase
         .from('wishes')
         .select('*')
-        // .eq('is_approved', true) // Uncomment this line to hide unapproved wishes
+        .eq('is_approved', true)
         .order('created_at', { ascending: false });
       
       if (error) throw error;
@@ -49,18 +49,10 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
     }
 
     setAttempts(prev => prev + 1);
-    setHint("Hint: Try a 4-digit number 🔢");
+    setHint("Hint: Ngày Sinh của chị Dâng!!");
   };
 
-  const filterBadWords = (text) => {
-    const badWords = ['badword1', 'badword2', 'ugly', 'hate'];
-    let sanitized = text;
-    badWords.forEach(word => {
-      const regex = new RegExp(word, 'gi');
-      sanitized = sanitized.replace(regex, '***');
-    });
-    return sanitized;
-  };
+
 
   const handleSubmitWish = async (e) => {
     e.preventDefault();
@@ -85,26 +77,27 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
       return;
     }
 
-    const sanitizedMsg = filterBadWords(newWishMsg);
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase
-        .from('wishes')
-        .insert([
-          { 
-            name: newWishName.trim() || "Fan ẩn danh", 
-            message: sanitizedMsg, 
-            image_url: null,
-            is_approved: false
-          }
-        ])
-        .select();
+      const res = await fetch('/api/wishes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newWishName.trim(),
+          message: newWishMsg.trim(),
+        }),
+      });
 
-      if (error) throw error;
+      const json = await res.json();
+
+      if (!res.ok) {
+        setErrorMsg(json.error || 'Failed to send wish. Please try again.');
+        return;
+      }
 
       await fetchWishes();
-      
+
       setNewWishName('');
       setNewWishMsg('');
       setErrorMsg('');
