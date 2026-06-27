@@ -364,7 +364,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
               <button type="submit" className="w-full py-3 bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-sky-950 font-bold rounded-xl shadow-[0_0_20px_rgba(56,189,248,0.4)] transition-all active:scale-95">Lặn Xuống</button>
             </form>
             <AnimatePresence>
-              {hint && <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 text-sm font-medium text-sky-300 bg-sky-900/30 py-2 px-4 rounded-lg border border-sky-500/20">{hint}</motion.p>}
+              {hint && <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="mt-4 text-sm font-medium text-sky-300 bg-sky-900/30 py-2 px-4 rounded-lg border border-sky-500/20">{hint}</motion.p>}
             </AnimatePresence>
           </motion.div>
         </div>
