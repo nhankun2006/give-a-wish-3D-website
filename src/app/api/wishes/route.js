@@ -29,7 +29,10 @@ async function mistralModerationCheck(text) {
         messages: [
           {
             role: 'system',
-            content: `You are a strict Vietnamese and English content moderator.
+            content:
+              `
+You are a strict Vietnamese and English content moderator.
+
 BLOCK any message that contains:
 - insults or name-calling (e.g. "ngu", "đần", "óc chó", "idiot", "stupid")
 - profanity or offensive language

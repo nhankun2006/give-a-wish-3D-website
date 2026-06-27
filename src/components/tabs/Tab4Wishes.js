@@ -9,7 +9,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
   const [passcode, setPasscode] = useState('');
   const [attempts, setAttempts] = useState(0);
   const [hint, setHint] = useState('');
-  
+
   const [wishes, setWishes] = useState([]);
   const [newWishName, setNewWishName] = useState('');
   const [newWishMsg, setNewWishMsg] = useState('');
@@ -33,7 +33,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
         .select('*')
         .eq('is_approved', true)
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
       if (data) setWishes(data);
     } catch (error) {
@@ -124,7 +124,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -135,9 +135,9 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
       }}
     >
       <div className="w-full max-w-4xl px-4 py-16">
-        
+
         {!isUnlocked ? (
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.9 }}
             animate={{ scale: 1 }}
             className="max-w-md mx-auto bg-white/40 backdrop-blur-md rounded-3xl p-8 border border-white/50 shadow-xl clay-card text-center mt-32"
@@ -147,16 +147,16 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
             </div>
             <h2 className="text-2xl font-bold text-sky-900 mb-2">Secret Treasure</h2>
             <p className="text-sky-800/80 mb-6">Enter the passcode to unlock fan wishes</p>
-            
+
             <form onSubmit={handleUnlock} className="space-y-4">
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={passcode}
                 onChange={(e) => setPasscode(e.target.value)}
                 placeholder="Enter 4-digit passcode..."
                 className="w-full px-4 py-3 rounded-xl bg-white/50 border border-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 text-sky-900 placeholder-sky-900/40 text-center font-bold tracking-wider"
               />
-              <button 
+              <button
                 type="submit"
                 className="w-full py-3 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95"
               >
@@ -166,7 +166,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
 
             <AnimatePresence>
               {hint && (
-                <motion.p 
+                <motion.p
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="mt-4 text-sm font-medium text-amber-700 bg-amber-100/50 py-2 px-4 rounded-lg"
@@ -177,14 +177,14 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
             </AnimatePresence>
           </motion.div>
         ) : (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="space-y-12"
           >
             <div className="text-center">
               <div className="inline-flex items-center justify-center p-3 bg-sky-100 rounded-full mb-4 shadow-sm border border-sky-200">
-                 <Unlock className="w-6 h-6 text-sky-600" />
+                <Unlock className="w-6 h-6 text-sky-600" />
               </div>
               <h2 className="text-3xl font-bold text-sky-900 drop-shadow-sm">Treasure Chest Unlocked!</h2>
               <p className="text-sky-800/80 mt-2">Read and share your wishes</p>
@@ -193,7 +193,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
             {/* Wishes Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {wishes.map((wish) => (
-                <motion.div 
+                <motion.div
                   key={wish.id}
                   initial={{ scale: 0.9, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
@@ -204,9 +204,9 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                   {/* Polaroid Photo area */}
                   <div className="w-full aspect-square bg-sky-50 mb-4 flex items-center justify-center border border-gray-100 overflow-hidden">
                     {wish.image_url ? (
-                       <img src={wish.image_url} alt="Fan upload" className="w-full h-full object-cover" />
+                      <img src={wish.image_url} alt="Fan upload" className="w-full h-full object-cover" />
                     ) : (
-                       <span className="text-sky-200 font-bold text-4xl opacity-50">♥</span>
+                      <span className="text-sky-200 font-bold text-4xl opacity-50">♥</span>
                     )}
                   </div>
                   <p className="font-handwriting text-gray-800 text-lg leading-relaxed">{wish.message}</p>
@@ -220,7 +220,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
               <h3 className="text-2xl font-bold text-sky-900 mb-6 flex items-center gap-2">
                 <Send className="w-6 h-6 text-sky-500" /> Add Your Wish
               </h3>
-              
+
               <form onSubmit={handleSubmitWish} className="space-y-4">
 
                 <div>
@@ -238,7 +238,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                 </div>
 
                 <div className="relative">
-                  <textarea 
+                  <textarea
                     value={newWishMsg}
                     onChange={(e) => setNewWishMsg(e.target.value)}
                     placeholder="Write your message here... (max 250 chars)"
@@ -252,20 +252,19 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
 
                 {errorMsg && <p className="text-red-500 text-sm font-medium">{errorMsg}</p>}
 
-                <button 
+                <button
                   type="submit"
                   disabled={isLoading || cooldownLeft > 0}
-                  className={`w-full py-4 ${
-                    isLoading || cooldownLeft > 0
+                  className={`w-full py-4 ${isLoading || cooldownLeft > 0
                       ? 'bg-sky-300 cursor-not-allowed'
                       : 'bg-sky-500 hover:bg-sky-600'
-                  } text-white font-bold rounded-xl shadow-[0_4px_14px_0_rgba(14,165,233,0.39)] transition-all active:scale-95 text-lg`}
+                    } text-white font-bold rounded-xl shadow-[0_4px_14px_0_rgba(14,165,233,0.39)] transition-all active:scale-95 text-lg`}
                 >
                   {isLoading
                     ? 'Đang gửi...'
                     : cooldownLeft > 0
-                    ? `⏳ Wait ${cooldownLeft}s...`
-                    : 'Gửi Lời Chúc'}
+                      ? `⏳ Wait ${cooldownLeft}s...`
+                      : 'Gửi Lời Chúc'}
                 </button>
               </form>
             </div>
