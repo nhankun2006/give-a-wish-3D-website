@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useRef, useState } from 'react';
 
@@ -149,7 +149,11 @@ export default function Home() {
 
 
       {/* DÁN CỤC POPUP VÀO ĐÂY (NẰM BÊN TRONG MAIN) */}
-      <ImagePopup selectedImage={selectedImage} setSelectedImage={setSelectedImage} />
+      <ImagePopup
+        selectedImage={selectedImage}
+        setSelectedImage={setSelectedImage}
+        images={['IMG_0166.JPG', 'IMG_1008.JPG', 'IMG_1824.JPG', 'IMG_3536.JPG', 'IMG_3779.JPG', 'IMG_4246.JPG', 'IMG_4247.JPG', 'IMG_9281.JPG']} // Truyền mảng hình vào
+      />
 
       {/* LỚP MÀN HÌNH ĐEN CHE TOÀN BỘ WEB KHI KÍCH HOẠT QUÀ TẶNG */}
       {showSurprise && (
