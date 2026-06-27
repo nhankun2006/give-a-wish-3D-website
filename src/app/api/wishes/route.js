@@ -18,6 +18,8 @@ async function mistralModerationCheck(text) {
   }
 
   try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
     const response = await fetch('https://api.mistral.ai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -30,26 +32,22 @@ async function mistralModerationCheck(text) {
           {
             role: 'system',
             content:
-              `
-You are a strict Vietnamese and English content moderator.
+              `You are a Vietnamese and English birthday wish moderator.
+              APPROVE messages that are:
+              - Birthday wishes, congratulations, blessings
+              - Kind, friendly, supportive words
+              - Simple words like "Đẹp", "Xinh", "Chúc mừng", "Hạnh phúc", "Tuyệt vời", "Xin chào"
+              - Any short positive Vietnamese or English phrase
 
-BLOCK any message that contains:
-- insults or name-calling (e.g. "ngu", "đần", "óc chó", "idiot", "stupid")
-- profanity or offensive language
-- harassment, bullying, mocking or humiliation
-- hate speech
-- threats
-- sexual content
-- spam
-- advertisements
-- phone numbers, emails or URLs
+              BLOCK only messages that CLEARLY contain:
+              - Obvious insults or profanity
+              - Sexual content
+              - Spam or advertisements with URLs/phone numbers
+              - Threats or harassment
 
-Only APPROVE friendly, supportive or neutral birthday wishes.
+              When in doubt, APPROVE. Vietnamese words are usually fine.
 
-Reply with exactly one word:
-APPROVED
-or
-BLOCKED`,
+              Reply with exactly one word — APPROVED or BLOCKED`,
           },
           {
             role: 'user',
@@ -59,7 +57,9 @@ BLOCKED`,
         temperature: 0,
         max_tokens: 5,
       }),
+      signal: controller.signal,
     });
+    clearTimeout(timeout);
 
     if (!response.ok) {
       console.error('[Moderation] Mistral API returned status:', response.status);
@@ -72,7 +72,7 @@ BLOCKED`,
     return verdict === 'APPROVED';
   } catch (error) {
     console.error('[Moderation] Mistral API error:', error.message);
-    return false; // Fail safe
+    return true; // Timeout thì auto approve thay vì block
   }
 }
 
@@ -85,8 +85,9 @@ export async function POST(request) {
     if (!message || message.trim().length === 0) {
       return NextResponse.json({ error: 'Message is required.' }, { status: 400 });
     }
-    if (message.length > 250) {
-      return NextResponse.json({ error: 'Message cannot exceed 250 characters.' }, { status: 400 });
+    const wordCount = message.trim() === '' ? 0 : message.trim().split(/\s+/).length;
+    if (wordCount > 1000) {
+      return NextResponse.json({ error: 'Lời chúc không được vượt quá 1000 từ.' }, { status: 400 });
     }
     const longWord = message.split(/\s+/).find((word) => word.length > 16);
     if (longWord) {

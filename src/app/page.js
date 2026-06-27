@@ -37,7 +37,6 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState(0);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [showSurprise, setShowSurprise] = useState(false);
-
   const [selectedImage, setSelectedImage] = useState(null);
   const pageRef = useRef(null);
 
@@ -118,7 +117,7 @@ export default function Home() {
           setIsLanding(true);
           setActiveTab(0); // Đưa về Tab 1 để lần lặn sau bắt đầu từ đầu
         }}
-        className={`absolute top-6 left-6 z-50 px-5 py-2.5 bg-black/40 backdrop-blur-md border border-[#ff99c4]/50 rounded-full text-[#ff99c4] font-bold hover:bg-[#ff99c4] hover:text-black hover:scale-105 transition-all duration-500 flex items-center gap-2 shadow-[0_0_15px_rgba(255,153,196,0.3)] ${isLanding ? 'opacity-0 -translate-y-10 pointer-events-none' : 'opacity-100 translate-y-0'}`}
+        className={`absolute top-6 left-6 z-50 px-5 py-2.5 bg-black/40 backdrop-blur-md border border-[#ff99c4]/50 rounded-full text-[#ff99c4] font-bold hover:bg-[#ff99c4] hover:text-black hover:scale-105 transition-all duration-500 flex items-center gap-2 shadow-[0_0_15px_rgba(255,153,196,0.3)] cursor-pointer ${isLanding ? 'opacity-0 -translate-y-10 pointer-events-none' : 'opacity-100 translate-y-0'}`}
       >
         <span className="text-xl">🌊</span> Nổi Lên Mặt Nước
       </button>
@@ -139,7 +138,7 @@ export default function Home() {
         <Tab3Cinema activeTab={activeTab} showSurprise={showSurprise} setShowSurprise={setShowSurprise} />
 
         {/* Tab 4: Wishes (via Tab4Wishes component) */}
-        <div className={`transition-all duration-1000 absolute inset-0 ${activeTab === 3 ? 'opacity-100 z-20' : 'opacity-0 pointer-events-none z-0'}`}>
+        <div className={`transition-all duration-1000 absolute inset-0 ${activeTab === 3 ? 'opacity-100 z-20 pointer-events-auto' : 'opacity-0 pointer-events-none z-0'}`}>
           <Tab4Wishes isUnlocked={isUnlocked} setIsUnlocked={setIsUnlocked} />
         </div>
       </div>
@@ -150,7 +149,11 @@ export default function Home() {
 
 
       {/* DÁN CỤC POPUP VÀO ĐÂY (NẰM BÊN TRONG MAIN) */}
-      <ImagePopup selectedImage={selectedImage} setSelectedImage={setSelectedImage} />
+      <ImagePopup
+        selectedImage={selectedImage}
+        setSelectedImage={setSelectedImage}
+        images={['IMG_0166.JPG', 'IMG_1008.JPG', 'IMG_1824.JPG', 'IMG_3536.JPG', 'IMG_3779.JPG', 'IMG_4246.JPG', 'IMG_4247.JPG', 'IMG_9281.JPG']} // Truyền mảng hình vào
+      />
 
       {/* LỚP MÀN HÌNH ĐEN CHE TOÀN BỘ WEB KHI KÍCH HOẠT QUÀ TẶNG */}
       {showSurprise && (

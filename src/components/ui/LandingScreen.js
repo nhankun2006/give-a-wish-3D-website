@@ -13,7 +13,7 @@ export default function LandingScreen({ isLanding, setIsLanding }) {
             {/* Nút Ngọc Trai Kích Hoạt */}
             <button
                 onClick={() => setIsLanding(false)}
-                className="relative group flex items-center justify-center w-48 h-48 rounded-full bg-gradient-to-br from-white/10 to-white/5 border border-white/20 backdrop-blur-sm shadow-[0_0_40px_rgba(100,217,255,0.3)] hover:shadow-[0_0_60px_rgba(255,153,196,0.6)] transition-all duration-500 hover:scale-110"
+                className="relative group flex items-center justify-center w-48 h-48 rounded-full bg-gradient-to-br from-white/10 to-white/5 border border-white/20 backdrop-blur-sm shadow-[0_0_40px_rgba(100,217,255,0.3)] hover:shadow-[0_0_60px_rgba(255,153,196,0.6)] transition-all duration-500 hover:scale-110 cursor-pointer focus:outline-none"
             >
                 <div className="absolute inset-0 rounded-full border-[3px] border-[#ff99c4]/50 group-hover:border-[#64d9ff] animate-ping opacity-30"></div>
                 <div className="text-center">
