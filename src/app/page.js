@@ -37,7 +37,6 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState(0);
   const [isUnlocked, setIsUnlocked] = useState(false);
   const [showSurprise, setShowSurprise] = useState(false);
-
   const [selectedImage, setSelectedImage] = useState(null);
   const pageRef = useRef(null);
 
@@ -139,7 +138,7 @@ export default function Home() {
         <Tab3Cinema activeTab={activeTab} showSurprise={showSurprise} setShowSurprise={setShowSurprise} />
 
         {/* Tab 4: Wishes (via Tab4Wishes component) */}
-        <div className={`transition-all duration-1000 absolute inset-0 ${activeTab === 3 ? 'opacity-100 z-20' : 'opacity-0 pointer-events-none z-0'}`}>
+        <div className={`transition-all duration-1000 absolute inset-0 ${activeTab === 3 ? 'opacity-100 z-20 pointer-events-auto' : 'opacity-0 pointer-events-none z-0'}`}>
           <Tab4Wishes isUnlocked={isUnlocked} setIsUnlocked={setIsUnlocked} />
         </div>
       </div>
