@@ -25,7 +25,7 @@ async function mistralModerationCheck(text) {
         'Authorization': `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'open-mixtral-8x7b',
+        model: 'mistral-small-latest',
         messages: [
           {
             role: 'system',
@@ -49,9 +49,8 @@ Only APPROVE friendly, supportive or neutral birthday wishes.
 Reply with exactly one word:
 APPROVED
 or
-BLOCKED
-`,
-  },
+BLOCKED`,
+          },
           {
             role: 'user',
             content: text,
@@ -102,6 +101,13 @@ export async function POST(request) {
     const isApproved = await mistralModerationCheck(message);
     console.log(`[Moderation] Mistral result — isApproved: ${isApproved}`);
 
+    if (!isApproved) {
+      return NextResponse.json(
+        { error: 'Your wish contains inappropriate or toxic content and cannot be submitted.' },
+        { status: 400 }
+      );
+    }
+
     // 3. Insert into Supabase using admin client (bypasses RLS safely)
     const { data, error } = await supabaseAdmin
       .from('wishes')
@@ -109,7 +115,7 @@ export async function POST(request) {
         {
           name: (name || '').trim() || 'Fan ẩn danh',
           message: message.trim(),
-          is_approved: isApproved,
+          is_approved: true, // Now always true since it passed the check
           image_url: null,
         },
       ])
