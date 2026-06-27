@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useRef, useState } from 'react';
 
@@ -118,7 +118,7 @@ export default function Home() {
           setIsLanding(true);
           setActiveTab(0); // Đưa về Tab 1 để lần lặn sau bắt đầu từ đầu
         }}
-        className={`absolute top-6 left-6 z-50 px-5 py-2.5 bg-black/40 backdrop-blur-md border border-[#ff99c4]/50 rounded-full text-[#ff99c4] font-bold hover:bg-[#ff99c4] hover:text-black hover:scale-105 transition-all duration-500 flex items-center gap-2 shadow-[0_0_15px_rgba(255,153,196,0.3)] ${isLanding ? 'opacity-0 -translate-y-10 pointer-events-none' : 'opacity-100 translate-y-0'}`}
+        className={`absolute top-6 left-6 z-50 px-5 py-2.5 bg-black/40 backdrop-blur-md border border-[#ff99c4]/50 rounded-full text-[#ff99c4] font-bold hover:bg-[#ff99c4] hover:text-black hover:scale-105 transition-all duration-500 flex items-center gap-2 shadow-[0_0_15px_rgba(255,153,196,0.3)] cursor-pointer ${isLanding ? 'opacity-0 -translate-y-10 pointer-events-none' : 'opacity-100 translate-y-0'}`}
       >
         <span className="text-xl">🌊</span> Nổi Lên Mặt Nước
       </button>
