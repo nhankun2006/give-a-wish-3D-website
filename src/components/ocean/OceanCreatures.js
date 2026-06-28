@@ -1,12 +1,15 @@
 'use client';
 
-import Fish from './Fish';
-import Whale from './Whale';   // <--- Gọi bé Cá Voi vào đây
-import Starfish from './Starfish';
-import Crab from './Crab';
-import Coral from './Coral';
-import Turtle from './Turtle';
-import Octopus from './Octopus';
+import dynamic from 'next/dynamic';
+
+// === LAZY LOAD: Mỗi sinh vật biển được tách thành chunk riêng ===
+const Fish     = dynamic(() => import('./Fish'),     { ssr: false });
+const Whale    = dynamic(() => import('./Whale'),    { ssr: false });
+const Starfish = dynamic(() => import('./Starfish'), { ssr: false });
+const Crab     = dynamic(() => import('./Crab'),     { ssr: false });
+const Coral    = dynamic(() => import('./Coral'),    { ssr: false });
+const Turtle   = dynamic(() => import('./Turtle'),   { ssr: false });
+const Octopus  = dynamic(() => import('./Octopus'),  { ssr: false });
 
 const creatures = [
     // Đàn cá
