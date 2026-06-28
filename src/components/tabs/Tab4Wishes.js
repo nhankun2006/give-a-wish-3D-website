@@ -375,6 +375,8 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
             {positionedWishes.map((wish) => {
               const isSelected = selectedWish?.id === wish.id;
               const isHighlighted = highlightedShellId === wish.id;
+              const previewWords = wish.message.trim().split(/\s+/);
+              const previewText = previewWords.slice(0, 50).join(' ') + (previewWords.length > 50 ? '...' : '');
 
               return (
                 <motion.div
@@ -394,8 +396,14 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                     <ShellIcon isOpen={isSelected || isHighlighted} isBreathing={!isSelected && !isHighlighted} />
 
                     {/* Tooltip */}
-                    <div className="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 text-white text-xs px-2 py-1 rounded-md whitespace-nowrap pointer-events-none backdrop-blur-sm">
-                      Nhấn để đọc lời chúc
+                    <div className="absolute bottom-[90%] left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/80 text-sky-50 px-4 py-3 rounded-xl pointer-events-none backdrop-blur-md w-max max-w-[250px] md:max-w-[320px] z-50 text-center shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-sky-400/30 translate-y-2 group-hover:-translate-y-2">
+                      <p className="text-sm md:text-base italic mb-2 opacity-90 leading-relaxed">
+                        "{previewText}"
+                      </p>
+                      <p className="font-bold text-xs text-sky-300 uppercase">
+                        — {wish.name} —
+                      </p>
+                      <p className="text-[10px] text-sky-200/50 mt-1 font-semibold tracking-wider">NHẤN ĐỂ XEM CHI TIẾT</p>
                     </div>
                   </div>
                 </motion.div>
@@ -446,7 +454,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                 >
                   <button
                     onClick={() => setIsBigShellOpen(false)}
-                    className="absolute top-4 right-5 text-sky-200 hover:text-white transition-transform hover:rotate-90"
+                    className="absolute top-4 right-5 text-sky-200 hover:text-white transition-transform hover:rotate-90 cursor-pointer"
                   >
                     <X size={24} />
                   </button>
@@ -493,7 +501,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                     <button
                       onClick={handleSubmitWish}
                       disabled={isLoading}
-                      className="w-full py-3.5 mt-2 bg-gradient-to-r from-sky-400 via-sky-300 to-sky-400 text-sky-950 font-extrabold tracking-wide uppercase rounded-2xl shadow-[0_0_20px_rgba(125,211,252,0.6)] transition-all hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(125,211,252,0.8)]"
+                      className="w-full py-3.5 mt-2 bg-gradient-to-r from-sky-400 via-sky-300 to-sky-400 text-sky-950 font-extrabold tracking-wide uppercase rounded-2xl shadow-[0_0_20px_rgba(125,211,252,0.6)] transition-all hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(125,211,252,0.8)] cursor-pointer disabled:cursor-not-allowed"
                     >
                       {isLoading ? 'Đang tạo ngọc...' : '✨ Thả Xuống Biển ✨'}
                     </button>
@@ -521,7 +529,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                   className="relative w-[92vw] max-w-2xl bg-white/10 backdrop-blur-2xl rounded-3xl p-8 md:p-10 border border-white/30 shadow-[0_0_50px_rgba(255,255,255,0.1)] text-center glass-card"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  <button onClick={() => setSelectedWish(null)} className="absolute top-5 right-5 text-sky-200 hover:text-white transition-transform hover:rotate-90">
+                  <button onClick={() => setSelectedWish(null)} className="absolute top-5 right-5 text-sky-200 hover:text-white transition-transform hover:rotate-90 cursor-pointer">
                     <X size={28} />
                   </button>
 
