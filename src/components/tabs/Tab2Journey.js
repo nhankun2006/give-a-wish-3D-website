@@ -141,7 +141,6 @@ export default function Tab2Journey({ activeTab }) {
   const [isVisible, setIsVisible] = useState(false);
   const scrollRef = useRef(null);
 
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (activeTab === 1) {
@@ -153,6 +152,23 @@ export default function Tab2Journey({ activeTab }) {
     }
   }, [activeTab]);
 
+  // Xử lý sự kiện nhấn phím ESC để đóng thư
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setSelectedFan(null);
+      }
+    };
+    
+    if (selectedFan) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedFan]);
+
   const handleOpenLetter = async (fan) => {
     if (!fan) {
       setSelectedFan(null);
@@ -161,7 +177,6 @@ export default function Tab2Journey({ activeTab }) {
 
     // Đổi giao diện sang người mới ngay lập tức để tạo độ mượt
     setSelectedFan({ ...fan, full: "" });
-    setIsLoading(true);
 
     try {
       const response = await fetch("/fans/messages.json");
@@ -182,8 +197,6 @@ export default function Tab2Journey({ activeTab }) {
         ...fan,
         full: "Dòng nước đã cuốn trôi bức thư này mất rồi... 🌊",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
   const currentIndex = selectedFan
@@ -372,7 +385,7 @@ export default function Tab2Journey({ activeTab }) {
               </div>
               <button
                 onClick={() => handleOpenLetter(null)}
-                className="w-10 h-10 rounded-full flex items-center justify-center hover:rotate-90 transition-all duration-300 text-lg shadow-sm font-bold border"
+                className="w-10 h-10 rounded-full flex items-center justify-center hover:rotate-90 transition-all duration-300 text-lg shadow-sm font-bold border cursor-pointer"
                 style={{
                   backgroundColor: `rgba(${selectedFan.accentRgb}, 0.1)`,
                   color: selectedFan.accent,
@@ -473,7 +486,7 @@ export default function Tab2Journey({ activeTab }) {
               {/* Nút lùi */}
               <button
                 onClick={() => handleOpenLetter(prevFan)}
-                className="w-12 h-12 md:w-14 md:h-14 flex-shrink-0 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-sm border text-xl"
+                className="w-12 h-12 md:w-14 md:h-14 flex-shrink-0 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-sm border text-xl cursor-pointer"
                 style={{
                   backgroundColor: `rgba(${selectedFan.accentRgb}, 0.1)`,
                   color: selectedFan.accent,
@@ -486,7 +499,7 @@ export default function Tab2Journey({ activeTab }) {
               {/* Nút giữa (Gấp thư - Giữ nguyên y như cũ) */}
               <button
                 onClick={() => handleOpenLetter(null)}
-                className="flex-1 py-3.5 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-[1.01] text-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] flex items-center justify-center gap-2"
+                className="flex-1 py-3.5 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-[1.01] text-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] flex items-center justify-center gap-2 cursor-pointer"
                 style={{ backgroundColor: selectedFan.accent }}
               >
                 Gấp Thư Lại{" "}
@@ -500,7 +513,7 @@ export default function Tab2Journey({ activeTab }) {
               {/* Nút tới */}
               <button
                 onClick={() => handleOpenLetter(nextFan)}
-                className="w-12 h-12 md:w-14 md:h-14 flex-shrink-0 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-sm border text-xl"
+                className="w-12 h-12 md:w-14 md:h-14 flex-shrink-0 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-sm border text-xl cursor-pointer"
                 style={{
                   backgroundColor: `rgba(${selectedFan.accentRgb}, 0.1)`,
                   color: selectedFan.accent,
@@ -514,67 +527,7 @@ export default function Tab2Journey({ activeTab }) {
         </div>
       )}
 
-      {/* === EMBEDDED KEYFRAMES & UTILS === */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeInDown {
-          from { opacity: 0; transform: translateY(-20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes modalSlideUp {
-          from { opacity: 0; transform: translateY(40px) scale(0.95); }
-          to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes floating {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-12px); }
-        }
-        @keyframes bounce-x {
-          0%, 100% { transform: translateX(0); }
-          50% { transform: translateX(-4px); }
-        }
-        .animate-bounce-x {
-          animation: bounce-x 1.5s infinite ease-in-out;
-        }
-        .line-clamp-4 {
-          display: -webkit-box;
-          -webkit-line-clamp: 4;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .hide-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(0,0,0,0.2);
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255,255,255,0.15);
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255,255,255,0.3);
-        }
-      `,
-        }}
-      />
+
     </>
   );
 }

@@ -79,15 +79,7 @@ export default function Crab({ style }) {
         <path d="M 55 65 Q 60 70 65 65" stroke="#d63c65" strokeWidth="3" fill="none" strokeLinecap="round" />
       </svg>
 
-      {/* Keyframe để kẹp cua chuyển động */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes wiggle {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(12deg); }
-          }
-        `
-      }} />
+
     </div>
   );
 }

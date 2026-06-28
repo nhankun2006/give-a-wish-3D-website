@@ -68,16 +68,7 @@ export default function Starfish({ style }) {
         </g>
       </svg>
 
-      {/* --- HIỆU ỨNG LẮC LƯ VÀ PHÌNH TO --- */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes starWobble {
-            0% { transform: rotate(-8deg) scale(1); }
-            50% { transform: rotate(8deg) scale(1.05); }
-            100% { transform: rotate(-8deg) scale(1); }
-          }
-        `
-      }} />
+
     </div>
   );
 }

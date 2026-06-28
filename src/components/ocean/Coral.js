@@ -53,18 +53,7 @@ export default function Coral({ style }) {
         </g>
       </svg>
 
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes sway {
-            0%, 100% { transform: rotate(-3deg); }
-            50% { transform: rotate(3deg); }
-          }
-          @keyframes floatUp {
-            0% { transform: translateY(0) scale(1); opacity: 0.6; }
-            100% { transform: translateY(-15px) scale(0.5); opacity: 0; }
-          }
-        `
-      }} />
+
     </div>
   );
 }
