@@ -31,107 +31,107 @@ const fanMessages = [
   {
     id: "4",
     name: "xunhen_",
-    icon: "🐚",
-    accent: "#ff99c4",
-    accentRgb: "255,153,196",
-    delay: "1.2s"
+    icon: "🐠",
+    accent: "#ffb347",
+    accentRgb: "255,179,71",
+    delay: "2.1s"
   },
   {
     id: "5",
     name: "_ienss_1008",
-    icon: "🐚",
-    accent: "#ff99c4",
-    accentRgb: "255,153,196",
-    delay: "0.3s"
+    icon: "🐬",
+    accent: "#ffcc5c",
+    accentRgb: "255,204,92",
+    delay: "0.4s"
   },
   {
     id: "6",
     name: "votamgiahan",
-    icon: "🐚",
-    accent: "#ff99c4",
-    accentRgb: "255,153,196",
-    delay: "2.1s",
+    icon: "🐡",
+    accent: "#88d8b0",
+    accentRgb: "136,216,176",
+    delay: "1.2s",
     images: ["/fans/image6.jpg"],
   },
   {
     id: "7",
     name: "bbi_luvli",
-    icon: "🐚",
-    accent: "#ff99c4",
-    accentRgb: "255,153,196",
-    delay: "0.9s"
+    icon: "🦀",
+    accent: "#ff6f69",
+    accentRgb: "255,111,105",
+    delay: "2.8s"
   },
   {
     id: "8",
     name: "889698_luv",
-    icon: "🐚",
-    accent: "#ff99c4",
-    accentRgb: "255,153,196",
-    delay: "1.7s"
+    icon: "🐋",
+    accent: "#b19cd9",
+    accentRgb: "177,156,217",
+    delay: "0.9s"
   },
   {
     id: "9",
     name: "herb.lite",
-    icon: "🐚",
-    accent: "#ff99c4",
-    accentRgb: "255,153,196",
-    delay: "0.5s"
+    icon: "🦑",
+    accent: "#d4a5a5",
+    accentRgb: "212,165,165",
+    delay: "1.8s"
   },
   {
     id: "10",
     name: "ng.uyen8291",
-    icon: "🐚",
-    accent: "#ff99c4",
-    accentRgb: "255,153,196",
-    delay: "0.5s"
+    icon: "🪼",
+    accent: "#e6a8d7",
+    accentRgb: "230,168,215",
+    delay: "0.2s"
   },
   {
     id: "11",
     name: "hatde_coco",
-    icon: "🐚",
-    accent: "#ff99c4",
-    accentRgb: "255,153,196",
-    delay: "0.5s"
+    icon: "🪸",
+    accent: "#f3e5ab",
+    accentRgb: "243,229,171",
+    delay: "2.5s"
   },
   {
     id: "12",
     name: "_tduyen._",
-    icon: "🐚",
-    accent: "#ff99c4",
-    accentRgb: "255,153,196",
-    delay: "0.5s"
+    icon: "🦈",
+    accent: "#96ceb4",
+    accentRgb: "150,206,180",
+    delay: "1.1s"
   },
   {
     id: "13",
     name: "hhhbhjjj33",
-    icon: "🐚",
-    accent: "#ff99c4",
-    accentRgb: "255,153,196",
-    delay: "0.5s"
+    icon: "🐙",
+    accent: "#a1eeff",
+    accentRgb: "161,238,255",
+    delay: "2.3s"
   },
   {
     id: "14",
     name: "nnct_2310",
-    icon: "🐚",
-    accent: "#ff99c4",
-    accentRgb: "255,153,196",
-    delay: "0.5s"
+    icon: "🌊",
+    accent: "#64d9ff",
+    accentRgb: "100,217,255",
+    delay: "0.6s"
   },
   {
     id: "15",
     name: "c Moon",
-    icon: "🐚",
+    icon: "🌸",
     accent: "#ff99c4",
     accentRgb: "255,153,196",
-    delay: "0.5s"
+    delay: "1.9s"
   },
   {
     id: "16",
     name: "tragung_213",
-    icon: "🐚",
-    accent: "#ff99c4",
-    accentRgb: "255,153,196",
-    delay: "0.5s",
+    icon: "🧊",
+    accent: "#6ee7b7",
+    accentRgb: "110,231,183",
+    delay: "2.7s",
     images: ["/fans/image16.jpg"],
   },
 ];
@@ -202,92 +202,94 @@ export default function Tab2Journey({ activeTab }) {
   return (
     <>
       <div
-        className={`transition-all duration-1000 absolute inset-0 flex flex-col items-center justify-center ${activeTab === 1 ? "opacity-100 z-20" : "opacity-0 pointer-events-none z-0"}`}
+        className={`transition-all duration-1000 absolute inset-0 overflow-y-auto overflow-x-hidden custom-scrollbar ${activeTab === 1 ? "opacity-100 z-20" : "opacity-0 pointer-events-none z-0"}`}
       >
-        {/* HEADER SECTION */}
-        <div className="text-center mb-4 mt-8 md:mt-2 relative px-4 w-full max-w-4xl mx-auto flex-shrink-0">
-          <div
-            className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#0a192f]/50 border border-[#64d9ff]/30 backdrop-blur-md mb-4 shadow-[0_0_15px_rgba(100,217,255,0.2)]"
-            style={{
-              animation: isVisible
-                ? "fadeInDown 0.6s ease-out forwards"
-                : "none",
-              opacity: 0,
-            }}
-          >
-            <span className="text-lg animate-pulse">🫧</span>
-            <span className="text-[#64d9ff] text-sm font-semibold tracking-wider uppercase">
-              Từ trái tim đại dương
-            </span>
+        <div className="min-h-full flex flex-col items-center justify-center py-16 md:py-24">
+          {/* HEADER SECTION */}
+          <div className="text-center mb-4 mt-8 md:mt-2 relative px-4 w-full max-w-4xl mx-auto flex-shrink-0">
+            <div
+              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#0a192f]/50 border border-[#64d9ff]/30 backdrop-blur-md mb-4 shadow-[0_0_15px_rgba(100,217,255,0.2)]"
+              style={{
+                animation: isVisible
+                  ? "fadeInDown 0.6s ease-out forwards"
+                  : "none",
+                opacity: 0,
+              }}
+            >
+              <span className="text-lg animate-pulse">🫧</span>
+              <span className="text-[#64d9ff] text-sm font-semibold tracking-wider uppercase">
+                Từ trái tim đại dương
+              </span>
+            </div>
+
+            <h2
+              className="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#ff99c4] via-[#64d9ff] to-[#a1eeff] mb-4 drop-shadow-lg pb-1"
+              style={{
+                animation: isVisible
+                  ? "fadeInUp 0.8s ease-out 0.2s forwards"
+                  : "none",
+                opacity: 0,
+              }}
+            >
+              Lời Tâm Sự Của Fan
+            </h2>
+            <p
+              className="text-[#eaf4ff]/70 text-sm md:text-base max-w-lg mx-auto"
+              style={{
+                animation: isVisible
+                  ? "fadeInUp 0.8s ease-out 0.4s forwards"
+                  : "none",
+                opacity: 0,
+              }}
+            >
+              Những dòng tin nhắn lấp lánh như bọt biển gửi đến Công chúa Biển Cả
+              🌊
+            </p>
           </div>
 
-          <h2
-            className="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#ff99c4] via-[#64d9ff] to-[#a1eeff] mb-4 drop-shadow-lg pb-1"
-            style={{
-              animation: isVisible
-                ? "fadeInUp 0.8s ease-out 0.2s forwards"
-                : "none",
-              opacity: 0,
-            }}
-          >
-            Lời Tâm Sự Của Fan
-          </h2>
-          <p
-            className="text-[#eaf4ff]/70 text-sm md:text-base max-w-lg mx-auto"
-            style={{
-              animation: isVisible
-                ? "fadeInUp 0.8s ease-out 0.4s forwards"
-                : "none",
-              opacity: 0,
-            }}
-          >
-            Những dòng tin nhắn lấp lánh như bọt biển gửi đến Công chúa Biển Cả
-            🌊
-          </p>
-        </div>
-
-        {/* DYNAMIC BUBBLES CONTAINER */}
-        <div className="relative w-full max-w-5xl mx-auto mt-8 z-10">
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 pb-16 pt-8 px-4">
-            {fanMessages.map((fan, index) => (
-              <div
-                key={fan.id}
-                onClick={() => handleOpenLetter(fan)}
-                className="relative cursor-pointer group flex flex-col items-center"
-                style={{
-                  animation: isVisible
-                    ? `fadeInUp 0.8s ease-out ${0.4 + index * 0.2}s forwards, floating ${5 + (index % 3)}s ease-in-out infinite ${fan.delay}`
-                    : "none",
-                  opacity: 0,
-                }}
-              >
-                {/* Bubble Shape */}
+          {/* DYNAMIC BUBBLES CONTAINER */}
+          <div className="relative w-full max-w-5xl mx-auto mt-8 z-10">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 md:gap-10 pb-16 pt-8 px-4 justify-items-center">
+              {fanMessages.map((fan, index) => (
                 <div
-                  className="w-24 h-24 md:w-32 md:h-32 rounded-full backdrop-blur-md bg-white/10 border border-white/30 flex items-center justify-center text-4xl md:text-5xl transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-2 relative"
+                  key={fan.id}
+                  onClick={() => handleOpenLetter(fan)}
+                  className="relative cursor-pointer group flex flex-col items-center"
                   style={{
-                    boxShadow: `inset 0 0 20px rgba(${fan.accentRgb}, 0.6), 0 10px 30px rgba(0,0,0,0.3), 0 0 20px rgba(${fan.accentRgb}, 0.4)`,
+                    animation: isVisible
+                      ? `fadeInUp 0.8s ease-out ${0.4 + index * 0.1}s forwards, floating ${5 + (index % 3)}s ease-in-out infinite ${fan.delay}`
+                      : "none",
+                    opacity: 0,
                   }}
                 >
-                  <span className="relative z-10 group-hover:animate-bounce">
-                    {fan.icon}
-                  </span>
+                  {/* Bubble Shape */}
+                  <div
+                    className="w-24 h-24 md:w-32 md:h-32 rounded-full backdrop-blur-md bg-white/10 border border-white/30 flex items-center justify-center text-4xl md:text-5xl transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-2 relative"
+                    style={{
+                      boxShadow: `inset 0 0 20px rgba(${fan.accentRgb}, 0.6), 0 10px 30px rgba(0,0,0,0.3), 0 0 20px rgba(${fan.accentRgb}, 0.4)`,
+                    }}
+                  >
+                    <span className="relative z-10 group-hover:animate-bounce">
+                      {fan.icon}
+                    </span>
 
-                  {/* Bubble light reflection (Hiệu ứng bóng nước) */}
-                  <div className="absolute top-2 left-3 md:top-3 md:left-5 w-6 h-6 md:w-8 md:h-8 border-t-[3px] border-l-[3px] border-white/70 rounded-full opacity-80 rotate-[-15deg]"></div>
-                  <div className="absolute bottom-3 right-4 w-2 h-2 bg-white/50 rounded-full blur-[1px]"></div>
-                </div>
+                    {/* Bubble light reflection (Hiệu ứng bóng nước) */}
+                    <div className="absolute top-2 left-3 md:top-3 md:left-5 w-6 h-6 md:w-8 md:h-8 border-t-[3px] border-l-[3px] border-white/70 rounded-full opacity-80 rotate-[-15deg]"></div>
+                    <div className="absolute bottom-3 right-4 w-2 h-2 bg-white/50 rounded-full blur-[1px]"></div>
+                  </div>
 
-                {/* Name Tag */}
-                <div
-                  className="mt-5 px-5 py-1.5 rounded-full bg-[#041c32]/60 backdrop-blur-sm border border-white/20 text-white font-medium text-sm md:text-base shadow-lg transition-all group-hover:bg-white/20 group-hover:border-white/40"
-                  style={{
-                    boxShadow: `0 4px 15px rgba(${fan.accentRgb}, 0.2)`,
-                  }}
-                >
-                  @{fan.name}
+                  {/* Name Tag */}
+                  <div
+                    className="mt-5 px-5 py-1.5 rounded-full bg-[#041c32]/60 backdrop-blur-sm border border-white/20 text-white font-medium text-sm md:text-base shadow-lg transition-all group-hover:bg-white/20 group-hover:border-white/40"
+                    style={{
+                      boxShadow: `0 4px 15px rgba(${fan.accentRgb}, 0.2)`,
+                    }}
+                  >
+                    @{fan.name}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </div>
