@@ -153,6 +153,23 @@ export default function Tab2Journey({ activeTab }) {
     }
   }, [activeTab]);
 
+  // Xử lý sự kiện nhấn phím ESC để đóng thư
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        setSelectedFan(null);
+      }
+    };
+    
+    if (selectedFan) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedFan]);
+
   const handleOpenLetter = async (fan) => {
     if (!fan) {
       setSelectedFan(null);
@@ -372,7 +389,7 @@ export default function Tab2Journey({ activeTab }) {
               </div>
               <button
                 onClick={() => handleOpenLetter(null)}
-                className="w-10 h-10 rounded-full flex items-center justify-center hover:rotate-90 transition-all duration-300 text-lg shadow-sm font-bold border"
+                className="w-10 h-10 rounded-full flex items-center justify-center hover:rotate-90 transition-all duration-300 text-lg shadow-sm font-bold border cursor-pointer"
                 style={{
                   backgroundColor: `rgba(${selectedFan.accentRgb}, 0.1)`,
                   color: selectedFan.accent,
@@ -473,7 +490,7 @@ export default function Tab2Journey({ activeTab }) {
               {/* Nút lùi */}
               <button
                 onClick={() => handleOpenLetter(prevFan)}
-                className="w-12 h-12 md:w-14 md:h-14 flex-shrink-0 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-sm border text-xl"
+                className="w-12 h-12 md:w-14 md:h-14 flex-shrink-0 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-sm border text-xl cursor-pointer"
                 style={{
                   backgroundColor: `rgba(${selectedFan.accentRgb}, 0.1)`,
                   color: selectedFan.accent,
@@ -486,7 +503,7 @@ export default function Tab2Journey({ activeTab }) {
               {/* Nút giữa (Gấp thư - Giữ nguyên y như cũ) */}
               <button
                 onClick={() => handleOpenLetter(null)}
-                className="flex-1 py-3.5 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-[1.01] text-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] flex items-center justify-center gap-2"
+                className="flex-1 py-3.5 rounded-xl font-bold text-lg transition-all duration-300 hover:scale-[1.01] text-white shadow-[0_4px_15px_rgba(0,0,0,0.1)] flex items-center justify-center gap-2 cursor-pointer"
                 style={{ backgroundColor: selectedFan.accent }}
               >
                 Gấp Thư Lại{" "}
@@ -500,7 +517,7 @@ export default function Tab2Journey({ activeTab }) {
               {/* Nút tới */}
               <button
                 onClick={() => handleOpenLetter(nextFan)}
-                className="w-12 h-12 md:w-14 md:h-14 flex-shrink-0 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-sm border text-xl"
+                className="w-12 h-12 md:w-14 md:h-14 flex-shrink-0 rounded-xl flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-sm border text-xl cursor-pointer"
                 style={{
                   backgroundColor: `rgba(${selectedFan.accentRgb}, 0.1)`,
                   color: selectedFan.accent,
