@@ -141,7 +141,6 @@ export default function Tab2Journey({ activeTab }) {
   const [isVisible, setIsVisible] = useState(false);
   const scrollRef = useRef(null);
 
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (activeTab === 1) {
@@ -178,7 +177,6 @@ export default function Tab2Journey({ activeTab }) {
 
     // Đổi giao diện sang người mới ngay lập tức để tạo độ mượt
     setSelectedFan({ ...fan, full: "" });
-    setIsLoading(true);
 
     try {
       const response = await fetch("/fans/messages.json");
@@ -199,8 +197,6 @@ export default function Tab2Journey({ activeTab }) {
         ...fan,
         full: "Dòng nước đã cuốn trôi bức thư này mất rồi... 🌊",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
   const currentIndex = selectedFan
@@ -531,67 +527,7 @@ export default function Tab2Journey({ activeTab }) {
         </div>
       )}
 
-      {/* === EMBEDDED KEYFRAMES & UTILS === */}
-      <style
-        dangerouslySetInnerHTML={{
-          __html: `
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(30px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeInDown {
-          from { opacity: 0; transform: translateY(-20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes modalSlideUp {
-          from { opacity: 0; transform: translateY(40px) scale(0.95); }
-          to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        @keyframes floating {
-          0%, 100% { transform: translateY(0); }
-          50% { transform: translateY(-12px); }
-        }
-        @keyframes bounce-x {
-          0%, 100% { transform: translateX(0); }
-          50% { transform: translateX(-4px); }
-        }
-        .animate-bounce-x {
-          animation: bounce-x 1.5s infinite ease-in-out;
-        }
-        .line-clamp-4 {
-          display: -webkit-box;
-          -webkit-line-clamp: 4;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;
-        }
-        .hide-scrollbar {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 8px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(0,0,0,0.2);
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255,255,255,0.15);
-          border-radius: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255,255,255,0.3);
-        }
-      `,
-        }}
-      />
+
     </>
   );
 }

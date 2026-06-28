@@ -55,13 +55,7 @@ export default function Fish({ style, variant }) {
         </g>
       </svg>
 
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes swimBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-          @keyframes tailWag { 0% { transform: rotate(-10deg); } 100% { transform: rotate(10deg); } }
-          @keyframes finFlap { 0% { transform: rotate(-5deg); } 100% { transform: rotate(15deg); } }
-        `
-      }} />
+
     </div>
   );
 }

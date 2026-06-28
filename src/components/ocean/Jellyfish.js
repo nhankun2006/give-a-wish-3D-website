@@ -80,23 +80,7 @@ export default function Jellyfish({ style }) {
         </g>
       </svg>
 
-      {/* --- HIỆU ỨNG CHUYỂN ĐỘNG --- */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes jellyFloat {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-12px); }
-          }
-          @keyframes jellyPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.03) scaleY(0.95); }
-          }
-          @keyframes tentacleSway {
-            0% { transform: rotate(-10deg); }
-            100% { transform: rotate(10deg); }
-          }
-        `
-      }} />
+
     </div>
   );
 }

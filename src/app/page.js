@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useRef, useState } from 'react';
 
@@ -16,11 +16,7 @@ import Tab4Wishes from '@/components/tabs/Tab4Wishes';
 import CameraController from '@/components/models/CameraController';
 
 // Import các components ocean
-import Fish from '@/components/ocean/Fish';
-import Jellyfish from '@/components/ocean/Jellyfish';
-import Starfish from '@/components/ocean/Starfish';
-import Crab from '@/components/ocean/Crab';
-import Coral from '@/components/ocean/Coral';
+
 import Bubbles from '@/components/ocean/Bubbles';
 import Ripples from '@/components/ocean/Ripples';
 import OceanCreatures from '@/components/ocean/OceanCreatures';

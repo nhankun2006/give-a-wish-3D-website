@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -485,7 +485,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                         }}
                         placeholder="Những lời trân quý gửi đến đại dương..."
                         rows="3"
-                        className="w-full px-4 py-3 rounded-2xl bg-white/90 border border-sky-300/30 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 text-gray-800 placeholder-gray-400 resize-none text-sm md:text-base font-medium custom-scrollbar shadow-inner transition-all"
+                        className="w-full px-4 py-3 rounded-2xl bg-white/90 border border-sky-300/30 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 text-gray-800 placeholder-gray-400 resize-none text-sm md:text-base font-medium custom-scrollbar-thin shadow-inner transition-all"
                       />
                       <span className={`absolute bottom-2 right-3 text-xs font-medium ${(newWishMsg.trim() === '' ? 0 : newWishMsg.trim().split(/\s+/).length) >= 950
                         ? 'text-red-400' : 'text-gray-400'
@@ -542,7 +542,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                   {selectedWish.message.length > 80 ? (
                     /* LONG: scroll box, chữ nhỏ, text-left để dễ đọc */
                     <>
-                      <div className="w-full max-h-[55vh] overflow-y-auto custom-scrollbar px-2 pb-1">
+                      <div className="w-full max-h-[55vh] overflow-y-auto custom-scrollbar-thin px-2 pb-1">
                         <p className="text-sm md:text-base text-sky-50 leading-relaxed whitespace-pre-line text-left">
                           <span className="text-sky-400/50 font-serif text-3xl leading-none align-[-10px] mr-0.5">"</span>
                           {selectedWish.message}
@@ -573,17 +573,6 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
               </motion.div>
             )}
           </AnimatePresence>
-
-          <style jsx>{`
-            @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap');
-            .font-handwriting { font-family: 'Caveat', cursive; }
-            .glass-card {
-              box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            }
-            .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-            .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-            .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
-          `}</style>
         </>
       )}
     </motion.div>

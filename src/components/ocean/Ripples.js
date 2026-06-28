@@ -24,25 +24,7 @@ export default function Ripples() {
         ))}
       </div>
 
-      {/* --- HIỆU ỨNG GỢN SÓNG TINH TẾ --- */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes gentleRipple {
-            0% { 
-              width: 120px; /* Bắt đầu từ kích thước sát viền nút Lặn Xuống */
-              height: 120px; 
-              opacity: 0.8; 
-              border-width: 3px; /* Nét viền vừa phải */
-            }
-            100% { 
-              width: 700px; /* Tỏa ra nhẹ nhàng bao trùm giữa màn hình */
-              height: 700px; 
-              opacity: 0; 
-              border-width: 0px; /* Mỏng dần rồi tan biến */
-            }
-          }
-        `
-      }} />
+
     </>
   );
 }
