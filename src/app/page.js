@@ -45,9 +45,16 @@ export default function Home() {
       );
 
       // 2. VỪA VÀO LINK: Toàn bộ trang web giật từ trên cao rơi rớt xuống nước
-      gsap.fromTo(pageRef.current,
-        { y: "-100vh" },
-        { y: "0", duration: 1.5, ease: "power3.inOut" }
+      // Khóa scroll của body trong lúc animate để không có scrollbar flash
+      document.body.style.overflow = 'hidden';
+      gsap.to(pageRef.current,
+        {
+          y: "0",
+          duration: 1.5,
+          ease: "power3.inOut",
+          clearProps: "transform",
+          onComplete: () => { document.body.style.overflow = ''; }
+        }
       );
 
       // 3. VỪA CHẠM NƯỚC: Tỏa 5 lớp sóng liên tiếp lan rộng ra
@@ -81,7 +88,10 @@ export default function Home() {
     <main
       ref={pageRef}
       className="ocean-page relative w-full h-screen overflow-hidden"
-      style={{ background: 'radial-gradient(circle at 50% 0%, #a1eeff 0%, #0c5c9e 35%, #021428 100%)' }}
+      style={{
+        background: 'radial-gradient(circle at 50% 0%, #a1eeff 0%, #0c5c9e 35%, #021428 100%)',
+        transform: 'translateY(-100vh)', // Pre-position: trang bắt đầu ở trên cao để GSAP animate xuống mượt
+      }}
     >
 
       {/* --- LỚP 1: BACKGROUND ĐẠI DƯƠNG TĨNH --- */}
