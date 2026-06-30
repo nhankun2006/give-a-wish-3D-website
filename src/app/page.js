@@ -24,9 +24,10 @@ const Ripples        = dynamic(() => import('@/components/ocean/Ripples'),      
 const OceanCreatures = dynamic(() => import('@/components/ocean/OceanCreatures'), { ssr: false });
 
 // === STATIC IMPORT: UI cốt lõi — cần render ngay từ đầu ===
-import LandingScreen  from '@/components/ui/LandingScreen';
-import ImagePopup     from '@/components/ui/ImagePopup';
-import TabNavigation  from '@/components/ui/TabNavigation';
+import LandingScreen   from '@/components/ui/LandingScreen';
+import ImagePopup      from '@/components/ui/ImagePopup';
+import TabNavigation   from '@/components/ui/TabNavigation';
+import SurpriseScreen  from '@/components/ui/SurpriseScreen';
 
 // === GIAO DIỆN CHÍNH ===
 export default function Home() {
