@@ -1,33 +1,35 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import dynamic from 'next/dynamic';
 
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 import gsap from 'gsap';
 
-// === LAZY LOAD: Tab components (chỉ tải khi người dùng lặn xuống) ===
-const Tab1Gallery = dynamic(() => import('@/components/tabs/Tab1Gallery'));
-const Tab2Journey = dynamic(() => import('@/components/tabs/Tab2Journey'));
-const Tab3Cinema  = dynamic(() => import('@/components/tabs/Tab3Cinema'));
-const Tab4Wishes  = dynamic(() => import('@/components/tabs/Tab4Wishes'));
+// Import các components tabs
+import Tab1Gallery from '@/components/tabs/Tab1Gallery';
+import Tab2Journey from '@/components/tabs/Tab2Journey';
+import Tab3Cinema from '@/components/tabs/Tab3Cinema';
+import Tab4Wishes from '@/components/tabs/Tab4Wishes';
 
-// === LAZY LOAD: 3D model — ssr:false vì dùng WebGL (browser-only) ===
-const CameraController = dynamic(
-  () => import('@/components/models/CameraController'),
-  { ssr: false }
-);
+// Import các components models 
+import CameraController from '@/components/models/CameraController';
 
-// === LAZY LOAD: Ocean effects — ssr:false vì chỉ chạy trên browser ===
-const Bubbles        = dynamic(() => import('@/components/ocean/Bubbles'),        { ssr: false });
-const Ripples        = dynamic(() => import('@/components/ocean/Ripples'),        { ssr: false });
-const OceanCreatures = dynamic(() => import('@/components/ocean/OceanCreatures'), { ssr: false });
+// Import các components ocean
+import Fish from '@/components/ocean/Fish';
+import Jellyfish from '@/components/ocean/Jellyfish';
+import Starfish from '@/components/ocean/Starfish';
+import Crab from '@/components/ocean/Crab';
+import Coral from '@/components/ocean/Coral';
+import Bubbles from '@/components/ocean/Bubbles';
+import Ripples from '@/components/ocean/Ripples';
+import OceanCreatures from '@/components/ocean/OceanCreatures';
 
-// === STATIC IMPORT: UI cốt lõi — cần render ngay từ đầu ===
-import LandingScreen   from '@/components/ui/LandingScreen';
-import ImagePopup      from '@/components/ui/ImagePopup';
-import TabNavigation   from '@/components/ui/TabNavigation';
-import SurpriseScreen  from '@/components/ui/SurpriseScreen';
+// Import các components ui
+import LandingScreen from '@/components/ui/LandingScreen';
+import ImagePopup from '@/components/ui/ImagePopup';
+import SurpriseScreen from '@/components/ui/SurpriseScreen';
+import TabNavigation from '@/components/ui/TabNavigation';
 
 // === GIAO DIỆN CHÍNH ===
 export default function Home() {
@@ -39,47 +41,54 @@ export default function Home() {
   const pageRef = useRef(null);
 
   useEffect(() => {
+    let timeout;
+    
     const ctx = gsap.context(() => {
-      // 1. Bong bóng dâng lên nhộn nhịp xuyên suốt
-      gsap.to('.bubble', { y: "-120vh", opacity: 0, duration: 6, repeat: -1, stagger: 0.3 }
+      // Bọc trong setTimeout 100ms để đợi các component con (Ripples, Bubbles...) render ra DOM
+      timeout = setTimeout(() => {
+        // Nếu pageRef chưa có thì dừng luôn để tránh lỗi rỗng
+        if (!pageRef.current) return;
 
-      );
-
-      // 2. VỪA VÀO LINK: Toàn bộ trang web giật từ trên cao rơi rớt xuống nước
-      // Khóa scroll của body trong lúc animate để không có scrollbar flash
-      document.body.style.overflow = 'hidden';
-      gsap.to(pageRef.current,
-        {
-          y: "0",
-          duration: 1.5,
-          ease: "power3.inOut",
-          clearProps: "transform",
-          onComplete: () => { document.body.style.overflow = ''; }
+        // 1. Bong bóng (Kiểm tra xem có class .bubble chưa)
+        if (document.querySelectorAll('.bubble').length > 0) {
+          gsap.to('.bubble', { y: "-120vh", opacity: 0, duration: 6, repeat: -1, stagger: 0.3 });
         }
-      );
 
-      // 3. VỪA CHẠM NƯỚC: Tỏa 5 lớp sóng liên tiếp lan rộng ra
-      gsap.fromTo('.ripple',
-        { width: 0, height: 0, opacity: 1, borderWidth: "15px" },
-        { width: "250vw", height: "250vw", borderWidth: "1px", opacity: 0, duration: 3, stagger: 0.15, ease: "power2.out", delay: 1.0 }
-      );
+        // 2. VỪA VÀO LINK
+        gsap.fromTo(pageRef.current,
+          { y: "-100vh" },
+          { y: "0", duration: 1.5, ease: "power3.inOut" }
+        );
 
-      // 4. VỪA TỎA SÓNG XONG: Cá và sinh vật biển từ 2 bên rìa lao nhanh ra rồi đứng nhấp nhô
-      gsap.fromTo('.creature', {
-        x: (index, target) => parseFloat(target.style.left) < 50 ? -1500 : 1500,
-        opacity: 0
-      }, {
-        x: 0, opacity: 1, duration: 1.2, stagger: 0.1, ease: "power3.out", delay: 1.3,
-        onComplete: () => {
-          // Lao ra vị trí xong thì chốt chặn đứng yên tại chỗ và nhấp nhô nhẹ
-          gsap.to('.creature', {
-            y: "+=15", rotation: "random(-4, 4)", duration: "random(2, 4)", yoyo: true, repeat: -1, ease: "sine.inOut",
+        // 3. VỪA CHẠM NƯỚC (Fix triệt để lỗi target .ripple not found)
+        if (document.querySelectorAll('.ripple').length > 0) {
+          gsap.fromTo('.ripple',
+            { width: 0, height: 0, opacity: 1, borderWidth: "15px" },
+            { width: "250vw", height: "250vw", borderWidth: "1px", opacity: 0, duration: 3, stagger: 0.15, ease: "power2.out", delay: 1.0 }
+          );
+        }
+
+        // 4. VỪA TỎA SÓNG XONG
+        if (document.querySelectorAll('.creature').length > 0) {
+          gsap.fromTo('.creature', {
+            x: (index, target) => parseFloat(target.style.left) < 50 ? -1500 : 1500,
+            opacity: 0
+          }, {
+            x: 0, opacity: 1, duration: 1.2, stagger: 0.1, ease: "power3.out", delay: 1.3,
+            onComplete: () => {
+              gsap.to('.creature', {
+                y: "+=15", rotation: "random(-4, 4)", duration: "random(2, 4)", yoyo: true, repeat: -1, ease: "sine.inOut",
+              });
+            }
           });
         }
-      });
+      }, 100); // 100ms là đủ để React gắn xong DOM
     }, pageRef);
 
-    return () => ctx.revert();
+    return () => {
+      clearTimeout(timeout); // Dọn dẹp timeout nếu người dùng tắt trang nhanh
+      ctx.revert();
+    };
   }, []);
 
   const handleNextTab = () => setActiveTab((prev) => (prev + 1) % 4);
@@ -89,10 +98,7 @@ export default function Home() {
     <main
       ref={pageRef}
       className="ocean-page relative w-full h-screen overflow-hidden"
-      style={{
-        background: 'radial-gradient(circle at 50% 0%, #a1eeff 0%, #0c5c9e 35%, #021428 100%)',
-        transform: 'translateY(-100vh)', // Pre-position: trang bắt đầu ở trên cao để GSAP animate xuống mượt
-      }}
+      style={{ background: 'radial-gradient(circle at 50% 0%, #a1eeff 0%, #0c5c9e 35%, #021428 100%)' }}
     >
 
       {/* --- LỚP 1: BACKGROUND ĐẠI DƯƠNG TĨNH --- */}
@@ -119,16 +125,63 @@ export default function Home() {
         </Canvas>
       </div>
 
-      {/* --- NÚT NỔI LÊN MẶT NƯỚC (QUAY LẠI TRANG CHỦ) --- */}
       <button
-        onClick={() => {
-          setIsLanding(true);
-          setActiveTab(0); // Đưa về Tab 1 để lần lặn sau bắt đầu từ đầu
-        }}
-        className={`absolute top-6 left-6 z-50 px-5 py-2.5 bg-black/40 backdrop-blur-md border border-[#ff99c4]/50 rounded-full text-[#ff99c4] font-bold hover:bg-[#ff99c4] hover:text-black hover:scale-105 transition-all duration-500 flex items-center gap-2 shadow-[0_0_15px_rgba(255,153,196,0.3)] cursor-pointer ${isLanding ? 'opacity-0 -translate-y-10 pointer-events-none' : 'opacity-100 translate-y-0'}`}
-      >
-        <span className="text-xl">🌊</span> Nổi Lên Mặt Nước
-      </button>
+  onClick={() => {
+    setIsLanding(true);
+    setActiveTab(0);
+  }}
+  className={`absolute top-5 left-5 z-50 group transition-all duration-500 ${
+    isLanding
+      ? "opacity-0 -translate-y-10 pointer-events-none"
+      : "opacity-100 translate-y-0"
+  }`}
+>
+  <div
+    className="
+      relative overflow-hidden
+      flex items-center gap-3
+      px-5 py-2.5
+      rounded-full
+      border-2 border-[#f7b7cf]
+      bg-gradient-to-b
+      from-[#d8f8ff]
+      via-[#bdeff8]
+      to-[#9fe1ee]
+      backdrop-blur-xl
+      shadow-[0_4px_20px_rgba(255,170,200,.45),inset_0_1px_2px_rgba(255,255,255,.9)]
+      transition-all duration-300
+      group-hover:scale-105
+      group-hover:shadow-[0_0_25px_rgba(255,180,210,.8)]
+    "
+  >
+    {/* ánh sáng mặt kính */}
+    <div className="absolute inset-x-3 top-1 h-1/2 rounded-full bg-white/35 blur-md pointer-events-none" />
+
+    {/* bong bóng */}
+    <div className="absolute left-8 top-2 w-2 h-2 rounded-full bg-white/70" />
+    <div className="absolute right-10 top-3 w-1.5 h-1.5 rounded-full bg-white/60" />
+    <div className="absolute right-5 bottom-2 w-2 h-2 rounded-full bg-white/50" />
+
+    {/* icon */}
+    <span className="relative z-10 text-2xl group-hover:-translate-y-0.5 transition-transform">
+      🐬
+    </span>
+
+    {/* text */}
+    <span
+      className="relative z-10 font-extrabold text-lg md:text-xl tracking-wide"
+      style={{
+        color: "#4d7080",
+        textShadow: `
+          0 1px 0 rgba(255,255,255,.95),
+          0 0 6px rgba(255,255,255,.8)
+        `,
+      }}
+    >
+      Nổi Lên Mặt Nước
+    </span>
+  </div>
+</button>
 
       {/* --- LỚP 3: MÀN HÌNH CHỜ (TRANG CHỦ - LANDING PAGE) --- */}
       <LandingScreen isLanding={isLanding} setIsLanding={setIsLanding} />

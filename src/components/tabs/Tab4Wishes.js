@@ -1,579 +1,580 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
-// === COMPONENT: VỎ SÒ (SVG Draw) ===
-// === COMPONENT: VỎ SÒ (Phiên bản Cinematic 3D) ===
-const ShellIcon = ({ isOpen, isBreathing, className, depthScale = 1 }) => (
-  <motion.div
-    animate={
-      isBreathing && !isOpen
-        ? { y: [0, -8 * depthScale, 0] }
-        : { y: 0 }
-    }
-    transition={{ duration: 3 + Math.random() * 2, repeat: Infinity, ease: "easeInOut" }}
-    className="w-full h-full relative flex items-center justify-center"
-    style={{ perspective: '400px' }}
-  >
-    {/* Bloom phía sau */}
-    <div className={`absolute inset-0 rounded-full blur-2xl transition-all duration-1000 ${isOpen ? 'bg-sky-300/50 scale-150' : 'bg-sky-400/20 scale-100'}`}></div>
+// ─── SONAR CANVAS ────────────────────────────────────────────────────────────
+function SonarCanvas({ triggerRef, onDotClick, wishesRef, newWishIdRef }) {
+  const canvasRef = useRef(null);
 
-    {/* SVG container chính */}
-    <div className="w-full h-full relative" style={{ transformStyle: 'preserve-3d' }}>
-
-      {/* === VỎ DƯỚI (đứng im) === */}
-      <svg viewBox="0 0 100 100" className={`absolute inset-0 w-full h-full z-10 ${className}`}>
-        <defs>
-          <radialGradient id="pearlPremium2" cx="35%" cy="35%" r="65%">
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="40%" stopColor="#e0f2fe" />
-            <stop offset="100%" stopColor="#7dd3fc" />
-          </radialGradient>
-          <filter id="glowPremium2">
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-        </defs>
-        {/* Thân vỏ dưới */}
-        <path d="M20 80 Q50 100 80 80 C95 60 90 20 50 10 C10 20 5 60 20 80 Z"
-          fill="#0c4a6e" stroke="#38bdf8" strokeWidth="1.5" opacity="0.9" />
-        <path d="M50 10 L40 85 M50 10 L60 85 M50 10 L25 70 M50 10 L75 70"
-          stroke="#0ea5e9" strokeWidth="1" fill="none" opacity="0.4" />
-
-        {/* Viên ngọc — chỉ hiện khi mở */}
-        <motion.circle
-          cx="50" cy="58" r="13"
-          fill="url(#pearlPremium2)"
-          filter="url(#glowPremium2)"
-          animate={isOpen ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.3 }}
-          transition={{ duration: 0.5, delay: isOpen ? 0.3 : 0 }}
-        />
-      </svg>
-
-      {/* === VỎ TRÊN (xoay mở ra) === */}
-      <motion.svg
-        viewBox="0 0 100 100"
-        className={`absolute inset-0 w-full h-full z-20 drop-shadow-[0_15px_25px_rgba(2,132,199,0.5)] ${className}`}
-        animate={
-          isOpen
-            ? { rotateX: -70 }
-            : isBreathing
-              ? { rotateX: [0, -12, 0] }
-              : { rotateX: 0 }
-        }
-        transition={{
-          rotateX: isOpen
-            ? { type: 'spring', bounce: 0.3, duration: 0.7 }
-            : { duration: 4, repeat: Infinity, ease: "easeInOut" }
-        }}
-        style={{ transformOrigin: '50% 95%', transformStyle: 'preserve-3d' }}
-      >
-        <path d="M20 80 Q50 100 80 80 C95 60 90 20 50 10 C10 20 5 60 20 80 Z"
-          fill="#e0f2fe" stroke="#7dd3fc" strokeWidth="2" opacity="0.95" />
-        <path d="M50 10 L40 85 M50 10 L60 85 M50 10 L25 70 M50 10 L75 70"
-          stroke="#bae6fd" strokeWidth="1.5" fill="none" opacity="0.7" />
-        {/* Viền sáng mép vỏ trên */}
-        <path d="M20 80 Q50 100 80 80" fill="none" stroke="#ffffff" strokeWidth="2" opacity="0.6" />
-      </motion.svg>
-
-    </div>
-  </motion.div>
-);
-
-
-// === MAIN COMPONENT ===
-export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
-  const [passcode, setPasscode] = useState('');
-  const [attempts, setAttempts] = useState(0);
-  const [hint, setHint] = useState('');
-
-  const [wishes, setWishes] = useState([]);
-  const [positionedWishes, setPositionedWishes] = useState([]);
-  const [selectedWish, setSelectedWish] = useState(null);
-
-  // Form states
-  const [isBigShellOpen, setIsBigShellOpen] = useState(false);
-  const [newWishName, setNewWishName] = useState('');
-  const [newWishMsg, setNewWishMsg] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Animation states
-  const [flyingPearl, setFlyingPearl] = useState(null);
-  const [highlightedShellId, setHighlightedShellId] = useState(null);
-  const [pearlAnimation, setPearlAnimation] = useState(null);
-  const [pendingShellPos, setPendingShellPos] = useState(null);
-  const correctPasscode = "1007";
-  // === DÁN ĐOẠN NÀY VÀO DƯỚI correctPasscode ===
   useEffect(() => {
-    if (isUnlocked) fetchWishes();
-  }, [isUnlocked]);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const s = { rings: [], dots: [], particles: [], sweepAngle: 0, raf: null };
+    const GREEN = '#1aff8c';
+
+    const resize = () => {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    };
+    resize();
+    const ro = new ResizeObserver(resize);
+    ro.observe(canvas);
+
+    const handleClick = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      const clickedDot = s.dots.find(d => {
+        const dist = Math.sqrt(Math.pow(d.x - mouseX, 2) + Math.pow(d.y - mouseY, 2));
+        return dist < 20;
+      });
+
+      if (clickedDot && clickedDot.wish && onDotClick) {
+        // Truyền thẳng data lời chúc lên hàm cha
+        onDotClick(clickedDot.wish);
+      }
+    };
+    canvas.addEventListener('click', handleClick);
+
+    const W = () => canvas.width;
+    const H = () => canvas.height;
+    const cx = () => W() / 2;
+    const cy = () => H() / 2;
+    const maxR = () => Math.min(W(), H()) * 1;
+
+    // Expose trigger to parent
+    triggerRef.current = () => {
+      // double ring burst
+      s.rings.push({ x: cx(), y: cy(), r: 4, maxR: maxR(), alpha: 1, speed: 2.8 });
+      s.rings.push({ x: cx(), y: cy(), r: 4, maxR: maxR() * 0.6, alpha: 1, speed: 2.2 });
+      // random contact dot
+      const angle = Math.random() * Math.PI * 2;
+      const dist = Math.random() * maxR() * 0.55 + maxR() * 0.1;
+      const dx = cx() + Math.cos(angle) * dist;
+      const dy = cy() + Math.sin(angle) * dist;
+      s.dots.push({ x: dx, y: dy, blink: Math.random() * Math.PI * 2, life: 240 });
+      for (let i = 0; i < 22; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const spd = Math.random() * 1.8 + 0.5;
+        s.particles.push({ x: dx, y: dy, vx: Math.cos(a) * spd, vy: Math.sin(a) * spd, alpha: 1, r: Math.random() * 2 + 1 });
+      }
+    };
+
+    const drawGrid = () => {
+      // Bỏ lưới ô vuông cứng nhắc, chỉ giữ lại các vòng tròn sóng biển
+      const R = maxR();
+      ctx.strokeStyle = 'rgba(100,217,255,0.15)';
+      for (let r = R * 0.25; r <= R; r += R * 0.25) {
+        ctx.beginPath(); ctx.arc(cx(), cy(), r, 0, Math.PI * 2); ctx.stroke();
+      }
+    };
+
+    const drawSweep = () => {
+      const R = maxR();
+      ctx.save(); ctx.translate(cx(), cy()); ctx.rotate(s.sweepAngle);
+      const grad = ctx.createRadialGradient(0, 0, 0, 0, 0, R);
+      grad.addColorStop(0, 'rgba(100,217,255,0.15)'); // Xanh cyan mờ
+      grad.addColorStop(1, 'rgba(100,217,255,0)');
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, R, -0.06, Math.PI * 0.35); ctx.closePath();
+      ctx.fillStyle = grad; ctx.fill();
+      ctx.strokeStyle = 'rgba(255,153,196,0.6)'; // Tia viền màu hồng
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(R, 0); ctx.stroke();
+      ctx.restore();
+
+      const currentWishes = wishesRef?.current || [];
+      const safeRadius = (Math.min(W(), H()) / 2) - 40;
+
+      if (!s.wishNodes || s.wishNodes.length !== currentWishes.length) {
+        s.wishNodes = currentWishes.map((wish) => ({
+          wish: wish, angle: Math.random() * Math.PI * 2, dist: Math.random() * safeRadius * 0.8 + safeRadius * 0.15, cooldown: 0
+        }));
+      }
+
+      const normalizedSweep = s.sweepAngle % (Math.PI * 2);
+      s.wishNodes.forEach(node => {
+        if (node.cooldown > 0) node.cooldown--;
+        const diff = Math.abs(normalizedSweep - node.angle);
+        if (diff < 0.05 && node.cooldown === 0) {
+          node.cooldown = 200;
+          const dx = cx() + Math.cos(node.angle) * node.dist;
+          const dy = cy() + Math.sin(node.angle) * node.dist;
+          s.dots.push({ x: dx, y: dy, blink: Math.random() * Math.PI * 2, life: 400, wish: node.wish });
+          s.rings.push({ x: dx, y: dy, r: 2, maxR: 15, alpha: 0.6, speed: 0.8 });
+        }
+      });
+      s.sweepAngle += 0.02;
+    };
+
+    const drawRings = () => {
+      s.rings = s.rings.filter(r => r.alpha > 0.01);
+      s.rings.forEach(r => {
+        ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(100,217,255,${r.alpha * 0.85})`; ctx.lineWidth = 1.5; ctx.stroke();
+        r.r += r.speed; r.alpha -= 0.007;
+        if (r.r > r.maxR) r.alpha = 0;
+      });
+    };
+
+    const drawDots = () => {
+      s.dots = s.dots.filter(d => d.life > 0);
+      s.dots.forEach(d => {
+        d.blink += 0.07; d.life--;
+        // Tính toán độ mờ dần khi bọt biển sắp vỡ
+        const a = (d.life / 240) * (0.5 + Math.sin(d.blink) * 0.5);
+        
+        const isNew = newWishIdRef?.current && d.wish && d.wish.id === newWishIdRef.current;
+        const dotColor = isNew ? PINK : CYAN;
+        const rgbColor = isNew ? '255,153,196' : '100,217,255';
+        
+        // Bơm size to hơn một chút cho mập mạp dễ thương
+        const size = isNew ? 12 : 8; 
+
+        ctx.save();
+        ctx.globalAlpha = a;
+
+        // 1. Hào quang tỏa sáng xung quanh (Glow)
+        ctx.shadowColor = dotColor;
+        ctx.shadowBlur = isNew ? 25 : 15;
+
+        // 2. Lõi bong bóng trong mờ (như bong bóng thật)
+        ctx.fillStyle = `rgba(${rgbColor}, 0.25)`;
+        ctx.beginPath(); ctx.arc(d.x, d.y, size, 0, Math.PI * 2); ctx.fill();
+
+        // 3. Viền bong bóng sắc nét
+        ctx.shadowBlur = 0; // Tắt glow để vẽ viền không bị nhòe
+        ctx.strokeStyle = dotColor;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // 4. HIỆU ỨNG PHA LÊ CĂNG MỌNG (Vệt sáng phản chiếu)
+        // Vệt sáng to ở góc trái trên
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, size * 0.65, Math.PI * 1.05, Math.PI * 1.55);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'; // Trắng tinh lấp lánh
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = 'round'; // Bo tròn 2 đầu vệt sáng
+        ctx.stroke();
+        
+        // Vệt sáng nhỏ ở góc phải dưới
+        ctx.beginPath();
+        ctx.arc(d.x, d.y, size * 0.55, Math.PI * 0.15, Math.PI * 0.45);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        // 5. ICON CHO LỜI CHÚC MỚI
+        if (isNew) {
+            ctx.font = '11px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Hiệu ứng trái tim đập thình thịch
+            const heartScale = 1 + Math.sin(d.blink * 3) * 0.25; 
+            ctx.translate(d.x, d.y);
+            ctx.scale(heartScale, heartScale);
+            ctx.fillText('💖', 0, 0); // Vẽ trái tim vào giữa bong bóng
+        }
+
+        ctx.restore();
+      });
+    };
+
+    const drawParticles = () => {
+      s.particles = s.particles.filter(p => p.alpha > 0.04);
+      s.particles.forEach(p => {
+        ctx.globalAlpha = p.alpha; ctx.fillStyle = GREEN;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
+        p.x += p.vx; p.y += p.vy; p.vx *= 0.96; p.vy *= 0.96; p.alpha -= 0.022;
+      });
+      ctx.globalAlpha = 1;
+    };
+
+    const drawCrosshair = () => {
+      const sz = 13;
+      ctx.strokeStyle = 'rgba(26,255,140,0.4)'; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(cx() - sz, cy()); ctx.lineTo(cx() + sz, cy()); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx(), cy() - sz); ctx.lineTo(cx(), cy() + sz); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx(), cy(), 4, 0, Math.PI * 2); ctx.stroke();
+    };
+
+    const loop = () => {
+      ctx.clearRect(0, 0, W(), H());
+      drawGrid(); drawSweep(); drawRings(); drawDots(); drawParticles(); drawCrosshair();
+      s.raf = requestAnimationFrame(loop);
+    };
+    loop();
+
+    return () => { cancelAnimationFrame(s.raf); ro.disconnect(); canvas.removeEventListener('click', handleClick); };
+  }, []);
+
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />;
+}
+
+// ─── HUD ITEM ─────────────────────────────────────────────────────────────────
+// Thay vì font Courier cứng ngắc và màu xanh neon, ta dùng font mặc định và màu biển
+const mono = { fontFamily: "inherit", fontWeight: "500" };
+const CYAN = '#64d9ff';
+const PINK = '#ff99c4';
+
+function HudItem({ label, value }) {
+  return (
+    <div>
+      <div style={{ ...mono, fontSize: 9, letterSpacing: 2, color: 'rgba(26,255,140,0.45)', textTransform: 'uppercase' }}>{label}</div>
+      <div style={{ ...mono, fontSize: 13, color: GREEN, letterSpacing: 1, opacity: 0.9 }}>{value}</div>
+    </div>
+  );
+}
+
+// ─── MAIN COMPONENT ───────────────────────────────────────────────────────────
+export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
+  // lock
+  const [passcode, setPasscode] = useState('');
+  const [hint, setHint] = useState('');
+  const correctPasscode = '1007';
+
+  // data
+  const [wishes, setWishes] = useState([]);
+  const [wishIdx, setWishIdx] = useState(0);
+  const [currentWish, setCurrentWish] = useState(null);
+  const [revealed, setRevealed] = useState(false);
+
+
+  const [newWishId, setNewWishId] = useState(null);
+  const newWishIdRef = useRef(null);
+  useEffect(() => { newWishIdRef.current = newWishId; }, [newWishId]);
+  // form
+  const [formOpen, setFormOpen] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newMsg, setNewMsg] = useState('');
+  const [formNote, setFormNote] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleDotClick = useCallback((wish) => {
+    if (!wish) return;
+    setCurrentWish(wish);
+    setRevealed(true);
+  }, []);
+
+  // 👈 DÁN THÊM HÀM NÀY VÀO ĐÂY: Hàm để nhảy sang bọt biển ngẫu nhiên
+  const handleRandomWish = (e) => {
+    e.stopPropagation(); // Ngăn click xuyên xuống canvas
+    if (!wishes || wishes.length <= 1) return;
+    let nextWish;
+    // Bốc ngẫu nhiên cho đến khi ra một lời chúc khác với cái đang mở
+    do {
+      nextWish = wishes[Math.floor(Math.random() * wishes.length)];
+    } while (currentWish && nextWish.id === currentWish.id);
+    setCurrentWish(nextWish);
+  };
+
+  const triggerRef = useRef(null);
+  const wishesRef = useRef([]); // fires canvas animation
+  const autoRef = useRef(null);
+
+  // ── fetch
+  useEffect(() => { if (isUnlocked) fetchWishes(); }, [isUnlocked]);
+  useEffect(() => { wishesRef.current = wishes; }, [wishes]);
 
   const fetchWishes = async () => {
     try {
       const { data, error } = await supabase
-        .from('wishes')
-        .select('*')
-        .eq('is_approved', true) // <-- PHỤC HỒI LẠI TÍNH NĂNG LỌC CỦA ÔNG TẠI ĐÂY
+        .from('wishes').select('*')
+        .eq('is_approved', true)
         .order('created_at', { ascending: false });
-
       if (error) throw error;
-      if (data) setWishes(data);
-    } catch (error) {
-      console.error('Error fetching wishes:', error.message);
-    }
+      if (data) {
+        setWishes(data);
+        return data; // Thêm dòng này để trả về data
+      }
+    } catch (e) { console.error('fetch wishes:', e.message); }
+    return null;
   };
-  // ==============================================
 
-
-
-  // TÌM toàn bộ useEffect([wishes]) và THAY BẰNG:
-  useEffect(() => {
-    const MAX_TRIES = 300;
-    const SHELL_PX = 128;
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const MIN_GAP_PX = 20;
-
-    const BIG_SHELL_CX = vw / 2;
-    const BIG_SHELL_CY = vh - 24 - 96;
-    const BIG_SHELL_R = 160;
-    const LABEL_CY = BIG_SHELL_CY - 110;
-    const LABEL_R = 200;
-
-    const isForbidden = (cx, cy) => {
-      const d1 = Math.sqrt((cx - BIG_SHELL_CX) ** 2 + (cy - BIG_SHELL_CY) ** 2);
-      if (d1 < BIG_SHELL_R) return true;
-      const d2 = Math.sqrt((cx - BIG_SHELL_CX) ** 2 + (cy - LABEL_CY) ** 2);
-      if (d2 < LABEL_R) return true;
-      return false;
-    };
-
-    const isOverlapping = (cx, cy, r, others) => {
-      return others.some(p => {
-        const minDist = r + p.r + MIN_GAP_PX;
-        const dx = cx - p.cx;
-        const dy = cy - p.cy;
-        return Math.sqrt(dx * dx + dy * dy) < minDist;
-      });
-    };
-
-    const placed = positionedWishes.filter(p =>
-      wishes.some(w => w.id === p.id)
-    );
-
-    const placedPx = placed.map(p => ({
-      ...p,
-      cx: (p.x / 100) * vw,
-      cy: (p.y / 100) * vh,
-      r: (SHELL_PX * p.scale) / 2,
-    }));
-
-    const newPositionsPx = [...placedPx];
-    const newPositions = [...placed];
-
-    for (const wish of wishes) {
-      if (placed.find(p => p.id === wish.id)) continue;
-
-      // Nếu là vỏ sò vừa gửi → dùng vị trí đã tính sẵn, không random
-      if (pendingShellPos && pendingShellPos.id === wish.id) {
-        const cx = (pendingShellPos.x / 100) * vw;
-        const cy = (pendingShellPos.y / 100) * vh;
-        newPositionsPx.push({ cx, cy, r: (SHELL_PX * pendingShellPos.scale) / 2, id: wish.id, scale: pendingShellPos.scale });
-        newPositions.push({
-          ...wish,
-          x: pendingShellPos.x,
-          y: pendingShellPos.y,
-          scale: pendingShellPos.scale,
-          rotation: Math.floor(Math.random() * 40) - 20,
-          depth: pendingShellPos.scale,
-          zIndex: Math.floor(pendingShellPos.scale * 30),
-        });
-        setPendingShellPos(null);
-        continue;
-      }
-
-      // Vỏ sò thường → random vị trí
-      const scale = Math.random() * 0.35 + 0.45;
-      const r = (SHELL_PX * scale) / 2;
-      const margin = r + 10;
-      const xMin = margin;
-      const xMax = vw - margin;
-      const yMin = margin;
-      const yMax = vh * 0.48;
-
-      let cx, cy, tries = 0, found = false;
-      do {
-        cx = Math.random() * (xMax - xMin) + xMin;
-        cy = Math.random() * (yMax - yMin) + yMin;
-        tries++;
-        if (!isForbidden(cx, cy) && !isOverlapping(cx, cy, r, newPositionsPx)) {
-          found = true;
-          break;
-        }
-      } while (tries < MAX_TRIES);
-
-      if (!found) {
-        const col = newPositions.length % 2 === 0 ? margin : vw - margin;
-        cx = col;
-        cy = margin + (newPositions.length * (SHELL_PX + 10)) % (yMax - yMin);
-      }
-
-      const x = (cx / vw) * 100;
-      const y = (cy / vh) * 100;
-
-      newPositionsPx.push({ cx, cy, r, id: wish.id, scale });
-      newPositions.push({
-        ...wish,
-        x, y, scale,
-        rotation: Math.floor(Math.random() * 40) - 20,
-        depth: scale,
-        zIndex: Math.floor(scale * 30),
-      });
-    }
-
-    setPositionedWishes(newPositions);
-  }, [wishes]);
-
+  // ── unlock
   const handleUnlock = (e) => {
     e.preventDefault();
-    if (passcode.toLowerCase() === correctPasscode) {
-      setIsUnlocked(true);
-      return;
-    }
-    setAttempts(prev => prev + 1);
-    setHint("Hint: Ngày Sinh của chị Dâng!!");
+    if (passcode === correctPasscode) { setIsUnlocked(true); return; }
+    setHint('Hint: Ngày sinh của chị Dâng!!');
   };
 
-  const handleSubmitWish = async (e) => {
-    e.preventDefault();
-    if (!newWishMsg.trim()) {
-      setErrorMsg("Bạn chưa gửi gắm tâm tư vào viên ngọc kìa!");
-      return;
-    }
-    setIsLoading(true);
+  const handleSubmit = async () => {
+    if (!newMsg.trim()) { setFormNote('Chưa có lời chúc!'); return; }
+    setIsSubmitting(true);
     try {
       const res = await fetch('/api/wishes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: newWishName.trim() || 'Fan ẩn danh',
-          message: newWishMsg.trim(),
-        }),
+        body: JSON.stringify({ name: newName.trim() || 'Fan ẩn danh', message: newMsg.trim() }),
       });
-      if (!res.ok) throw new Error('Lỗi gửi lời chúc');
-
-      const fakeId = "new-" + Date.now();
-      const newWish = {
-        id: fakeId,
-        name: newWishName.trim() || 'Fan ẩn danh',
-        message: newWishMsg.trim(),
-        created_at: new Date().toISOString()
-      };
-
-      // Tính vị trí vỏ sò mới NGAY BÂY — dùng cùng vị trí cho cả animation lẫn shell
-      const SHELL_PX = 128;
-      const vw = window.innerWidth;
-      const vh = window.innerHeight;
-      const scale = Math.random() * 0.35 + 0.45;
-      const r = (SHELL_PX * scale) / 2;
-      const margin = r + 10;
-      const BIG_SHELL_CX = vw / 2;
-      const BIG_SHELL_CY = vh - 24 - 96;
-
-      let cx, cy, tries = 0;
-      do {
-        cx = Math.random() * (vw - margin * 2) + margin;
-        cy = Math.random() * (vh * 0.42 - margin) + margin;
-        tries++;
-        const d = Math.sqrt((cx - BIG_SHELL_CX) ** 2 + (cy - BIG_SHELL_CY) ** 2);
-        const noOverlap = !positionedWishes.some(p => {
-          const px = (p.x / 100) * vw;
-          const py = (p.y / 100) * vh;
-          const pr = (SHELL_PX * p.scale) / 2;
-          return Math.sqrt((cx - px) ** 2 + (cy - py) ** 2) < (r + pr + 20);
-        });
-        if (d > 160 && noOverlap) break;
-      } while (tries < 200);
-
-      const targetX = (cx / vw) * 100; // % để dùng cho animation
-      const targetY = (cy / vh) * 100;
-
-      // Lưu vị trí đã tính để useEffect KHÔNG random lại
-      setPendingShellPos({ id: fakeId, x: targetX, y: targetY, scale });
-
-      // Đóng form
-      setIsBigShellOpen(false);
-      setNewWishName('');
-      setNewWishMsg('');
-      setErrorMsg('');
-
-      // Phase 1: Ngọc rơi xuống đáy
-      setWishes(prev => [newWish, ...prev]);
-      setHighlightedShellId(fakeId); // Vỏ sò mở miệng chờ
-
-      // Phase 2: Ngọc rơi xuống đáy (400ms sau)
-      setTimeout(() => {
-        setPearlAnimation({ phase: 'falling', targetX, targetY });
-
-        // Phase 3: Ngọc bay đến đúng vị trí vỏ sò (800ms sau)
-        setTimeout(() => {
-          setPearlAnimation({ phase: 'flying', targetX, targetY });
-
-          // Phase 4: Ngọc đến nơi — vỏ sò khép lại
-          setTimeout(() => {
-            setPearlAnimation(null);
-            setHighlightedShellId(null); // Vỏ sò khép lại
-          }, 1000);
-        }, 800);
-      }, 400);
-
-    } catch (error) {
-      console.error('Lỗi gửi ngọc:', error.message);
-      setErrorMsg("Bão biển cản trở, thử lại nha bạn!");
-    } finally {
-      setIsLoading(false);
-    }
+      if (!res.ok) throw new Error();
+      setNewName(''); setNewMsg('');
+      setFormOpen(false);
+      setFormNote('Tín hiệu đã gửi!');
+      setTimeout(() => setFormNote(''), 3000);
+      const freshData = await fetchWishes();   // refresh list và lấy list mới
+      if (freshData && freshData.length > 0) {
+        setNewWishId(freshData[0].id); // Đánh dấu lời chúc trên cùng là lời chúc mới
+      }   // refresh list
+    } catch {
+      setFormNote('Bong bóng lạc trôi mất rồi, gửi lại giúp mình nhé');
+    } finally { setIsSubmitting(false); }
   };
 
+  // ─────────────────────────────────────────────────────────────────────────
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       className="absolute inset-0 pointer-events-auto flex justify-center overflow-hidden"
       style={{
-        background: 'linear-gradient(180deg, rgba(2, 44, 67, 0.6) 0%, rgba(1, 24, 38, 0.9) 100%)',
-        backdropFilter: 'blur(5px)'
+        background: 'linear-gradient(180deg, rgba(2,44,67,.6) 0%, rgba(1,24,38,.9) 100%)',
+        backdropFilter: 'blur(5px)',
       }}
     >
-      {/* KHÓA MẬT MÃ (Giữ nguyên) */}
+
+      {/* ══════════════════ LOCK SCREEN ══════════════════ */}
       {!isUnlocked ? (
         <div className="w-full h-full flex flex-col items-center justify-center p-4">
-          <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }} className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-[0_0_40px_rgba(100,217,255,0.1)] text-center">
+          <motion.div initial={{ scale: 0.9 }} animate={{ scale: 1 }}
+            className="max-w-md w-full bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-[0_0_40px_rgba(100,217,255,0.1)] text-center">
             <div className="w-16 h-16 bg-sky-900/50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner border border-sky-400/30">
               <Lock className="w-8 h-8 text-sky-400" />
             </div>
             <h2 className="text-2xl font-bold text-sky-200 mb-2">Hộp Thư Dưới Đáy Biển</h2>
             <p className="text-sky-300/60 mb-6">Nhập mật mã để lặn xuống nơi cất giữ lời chúc</p>
             <form onSubmit={handleUnlock} className="space-y-4">
-              <input type="text" value={passcode} onChange={(e) => setPasscode(e.target.value)} placeholder="Nhập 4 số bí mật..." className="w-full px-4 py-3 rounded-xl bg-sky-950/50 border border-sky-500/30 focus:outline-none focus:ring-2 focus:ring-sky-400 text-sky-100 placeholder-sky-100/30 text-center font-bold tracking-wider" />
-              <button type="submit" className="w-full py-3 bg-gradient-to-r from-sky-500 to-sky-400 hover:from-sky-400 hover:to-sky-300 text-sky-950 font-bold rounded-xl shadow-[0_0_20px_rgba(56,189,248,0.4)] transition-all active:scale-95">Lặn Xuống</button>
+              <input
+                type="text" value={passcode} onChange={e => setPasscode(e.target.value)}
+                placeholder="Nhập 4 số bí mật..."
+                className="w-full px-4 py-3 rounded-xl bg-white/10 backdrop-blur-md border-2 border-[#64d9ff]/50 focus:outline-none focus:ring-2 focus:ring-[#ff99c4] text-white placeholder-white/50 text-center font-bold tracking-wider shadow-[0_0_15px_rgba(100,217,255,0.2)]"
+              />
+              <button type="submit"
+                className="w-full py-3 bg-gradient-to-r from-[#64d9ff] to-[#a1eeff] hover:from-[#ff99c4] hover:to-[#ffb6c1] text-[#021428] font-bold rounded-xl shadow-[0_0_20px_rgba(100,217,255,0.4)] transition-all active:scale-95">
+                Lặn Xuống
+              </button>
             </form>
             <AnimatePresence>
-              {hint && <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} className="mt-4 text-sm font-medium text-sky-300 bg-sky-900/30 py-2 px-4 rounded-lg border border-sky-500/20">{hint}</motion.p>}
+              {hint && (
+                <motion.p initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }}
+                  className="mt-4 text-sm font-medium text-sky-300 bg-sky-900/30 py-2 px-4 rounded-lg border border-sky-500/20">
+                  {hint}
+                </motion.p>
+              )}
             </AnimatePresence>
           </motion.div>
         </div>
+
       ) : (
-        <>
-          {/* ĐẠI DƯƠNG VỎ SÒ (Wishes) */}
-          <div className="absolute inset-0 w-full h-full">
-            {positionedWishes.map((wish) => {
-              const isSelected = selectedWish?.id === wish.id;
-              const isHighlighted = highlightedShellId === wish.id;
-              const previewWords = wish.message.trim().split(/\s+/);
-              const previewText = previewWords.slice(0, 50).join(' ') + (previewWords.length > 50 ? '...' : '');
+        /* ══════════════════ SONAR SCREEN ══════════════════ */
+        <div className="absolute inset-0" style={{ background: 'rgba(2, 20, 40, 0.4)', backdropFilter: 'blur(3px)' }}>
 
-              return (
-                <motion.div
-                  key={wish.id}
-                  className="absolute cursor-pointer group"
-                  style={{ left: `${wish.x}%`, top: `${wish.y}%`, zIndex: isSelected ? 40 : 10 }}
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: wish.scale, opacity: 1, rotate: wish.rotation }}
-                  whileHover={{ scale: wish.scale * 1.1, zIndex: 20 }}
-                  onClick={() => setSelectedWish(wish)}
-                >
-                  <div className="relative w-24 h-24 md:w-32 md:h-32 flex items-center justify-center">
-                    {/* Hào quang khi hover hoặc khi nhận ngọc mới */}
-                    <div className={`absolute inset-0 bg-sky-300/30 rounded-full blur-xl transition-all duration-500 ${isHighlighted ? 'opacity-100 scale-150 animate-pulse' : 'opacity-0 group-hover:opacity-100 group-hover:scale-125'}`}></div>
+          {/* canvas layer */}
+          <SonarCanvas triggerRef={triggerRef} onDotClick={handleDotClick} wishesRef={wishesRef} newWishIdRef={newWishIdRef} />
 
-                    {/* SVG Vỏ Sò */}
-                    <ShellIcon isOpen={isSelected || isHighlighted} isBreathing={!isSelected && !isHighlighted} />
+          {/* scan-line overlay (Đổi thành màu xanh dương nhạt) */}
+          <div style={{
+            position: 'absolute', left: 0, right: 0, height: 1, pointerEvents: 'none',
+            background: 'linear-gradient(90deg,transparent,rgba(100,217,255,.15),rgba(100,217,255,.4),rgba(100,217,255,.15),transparent)',
+            animation: 'scandown 3s linear infinite',
+          }} />
 
-                    {/* Tooltip */}
-                    <div className="absolute bottom-[90%] left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-black/80 text-sky-50 px-4 py-3 rounded-xl pointer-events-none backdrop-blur-md w-max max-w-[250px] md:max-w-[320px] z-50 text-center shadow-[0_0_15px_rgba(0,0,0,0.5)] border border-sky-400/30 translate-y-2 group-hover:-translate-y-2">
-                      <p className="text-sm md:text-base italic mb-2 opacity-90 leading-relaxed">
-                        "{previewText}"
-                      </p>
-                      <p className="font-bold text-xs text-sky-300 uppercase">
-                        — {wish.name} —
-                      </p>
-                      <p className="text-[10px] text-sky-200/50 mt-1 font-semibold tracking-wider">NHẤN ĐỂ XEM CHI TIẾT</p>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
+          {/* ── NÚT GỬI LỜI CHÚC (Đã làm cute) */}
+          <div className="absolute top-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20">
+            <button
+              onClick={() => setFormOpen(o => !o)}
+              className="px-6 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-[#ff99c4]/50 text-[#ff99c4] font-bold shadow-[0_0_15px_rgba(255,153,196,0.3)] hover:bg-[#ff99c4] hover:text-[#021428] transition-all hover:scale-105 flex items-center gap-2"
+            >
+              💌 Thả Bọt Biển
+            </button>
 
-          {/* VỎ SÒ LỚN (GỬI LỜI CHÚC) - Nằm giữa dưới đáy */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center">
-
-            {/* LABEL gợi ý - ẩn khi form mở */}
             <AnimatePresence>
-              {!isBigShellOpen && (
+              {formOpen && (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10, scale: 0.9 }}
-                  className="cursor-pointer text-center mb-4 mt-16"
-                  onClick={() => setIsBigShellOpen(true)}
+                  initial={{ opacity: 0, y: -6, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -6, scale: 0.97 }}
+                  style={{
+                    background: 'rgba(10, 25, 47, 0.85)',
+                    backdropFilter: 'blur(12px)',
+                    border: '2px solid rgba(100,217,255,0.5)',
+                    borderRadius: '24px',
+                    padding: 32, // Tăng không gian bên trong form cho thoáng đãng
+                    width: 600, // 👈 ĐÃ TĂNG LÊN 600 (Siêu bự)
+                    maxWidth: '92vw', // Đảm bảo tự động co lại trên màn hình điện thoại
+                    display: 'flex', flexDirection: 'column', gap: 20, // Tăng khoảng cách các ô
+                    boxShadow: '0 15px 40px rgba(0,0,0,0.6)'
+                  }}
                 >
-                  <p className="text-transparent bg-clip-text bg-gradient-to-r from-sky-200 via-white to-sky-200 font-semibold tracking-widest uppercase text-xs animate-pulse drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]">
-                    ✨ Nhấn vào vỏ sò để gửi viên ngọc của bạn ✨
-                  </p>
+                  {/* header */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ ...mono, fontSize: 16, color: '#ff99c4', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: 1 }}>
+                      ✨ Gửi lời chúc
+                    </span>
+                    <button onClick={() => setFormOpen(false)}
+                      style={{ background: 'none', border: 'none', color: '#ff99c4', cursor: 'pointer', fontSize: 28, lineHeight: 1 }}>
+                      ×
+                    </button>
+                  </div>
+
+                  <input
+                    value={newName} onChange={e => setNewName(e.target.value)}
+                    placeholder="Tên của bạn..." maxLength={30}
+                    style={{ ...mono, background: 'rgba(255,255,255,0.1)', borderRadius: '12px', border: '1px solid rgba(100,217,255,0.3)', color: '#fff', fontSize: 16, padding: '16px 20px', outline: 'none', width: '100%' }}
+                  />
+                  <textarea
+                    value={newMsg} onChange={e => setNewMsg(e.target.value)}
+                    placeholder="Viết điều gì đó dễ thương..." 
+                    rows={8} // 👈 TĂNG CHIỀU CAO LÊN 8 DÒNG (Cực kỳ rộng rãi)
+                    style={{ ...mono, background: 'rgba(255,255,255,0.1)', borderRadius: '12px', border: '1px solid rgba(100,217,255,0.3)', color: '#fff', fontSize: 16, padding: '16px 20px', outline: 'none', width: '100%', resize: 'none', lineHeight: 1.6 }}
+                  />
+                  <button onClick={handleSubmit} disabled={isSubmitting}
+                    style={{ ...mono, background: 'linear-gradient(90deg, #64d9ff, #a1eeff)', border: 'none', color: '#021428', fontWeight: 'bold', fontSize: 16, padding: '16px', cursor: 'pointer', borderRadius: '12px', textTransform: 'uppercase', letterSpacing: 1 }}>
+                    {isSubmitting ? 'Đang nhả bọt... 🫧' : 'Nhả Bọt Biển 🫧'}
+                  </button>
+
+                  {formNote && (
+                    <div style={{ 
+                      ...mono, 
+                      fontSize: 12, 
+                      textAlign: 'center', 
+                      // Nếu là lỗi thì màu hồng nhẹ, nếu thành công thì màu xanh biển
+                      color: formNote.includes('thất') || formNote.includes('vỡ') || formNote.includes('lạc') 
+                             ? '#ff99c4' 
+                             : '#64d9ff' 
+                    }}>
+                      {formNote}
+                    </div>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>
+          </div>
 
-            {/* VỎ SÒ SVG — chỉ bắt click khi form chưa mở */}
-            <motion.div
-              className={`relative w-36 h-36 md:w-48 md:h-48 flex items-end justify-center drop-shadow-[0_20px_50px_rgba(2,132,199,0.8)] ${!isBigShellOpen ? 'cursor-pointer' : ''}`}
-              onClick={() => !isBigShellOpen && setIsBigShellOpen(true)}
-              animate={isBigShellOpen ? { scale: 1.15, y: -30 } : { scale: 1, y: 0 }}
-              transition={{ type: "spring", damping: 20 }}
-              style={{ pointerEvents: isBigShellOpen ? 'none' : 'auto' }}
-            >
-              <div className="absolute inset-0 bg-sky-300/30 rounded-full blur-[40px] animate-pulse -z-10"></div>
-              <ShellIcon isOpen={isBigShellOpen} isBreathing={!isBigShellOpen} depthScale={0} />
-            </motion.div>
-
-            {/* FORM — là SIBLING của vỏ sò, KHÔNG nằm bên trong motion.div */}
-            <AnimatePresence>
-              {isBigShellOpen && (
+          {/* --- POPUP LÁ THƯ QUÝ GIÁ (Dễ thương & Sang trọng) --- */}
+          <div style={{
+            position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+            padding: '50px', borderRadius: '40px',
+            background: '#ffffff', // Nền trắng tinh khôi
+            border: '8px solid #ff99c4', // Viền hồng đậm chất quà tặng
+            boxShadow: '0 30px 80px rgba(0,0,0,0.3)',
+            textAlign: 'center', zIndex: 50,
+            display: revealed && currentWish ? 'flex' : 'none',
+            flexDirection: 'column', alignItems: 'center', gap: 30,
+            width: '750px', // 👈 TĂNG RỘNG LÊN 750PX
+            maxWidth: '92vw', overflow: 'visible'
+          }}>
+            <AnimatePresence mode="wait">
+              {currentWish && revealed && (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.6, y: -20, rotateX: 90 }}
-                  animate={{ opacity: 1, scale: 1, y: -220, rotateX: 0 }}
-                  exit={{ opacity: 0, scale: 0.8, y: -20 }}
-                  transition={{ type: "spring", bounce: 0.4 }}
-                  className="absolute bottom-0 w-[92vw] max-w-md bg-white/10 backdrop-blur-3xl p-6 md:p-8 rounded-[2rem] border border-white/40 shadow-[0_30px_60px_rgba(0,0,0,0.4),inset_0_0_20px_rgba(255,255,255,0.2)]"
-                  style={{ pointerEvents: 'auto' }}
+                  key={currentWish.id}
+                  initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+                  style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
                 >
-                  <button
-                    onClick={() => setIsBigShellOpen(false)}
-                    className="absolute top-4 right-5 text-sky-200 hover:text-white transition-transform hover:rotate-90 cursor-pointer"
-                  >
-                    <X size={24} />
+                  {/* Nút X hình tròn nhỏ xinh */}
+                  <button onClick={() => setRevealed(false)} style={{ 
+                    position: 'absolute', top: '-15px', right: '-15px', 
+                    background: '#ff99c4', border: 'none', color: '#fff', 
+                    borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px'
+                  }}>
+                    <X size={20} />
                   </button>
 
-                  <div className="text-center mb-5">
-                    <span className="text-3xl animate-bounce inline-block mb-1">💎</span>
-                    <h3 className="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-sky-200">
-                      Gửi Ngọc Lời Chúc
-                    </h3>
+                  {/* Icon trang trí phía trên */}
+                  <div style={{ fontSize: '30px' }}>💌</div>
+
+                  Để lá thư vẫn giữ được các đoạn xuống dòng (như người viết thư nhấn Enter) mà vẫn đảm bảo việc căn giữa hoặc căn lề đúng ý, bạn hãy thay thế phần hiển thị nội dung thư bằng cách sử dụng white-space: pre-wrap;. Cách này sẽ giúp trình duyệt tôn trọng mọi khoảng trắng và dấu xuống dòng trong nội dung lời chúc.
+
+Đây là phần code đã được tinh chỉnh cho SonarCanvas:
+
+JavaScript
+                  {/* VÙNG CUỘN - TỰ ĐỘNG CĂN GIỮA NẾU THƯ NGẮN & GIỮ ĐÚNG NGUYÊN DẤU XUỐNG DÒNG */}
+                  <div className="cute-scroll" style={{ 
+                    width: '100%', 
+                    maxHeight: '45vh', 
+                    overflowY: 'auto', 
+                    padding: '0 20px', 
+                    backgroundImage: currentWish.message.length > 150 
+                      ? 'repeating-linear-gradient(transparent, transparent 31px, rgba(255,153,196,0.4) 31px, rgba(255,153,196,0.4) 32px)' 
+                      : 'none',
+                    backgroundAttachment: 'local',
+                    lineHeight: '32px', 
+                    color: '#021428', 
+                    fontSize: '18px', 
+                    fontWeight: '400', 
+                    textAlign: currentWish.message.length > 150 ? 'justify' : 'center',
+                    
+                    // 👈 DÒNG NÀY GIÚP GIỮ NGUYÊN CÁC DẤU ENTER/XUỐNG DÒNG CỦA FAN
+                    whiteSpace: 'pre-wrap', 
+                    
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: currentWish.message.length > 150 ? 'flex-start' : 'center'
+                  }}>
+                    {currentWish.message}
                   </div>
 
-                  <div className="space-y-4">
-                    <input
-                      type="text"
-                      value={newWishName}
-                      onChange={(e) => setNewWishName(e.target.value)}
-                      placeholder="Tên của bạn..."
-                      maxLength={30}
-                      className="w-full px-4 py-3 rounded-2xl bg-white/90 border border-sky-300/30 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 text-gray-800 placeholder-gray-400 text-sm md:text-base font-medium shadow-inner transition-all"
-                    />
+                  {/* Tên người gửi (Dùng màu hồng chủ đạo) */}
+                  <div style={{ fontSize: '15px', color: '#ff99c4', fontWeight: '800', marginTop: '10px' }}>
+                    — {currentWish.name} —
+                  </div>
 
-                    <div className="relative">
-                      <textarea
-                        value={newWishMsg}
-                        onChange={(e) => {
-                          const wordCount = e.target.value.trim() === '' ? 0 : e.target.value.trim().split(/\s+/).length;
-                          if (wordCount <= 1000) setNewWishMsg(e.target.value);
-                        }}
-                        placeholder="Những lời trân quý gửi đến đại dương..."
-                        rows="3"
-                        className="w-full px-4 py-3 rounded-2xl bg-white/90 border border-sky-300/30 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 text-gray-800 placeholder-gray-400 resize-none text-sm md:text-base font-medium custom-scrollbar-thin shadow-inner transition-all"
-                      />
-                      <span className={`absolute bottom-2 right-3 text-xs font-medium ${(newWishMsg.trim() === '' ? 0 : newWishMsg.trim().split(/\s+/).length) >= 950
-                        ? 'text-red-400' : 'text-gray-400'
-                        }`}>
-                        {newWishMsg.trim() === '' ? 0 : newWishMsg.trim().split(/\s+/).length}/1000 từ
-                      </span>
-                    </div>
-
-                    {errorMsg && (
-                      <p className="text-pink-300 text-xs text-center animate-pulse">{errorMsg}</p>
-                    )}
-
-                    <button
-                      onClick={handleSubmitWish}
-                      disabled={isLoading}
-                      className="w-full py-3.5 mt-2 bg-gradient-to-r from-sky-400 via-sky-300 to-sky-400 text-sky-950 font-extrabold tracking-wide uppercase rounded-2xl shadow-[0_0_20px_rgba(125,211,252,0.6)] transition-all hover:scale-[1.03] hover:shadow-[0_0_30px_rgba(125,211,252,0.8)] cursor-pointer disabled:cursor-not-allowed"
-                    >
-                      {isLoading ? 'Đang tạo ngọc...' : '✨ Thả Xuống Biển ✨'}
+                  {/* 2 nút 🐡 và 🐳 siêu bự ở dưới */}
+                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '30px', marginTop: '20px' }}>
+                    <button onClick={handleRandomWish} style={{
+                        background: '#fff', border: '3px solid #ff99c4',
+                        borderRadius: '50%', width: '60px', height: '60px', fontSize: '30px',
+                        cursor: 'pointer', transition: '0.3s', boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                      }}
+                      onMouseOver={e => e.currentTarget.style.transform = 'scale(1.15) rotate(-10deg)'}
+                      onMouseOut={e => e.currentTarget.style.transform = 'scale(1) rotate(0deg)'}>
+                      🐡
+                    </button>
+                    
+                    <button onClick={handleRandomWish} style={{
+                        background: '#fff', border: '3px solid #64d9ff',
+                        borderRadius: '50%', width: '60px', height: '60px', fontSize: '30px',
+                        cursor: 'pointer', transition: '0.3s', boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+                      }}
+                      onMouseOver={e => e.currentTarget.style.transform = 'scale(1.15) rotate(10deg)'}
+                      onMouseOut={e => e.currentTarget.style.transform = 'scale(1) rotate(0deg)'}>
+                      🐳
                     </button>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
-
+          
           </div>
 
-
-          {/* POPUP ĐỌC LỜI CHÚC (Glassmorphism Card) */}
-          <AnimatePresence>
-            {selectedWish && (
-              <motion.div
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-md p-4"
-                onClick={() => setSelectedWish(null)}
-              >
-                <motion.div
-                  initial={{ scale: 0.8, y: 30, opacity: 0 }}
-                  animate={{ scale: 1, y: 0, opacity: 1 }}
-                  exit={{ scale: 0.8, y: 30, opacity: 0 }}
-                  transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                  className="relative w-[92vw] max-w-2xl bg-white/10 backdrop-blur-2xl rounded-3xl p-8 md:p-10 border border-white/30 shadow-[0_0_50px_rgba(255,255,255,0.1)] text-center glass-card"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <button onClick={() => setSelectedWish(null)} className="absolute top-5 right-5 text-sky-200 hover:text-white transition-transform hover:rotate-90 cursor-pointer">
-                    <X size={28} />
-                  </button>
-
-                  <div className="w-12 h-12 mx-auto mb-6 rounded-full bg-gradient-to-br from-white to-sky-100 shadow-[0_0_20px_rgba(255,255,255,0.8)] animate-pulse flex items-center justify-center">
-                    <span className="text-xl">💎</span>
-                  </div>
-
-                  <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-sky-200/50 to-transparent mb-8"></div>
-
-                  {selectedWish.message.length > 80 ? (
-                    /* LONG: scroll box, chữ nhỏ, text-left để dễ đọc */
-                    <>
-                      <div className="w-full max-h-[55vh] overflow-y-auto custom-scrollbar-thin px-2 pb-1">
-                        <p className="text-sm md:text-base text-sky-50 leading-relaxed whitespace-pre-line text-left">
-                          <span className="text-sky-400/50 font-serif text-3xl leading-none align-[-10px] mr-0.5">"</span>
-                          {selectedWish.message}
-                          <span className="text-sky-400/50 font-serif text-3xl leading-none align-[-10px] ml-0.5">"</span>
-                        </p>
-                      </div>
-                      <p className="text-sky-400/40 text-[10px] mt-1.5 flex items-center gap-1">
-                        ↕ cuộn để đọc thêm
-                      </p>
-                    </>
-                  ) : (
-                    /* SHORT: căn giữa, chữ to, padding thoáng */
-                    <div className="w-full flex items-center justify-center py-6 px-2">
-                      <p className="text-xl md:text-2xl text-sky-50 leading-relaxed text-center whitespace-pre-wrap">
-                        <span className="text-sky-400/50 font-serif text-4xl leading-none align-[-14px] mr-0.5">"</span>
-                        {selectedWish.message}
-                        <span className="text-sky-400/50 font-serif text-4xl leading-none align-[-14px] ml-0.5">"</span>
-                      </p>
-                    </div>
-                  )}
-
-                  <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-sky-200/50 to-transparent mt-8 mb-6"></div>
-
-                  <p className="font-bold text-sky-300 text-lg tracking-widest uppercase">
-                    — {selectedWish.name} —
-                  </p>
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </>
+          {/* keyframe & custom scrollbar (Sửa màu cuộn thành Hồng/Cyan) */}
+          <style>{`
+            @keyframes scandown {
+              0%   { top: 0;    opacity: .8 }
+              90%  { opacity: .5 }
+              100% { top: 100%; opacity: 0 }
+            }
+            .cute-scroll::-webkit-scrollbar {
+              width: 6px;
+            }
+            .cute-scroll::-webkit-scrollbar-track {
+              background: rgba(100, 217, 255, 0.1);
+              border-radius: 10px;
+            }
+            .cute-scroll::-webkit-scrollbar-thumb {
+              background: #ff99c4;
+              border-radius: 10px;
+            }
+            .cute-scroll::-webkit-scrollbar-thumb:hover {
+              background: #ffb6c1;
+            }
+          `}</style>
+        </div>
       )}
     </motion.div>
   );

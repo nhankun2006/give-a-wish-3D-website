@@ -22,7 +22,7 @@ const fanMessages = [
   },
   {
     id: "3",
-    name: "nabu_ove",
+    name: "nabii_ove",
     icon: "🐢",
     accent: "#6ee7b7",
     accentRgb: "110,231,183",
@@ -118,13 +118,14 @@ const fanMessages = [
     delay: "0.6s"
   },
   {
-    id: "15",
-    name: "c Moon",
-    icon: "🌸",
-    accent: "#ff99c4",
-    accentRgb: "255,153,196",
-    delay: "1.9s"
-  },
+  id: "15",
+  name: "c Moon",
+  icon: "🌙",
+  accent: "#ff99c4",
+  accentRgb: "255,153,196",
+  delay: "1.9s",
+  style: "filter: grayscale(100%) brightness(200%);"
+},
   {
     id: "16",
     name: "tragung_213",
@@ -216,48 +217,120 @@ export default function Tab2Journey({ activeTab }) {
     <>
       <div
         className={`transition-all duration-1000 absolute inset-0 overflow-y-auto overflow-x-hidden custom-scrollbar ${activeTab === 1 ? "opacity-100 z-20" : "opacity-0 pointer-events-none z-0"}`}
+        style={{
+  background: `
+    radial-gradient(circle at 18% 20%, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 18%),
+    radial-gradient(circle at 82% 18%, rgba(255,255,255,.45) 0%, rgba(255,255,255,0) 15%),
+    radial-gradient(circle at 12% 75%, rgba(255,220,235,.45) 0%, rgba(255,220,235,0) 22%),
+    radial-gradient(circle at 90% 80%, rgba(255,240,180,.28) 0%, rgba(255,240,180,0) 20%),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,.12) 0%, transparent 45%),
+    radial-gradient(circle at 65% 35%, rgba(175,255,250,.22) 0%, transparent 30%),
+    linear-gradient(
+              180deg,
+              #1f4b82 0%,   /* Xanh biển đậm ở trên mặt */
+              #173b69 40%,  /* Tối dần xuống dưới */
+              #122d58 100%  /* Dưới đáy biển tối thẳm */
+            )
+`
+}}
+
+
       >
+        <div
+  className="absolute inset-0 pointer-events-none"
+  style={{
+    background: `
+      radial-gradient(circle at 20% 30%, rgba(255,255,255,.35), transparent 30%),
+      radial-gradient(circle at 80% 20%, rgba(255,255,255,.25), transparent 25%),
+      radial-gradient(circle at 50% 60%, rgba(255,255,255,.15), transparent 35%)
+    `,
+    mixBlendMode: "screen"
+  }}
+/>
+
+{[
+  {top:"8%",left:"8%",size:70},
+  {top:"18%",left:"18%",size:95},
+  {top:"12%",left:"72%",size:65},
+  {top:"15%",left:"92%",size:55},
+  {top:"40%",left:"15%",size:55},
+  {top:"58%",left:"85%",size:85},
+  {top:"70%",left:"8%",size:110},
+  {top:"80%",left:"92%",size:90},
+].map((b,i)=>(
+  <div
+    key={i}
+    className="absolute rounded-full"
+    style={{
+      top:b.top,
+      left:b.left,
+      width:b.size,
+      height:b.size,
+      background:"rgba(255,255,255,.28)",
+      filter:"blur(4px)",
+      boxShadow:"0 0 45px rgba(255,255,255,.45)"
+    }}
+  />
+))}
+{Array.from({ length: 120 }).map((_, i) => (
+  <div
+    key={i}
+    className="absolute rounded-full animate-pulse"
+    style={{
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      width: `${2 + Math.random() * 4}px`,
+      height: `${2 + Math.random() * 4}px`,
+      background: [
+        "#fff",
+        "#fff7c2",
+        "#ffe4f3",
+        "#dffcff",
+      ][Math.floor(Math.random() * 4)],
+      opacity: 0.8,
+      boxShadow: "0 0 12px currentColor",
+    }}
+  />
+))}
         <div className="min-h-full flex flex-col items-center justify-center py-16 md:py-24">
           {/* HEADER SECTION */}
           <div className="text-center mb-4 mt-8 md:mt-2 relative px-4 w-full max-w-4xl mx-auto flex-shrink-0">
-            <div
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#0a192f]/50 border border-[#64d9ff]/30 backdrop-blur-md mb-4 shadow-[0_0_15px_rgba(100,217,255,0.2)]"
-              style={{
-                animation: isVisible
-                  ? "fadeInDown 0.6s ease-out forwards"
-                  : "none",
-                opacity: 0,
-              }}
-            >
-              <span className="text-lg animate-pulse">🫧</span>
-              <span className="text-[#64d9ff] text-sm font-semibold tracking-wider uppercase">
-                Từ trái tim đại dương
-              </span>
-            </div>
-
+            
+<div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/40 shadow-lg mb-5">
+  <span>💖</span>
+  <span className="text-[#4f6d7a] font-bold uppercase tracking-wide">
+    Từ Trái Tim Đại Dương
+  </span>
+</div>
             <h2
-              className="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#ff99c4] via-[#64d9ff] to-[#a1eeff] mb-4 drop-shadow-lg pb-1"
-              style={{
-                animation: isVisible
-                  ? "fadeInUp 0.8s ease-out 0.2s forwards"
-                  : "none",
-                opacity: 0,
-              }}
-            >
-              Lời Tâm Sự Của Fan
-            </h2>
+  className="text-3xl md:text-5xl font-extrabold text-[#f78fb3] mb-4 pb-1"
+  style={{
+    textShadow: `
+      0 2px 0 rgba(255,255,255,.95),
+      0 0 10px rgba(255,180,210,.8),
+      0 4px 12px rgba(255,120,170,.35)
+    `,
+    WebkitTextStroke: "2px rgba(255,255,255,.9)",
+    animation: isVisible
+      ? "fadeInUp 0.8s ease-out 0.2s forwards"
+      : "none",
+    opacity: 0,
+  }}
+>
+  Lời Tâm Sự Của Fan
+</h2>
             <p
-              className="text-[#eaf4ff]/70 text-sm md:text-base max-w-lg mx-auto"
-              style={{
-                animation: isVisible
-                  ? "fadeInUp 0.8s ease-out 0.4s forwards"
-                  : "none",
-                opacity: 0,
-              }}
-            >
-              Những dòng tin nhắn lấp lánh như bọt biển gửi đến Công chúa Biển Cả
-              🌊
-            </p>
+  className="text-[#4f6d7a] text-sm md:text-base font-semibold max-w-lg mx-auto"
+  style={{
+    textShadow: "0 2px 8px rgba(255,255,255,.6)",
+    animation: isVisible
+      ? "fadeInUp 0.8s ease-out 0.4s forwards"
+      : "none",
+    opacity: 0,
+  }}
+>
+  Những dòng tin nhắn lấp lánh gửi đến Công chúa Biển Cả 🌊
+</p>
           </div>
 
           {/* DYNAMIC BUBBLES CONTAINER */}
@@ -275,27 +348,32 @@ export default function Tab2Journey({ activeTab }) {
                     opacity: 0,
                   }}
                 >
-                  {/* Bubble Shape */}
+                  {/* Bubble Shape (Giao diện bong bóng xà phòng dễ thương) */}
                   <div
-                    className="w-24 h-24 md:w-32 md:h-32 rounded-full backdrop-blur-md bg-white/10 border border-white/30 flex items-center justify-center text-4xl md:text-5xl transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-2 relative"
+                    className="w-24 h-24 md:w-32 md:h-32 rounded-full backdrop-blur-sm border-2 flex items-center justify-center text-4xl md:text-5xl transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-4 group-hover:rotate-[5deg] relative"
                     style={{
-                      boxShadow: `inset 0 0 20px rgba(${fan.accentRgb}, 0.6), 0 10px 30px rgba(0,0,0,0.3), 0 0 20px rgba(${fan.accentRgb}, 0.4)`,
+                      background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3), transparent 70%), rgba(${fan.accentRgb}, 0.15)`,
+                      borderColor: `rgba(${fan.accentRgb}, 0.6)`,
+                      boxShadow: `inset 0 0 20px rgba(${fan.accentRgb}, 0.4), 0 10px 25px rgba(${fan.accentRgb}, 0.3), 0 0 15px rgba(255,255,255,0.3)`,
                     }}
                   >
                     <span className="relative z-10 group-hover:animate-bounce">
                       {fan.icon}
                     </span>
 
-                    {/* Bubble light reflection (Hiệu ứng bóng nước) */}
-                    <div className="absolute top-2 left-3 md:top-3 md:left-5 w-6 h-6 md:w-8 md:h-8 border-t-[3px] border-l-[3px] border-white/70 rounded-full opacity-80 rotate-[-15deg]"></div>
-                    <div className="absolute bottom-3 right-4 w-2 h-2 bg-white/50 rounded-full blur-[1px]"></div>
+                    {/* Điểm sáng lấp lánh (Highlight) kiểu bong bóng anime */}
+                    <div className="absolute top-3 left-4 w-4 h-4 md:w-5 md:h-5 bg-white/90 rounded-full blur-[1px]"></div>
+                    <div className="absolute top-8 left-3 w-1.5 h-1.5 md:w-2 md:h-2 bg-white/70 rounded-full blur-[0.5px]"></div>
+                    <div className="absolute bottom-3 right-4 w-3 h-1.5 bg-white/40 rounded-full blur-[1px] rotate-[-45deg]"></div>
                   </div>
 
-                  {/* Name Tag */}
+                  {/* Name Tag (Kẹo dẻo) */}
                   <div
-                    className="mt-5 px-5 py-1.5 rounded-full bg-[#041c32]/60 backdrop-blur-sm border border-white/20 text-white font-medium text-sm md:text-base shadow-lg transition-all group-hover:bg-white/20 group-hover:border-white/40"
+                    className="mt-5 px-6 py-1.5 rounded-full backdrop-blur-md bg-white/10 border-2 text-white font-bold text-sm md:text-base transition-all duration-300 group-hover:bg-white/25"
                     style={{
-                      boxShadow: `0 4px 15px rgba(${fan.accentRgb}, 0.2)`,
+                      borderColor: `rgba(${fan.accentRgb}, 0.5)`,
+                      boxShadow: `0 5px 15px rgba(0,0,0,0.2), 0 0 10px rgba(${fan.accentRgb}, 0.2)`,
+                      textShadow: "0 2px 4px rgba(0,0,0,0.4)"
                     }}
                   >
                     @{fan.name}
@@ -436,7 +514,9 @@ export default function Tab2Journey({ activeTab }) {
                   .map((line, i) => (
                     <p
                       key={i}
-                      className={`text-[#4a3f35] ${line.trim() === "" ? "h-8" : "mb-0"}`}
+                      // Thêm 'text-justify' để căn đều 2 bên lề giống trong ảnh
+                      // Thêm 'mb-3' để tạo khoảng cách giữa các đoạn văn nhìn thoáng hơn
+                      className={`text-[#4a3f35] text-justify ${line.trim() === "" ? "h-4 md:h-6" : "mb-3 md:mb-4"}`}
                     >
                       {line || "\u00A0"}
                     </p>
