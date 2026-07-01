@@ -62,13 +62,7 @@ export default function Octopus({ style }) {
         </g>
       </svg>
 
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes octoFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-          @keyframes octoSquish { 0%, 100% { transform: scaleY(1) scaleX(1); } 50% { transform: scaleY(0.95) scaleX(1.02); } }
-          @keyframes tentacleWiggle { 0% { transform: rotate(-12deg); } 100% { transform: rotate(12deg); } }
-        `
-      }} />
+
     </div>
   );
 }

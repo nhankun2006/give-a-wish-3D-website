@@ -68,18 +68,7 @@ export default function Whale({ style }) {
         <path d="M 128 72 Q 131 75 134 72" stroke="#021428" strokeWidth="2.5" strokeLinecap="round" fill="none" opacity="0.8" />
       </svg>
 
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes whaleFloat { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-12px) rotate(2deg); } }
-          @keyframes tailFlap { 0% { transform: rotate(-15deg); } 100% { transform: rotate(15deg); } }
-          @keyframes flipperWave { 0% { transform: rotate(-10deg); } 100% { transform: rotate(20deg); } }
-          @keyframes spout { 
-            0% { transform: translateY(10px); opacity: 0; } 
-            20% { opacity: 1; } 
-            100% { transform: translateY(-20px); opacity: 0; } 
-          }
-        `
-      }} />
+
     </div>
   );
 }

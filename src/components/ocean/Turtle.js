@@ -62,13 +62,7 @@ export default function Turtle({ style }) {
         </g>
       </svg>
 
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          @keyframes turtleFloat { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(-2deg); } }
-          @keyframes flipperFlap { 0% { transform: rotate(-10deg); } 100% { transform: rotate(20deg); } }
-          @keyframes headBob { 0% { transform: rotate(-5deg); } 100% { transform: rotate(5deg); } }
-        `
-      }} />
+
     </div>
   );
 }
