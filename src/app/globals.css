@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap');
 @import "tailwindcss";
 
 :root {
@@ -356,3 +357,51 @@ button, a {
   }
 }
 
+/* Custom Scrollbars */
+.custom-scrollbar::-webkit-scrollbar { width: 8px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+
+.custom-scrollbar-thin::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.3); border-radius: 10px; }
+
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Handwriting Font & Glass Card for Tab4Wishes */
+.font-handwriting { font-family: 'Caveat', cursive; }
+.glass-card { box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
+
+/* Tab2Journey Keyframes */
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes modalSlideUp { from { opacity: 0; transform: translateY(40px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes floating { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes bounce-x { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(-4px); } }
+.animate-bounce-x { animation: bounce-x 1.5s infinite ease-in-out; }
+
+/* Ocean Creatures Keyframes */
+@keyframes swimBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+@keyframes tailWag { 0% { transform: rotate(-10deg); } 100% { transform: rotate(10deg); } }
+@keyframes finFlap { 0% { transform: rotate(-5deg); } 100% { transform: rotate(15deg); } }
+@keyframes whaleFloat { 0%, 100% { transform: translateY(0) rotate(-2deg); } 50% { transform: translateY(-12px) rotate(2deg); } }
+@keyframes tailFlap { 0% { transform: rotate(-15deg); } 100% { transform: rotate(15deg); } }
+@keyframes flipperWave { 0% { transform: rotate(-10deg); } 100% { transform: rotate(20deg); } }
+@keyframes spout { 0% { transform: translateY(10px); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateY(-20px); opacity: 0; } }
+@keyframes wiggle { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(12deg); } }
+@keyframes octoFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes octoSquish { 0%, 100% { transform: scaleY(1) scaleX(1); } 50% { transform: scaleY(0.95) scaleX(1.02); } }
+@keyframes tentacleWiggle { 0% { transform: rotate(-12deg); } 100% { transform: rotate(12deg); } }
+@keyframes turtleFloat { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(-2deg); } }
+@keyframes flipperFlap { 0% { transform: rotate(-10deg); } 100% { transform: rotate(20deg); } }
+@keyframes headBob { 0% { transform: rotate(-5deg); } 100% { transform: rotate(5deg); } }
+@keyframes starWobble { 0% { transform: rotate(-8deg) scale(1); } 50% { transform: rotate(8deg) scale(1.05); } 100% { transform: rotate(-8deg) scale(1); } }
+@keyframes jellyFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+@keyframes jellyPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.03) scaleY(0.95); } }
+@keyframes tentacleSway { 0% { transform: rotate(-10deg); } 100% { transform: rotate(10deg); } }
+@keyframes sway { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+@keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 0.6; } 100% { transform: translateY(-15px) scale(0.5); opacity: 0; } }
+@keyframes gentleRipple { 0% { width: 120px; height: 120px; opacity: 0.8; border-width: 3px; } 100% { width: 700px; height: 700px; opacity: 0; border-width: 0px; } }
