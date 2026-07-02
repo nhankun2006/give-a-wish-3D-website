@@ -137,11 +137,26 @@ const fanMessages = [
   },
 ];
 
+const PARTICLE_COLORS = ["#fff", "#fff7c2", "#ffe4f3", "#dffcff"];
+
 export default function Tab2Journey({ activeTab }) {
   const [selectedFan, setSelectedFan] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [particles, setParticles] = useState([]);
   const scrollRef = useRef(null);
 
+
+  // Generate particles once on the client to avoid SSR/hydration mismatch
+  useEffect(() => {
+    const generated = Array.from({ length: 120 }, () => ({
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      width: `${2 + Math.random() * 4}px`,
+      height: `${2 + Math.random() * 4}px`,
+      background: PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)],
+    }));
+    setParticles(generated);
+  }, []);
 
   useEffect(() => {
     if (activeTab === 1) {
@@ -272,21 +287,16 @@ export default function Tab2Journey({ activeTab }) {
     }}
   />
 ))}
-{Array.from({ length: 120 }).map((_, i) => (
+{particles.map((p, i) => (
   <div
     key={i}
     className="absolute rounded-full animate-pulse"
     style={{
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      width: `${2 + Math.random() * 4}px`,
-      height: `${2 + Math.random() * 4}px`,
-      background: [
-        "#fff",
-        "#fff7c2",
-        "#ffe4f3",
-        "#dffcff",
-      ][Math.floor(Math.random() * 4)],
+      left: p.left,
+      top: p.top,
+      width: p.width,
+      height: p.height,
+      background: p.background,
       opacity: 0.8,
       boxShadow: "0 0 12px currentColor",
     }}
