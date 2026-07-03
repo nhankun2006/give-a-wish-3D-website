@@ -452,8 +452,12 @@ className="
       </div>
 
 
-{/* RƯƠNG KHO BÁU ĐÁY BIỂN (Bản Dark & Glow Mạnh Hơn) */}
-<div className="absolute bottom-4 right-12 z-40 pointer-events-none filter drop-shadow-[0_25px_35px_rgba(0,10,30,0.85)] hover:-translate-y-2 hover:scale-110 transition-all duration-700 ease-out flex flex-col items-center">
+{/* RƯƠNG KHO BÁU ĐÁY BIỂN */}
+{/* NOTE: filter:drop-shadow was removed from this wrapper.
+     filter creates a stacking context that causes Firefox (SpiderMonkey) to
+     composite child transforms incorrectly, making the lid appear closed.
+     The shadow is now applied via box-shadow on the chest body instead. */}
+<div className="absolute bottom-4 right-12 z-40 pointer-events-none flex flex-col items-center">
   
   {/* Ánh sáng ma thuật (Caustic Glow) - Tâm sáng rực rỡ hơn */}
   <div className="absolute -top-32 -left-20 w-72 h-72 bg-[radial-gradient(circle,_rgba(253,224,71,0.4)_0%,_rgba(134,239,172,0.25)_30%,_rgba(192,132,252,0.1)_60%,_transparent_80%)] rounded-full blur-3xl animate-pulse" style={{ animationDuration: '3s' }}></div>
@@ -464,11 +468,21 @@ className="
   {/* Lớp cát biển (3D Sand bed) */}
   <div className="absolute -bottom-6 -left-12 w-56 h-16 bg-[radial-gradient(ellipse_at_center,_rgba(20,83,45,0.8)_0%,_rgba(2,6,23,0.95)_70%,_transparent_100%)] rounded-[100%] blur-[5px] z-30 shadow-[0_10px_20px_rgba(0,0,0,0.7)]"></div>
 
-  {/* THÂN RƯƠNG (Gỗ 3D: Tone màu đậm hơn, cổ kính hơn) */}
-  <div className="relative w-32 h-20 bg-gradient-to-b from-[#4a2e1b] via-[#2d1a0e] to-[#0a0502] rounded-b-[24px] border-b-[4px] border-[#050201] shadow-[inset_0_5px_12px_rgba(255,255,255,0.05),inset_0_-10px_20px_rgba(0,0,0,0.95)] flex flex-col items-center">
+  {/* THÂN RƯƠNG — box-shadow replaces the removed outer filter:drop-shadow */}
+  <div className="relative w-32 h-20 bg-gradient-to-b from-[#4a2e1b] via-[#2d1a0e] to-[#0a0502] rounded-b-[24px] border-b-[4px] border-[#050201] shadow-[0_25px_35px_rgba(0,10,30,0.85),inset_0_5px_12px_rgba(255,255,255,0.05),inset_0_-10px_20px_rgba(0,0,0,0.95)] flex flex-col items-center">
     
     {/* NẮP RƯƠNG MỞ HÉ (Tone đậm) */}
-    <div className="absolute -top-11 left-0 w-32 h-14 bg-gradient-to-b from-[#5c3a21] via-[#3d2414] to-[#1a0f08] rounded-t-[26px] border-t-[2px] border-[#8c5a35] transform -rotate-[22deg] origin-bottom-left shadow-[8px_20px_30px_rgba(0,0,0,0.95),inset_0_-5px_12px_rgba(0,0,0,0.8),inset_0_2px_5px_rgba(255,255,255,0.1)] overflow-hidden z-20">
+    {/* Inline style used for transform: Tailwind's CSS-variable-based transforms
+        break in Firefox when an ancestor has `filter:` (creates stacking context).
+        Direct style prop is engine-agnostic and renders identically in V8 & SpiderMonkey. */}
+    <div
+      className="absolute -top-11 left-0 w-32 h-14 bg-gradient-to-b from-[#5c3a21] via-[#3d2414] to-[#1a0f08] rounded-t-[26px] border-t-[2px] border-[#8c5a35] overflow-hidden z-20"
+      style={{
+        transform: 'rotate(-22deg)',
+        transformOrigin: 'bottom left',
+        boxShadow: '8px 20px 30px rgba(0,0,0,0.95), inset 0 -5px 12px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.1)',
+      }}
+    >
       
       {/* Đai viền nắp rương (Kim loại đồng xỉn màu) */}
       <div className="absolute top-0 left-0 w-3.5 h-full bg-gradient-to-r from-[#92400e] via-[#d97706] to-[#78350f] shadow-[inset_-3px_0_5px_rgba(0,0,0,0.8),inset_2px_0_5px_rgba(255,255,255,0.4)]"></div>
