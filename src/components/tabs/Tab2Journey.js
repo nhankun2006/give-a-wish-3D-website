@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-
 const fanMessages = [
   {
     id: "1", // Chuyển thành chuỗi (string) để khớp với nhãn trong JSON
@@ -120,7 +119,7 @@ const fanMessages = [
   {
   id: "15",
   name: "c Moon",
-  icon: "🌙",
+  icon: "/iconwhite-moon.jpg",
   accent: "#ff99c4",
   accentRgb: "255,153,196",
   delay: "1.9s",
@@ -137,11 +136,26 @@ const fanMessages = [
   },
 ];
 
+const PARTICLE_COLORS = ["#fff", "#fff7c2", "#ffe4f3", "#dffcff"];
+
 export default function Tab2Journey({ activeTab }) {
   const [selectedFan, setSelectedFan] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [particles, setParticles] = useState([]);
   const scrollRef = useRef(null);
 
+
+  // Generate particles once on the client to avoid SSR/hydration mismatch
+  useEffect(() => {
+    const generated = Array.from({ length: 120 }, () => ({
+      left: `${Math.random() * 100}%`,
+      top: `${Math.random() * 100}%`,
+      width: `${2 + Math.random() * 4}px`,
+      height: `${2 + Math.random() * 4}px`,
+      background: PARTICLE_COLORS[Math.floor(Math.random() * PARTICLE_COLORS.length)],
+    }));
+    setParticles(generated);
+  }, []);
 
   useEffect(() => {
     if (activeTab === 1) {
@@ -272,21 +286,16 @@ export default function Tab2Journey({ activeTab }) {
     }}
   />
 ))}
-{Array.from({ length: 120 }).map((_, i) => (
+{particles.map((p, i) => (
   <div
     key={i}
     className="absolute rounded-full animate-pulse"
     style={{
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      width: `${2 + Math.random() * 4}px`,
-      height: `${2 + Math.random() * 4}px`,
-      background: [
-        "#fff",
-        "#fff7c2",
-        "#ffe4f3",
-        "#dffcff",
-      ][Math.floor(Math.random() * 4)],
+      left: p.left,
+      top: p.top,
+      width: p.width,
+      height: p.height,
+      background: p.background,
       opacity: 0.8,
       boxShadow: "0 0 12px currentColor",
     }}
@@ -298,10 +307,21 @@ export default function Tab2Journey({ activeTab }) {
             
 <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/40 shadow-lg mb-5">
   <span>💖</span>
-  <span className="text-[#4f6d7a] font-bold uppercase tracking-wide">
+  <span
+    className="font-bold uppercase tracking-wide text-[#ff7eb6]"
+    style={{
+      textShadow: `
+        0 0 6px rgba(255,255,255,.9),
+        0 0 12px rgba(255,126,182,.8),
+        0 2px 8px rgba(255,126,182,.5)
+      `,
+    }}
+  >
     Từ Trái Tim Đại Dương
   </span>
 </div>
+
+
             <h2
   className="text-3xl md:text-5xl font-extrabold text-[#f78fb3] mb-4 pb-1"
   style={{
@@ -317,19 +337,23 @@ export default function Tab2Journey({ activeTab }) {
     opacity: 0,
   }}
 >
-  Lời Tâm Sự Của Fan
+  Trạm Gom Yêu Thương
 </h2>
             <p
-  className="text-[#4f6d7a] text-sm md:text-base font-semibold max-w-lg mx-auto"
+  className="text-white text-sm md:text-base font-semibold max-w-lg mx-auto"
   style={{
-    textShadow: "0 2px 8px rgba(255,255,255,.6)",
+    textShadow: `
+      0 0 8px rgba(255,255,255,.9),
+      0 0 16px rgba(255,255,255,.6),
+      0 2px 10px rgba(0,0,0,.4)
+    `,
     animation: isVisible
       ? "fadeInUp 0.8s ease-out 0.4s forwards"
       : "none",
     opacity: 0,
   }}
 >
-  Những dòng tin nhắn lấp lánh gửi đến Công chúa Biển Cả 🌊
+  Mỗi bọt bong bóng lấp lánh là một lời nhắn ôm ấp vô vàng  <br />   yêu thương gửi đến Dâng
 </p>
           </div>
 
@@ -352,14 +376,23 @@ export default function Tab2Journey({ activeTab }) {
                   <div
                     className="w-24 h-24 md:w-32 md:h-32 rounded-full backdrop-blur-sm border-2 flex items-center justify-center text-4xl md:text-5xl transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-4 group-hover:rotate-[5deg] relative"
                     style={{
+                      
                       background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3), transparent 70%), rgba(${fan.accentRgb}, 0.15)`,
                       borderColor: `rgba(${fan.accentRgb}, 0.6)`,
                       boxShadow: `inset 0 0 20px rgba(${fan.accentRgb}, 0.4), 0 10px 25px rgba(${fan.accentRgb}, 0.3), 0 0 15px rgba(255,255,255,0.3)`,
                     }}
                   >
-                    <span className="relative z-10 group-hover:animate-bounce">
-                      {fan.icon}
-                    </span>
+                    {fan.icon.startsWith("/") ? (
+  <img
+    src={fan.icon}
+    alt={fan.name}
+    className="relative z-10 w-12 h-12 md:w-16 md:h-16 object-contain group-hover:animate-bounce"
+  />
+) : (
+  <span className="relative z-10 group-hover:animate-bounce">
+    {fan.icon}
+  </span>
+)}
 
                     {/* Điểm sáng lấp lánh (Highlight) kiểu bong bóng anime */}
                     <div className="absolute top-3 left-4 w-4 h-4 md:w-5 md:h-5 bg-white/90 rounded-full blur-[1px]"></div>
@@ -397,7 +430,7 @@ export default function Tab2Journey({ activeTab }) {
 
           {/* Modal content - Bức thư dễ thương */}
           <div
-            className="relative w-full max-w-4xl max-h-[85vh] flex flex-col rounded-3xl overflow-hidden text-[#5a4a42]"
+            className="relative w-full max-w-4xl max-h-[86vh] flex flex-col rounded-3xl overflow-hidden text-[#5a4a42]"
             onClick={(e) => e.stopPropagation()}
             style={{
               animation: "modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
@@ -438,14 +471,19 @@ export default function Tab2Journey({ activeTab }) {
             >
               <div className="flex items-center gap-4">
                 <div
-                  className="w-14 h-14 rounded-full flex items-center justify-center text-3xl shadow-inner border-2"
-                  style={{
-                    backgroundColor: `rgba(${selectedFan.accentRgb}, 0.1)`,
-                    borderColor: selectedFan.accent,
-                  }}
+                  className="w-14 h-14 rounded-full flex items-center justify-center shadow-inner border-2"
                 >
-                  {selectedFan.icon}
+                  {selectedFan.icon.startsWith("/") ? (
+                    <img
+                      src={selectedFan.icon}
+                      alt={selectedFan.name}
+                      className="w-10 h-10 object-contain"
+                    />
+                  ) : (
+                    <span className="text-3xl">{selectedFan.icon}</span>
+                  )}
                 </div>
+
                 <div>
                   <p
                     className="font-extrabold text-xl md:text-2xl"
