@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useEffect, useRef, useState } from 'react';
 
@@ -30,6 +30,7 @@ import LandingScreen from '@/components/ui/LandingScreen';
 import ImagePopup from '@/components/ui/ImagePopup';
 import SurpriseScreen from '@/components/ui/SurpriseScreen';
 import TabNavigation from '@/components/ui/TabNavigation';
+import WishesComingSoon from '@/components/ui/WishesComingSoon';
 
 // === GIAO DIỆN CHÍNH ===
 export default function Home() {
@@ -39,6 +40,10 @@ export default function Home() {
   const [showSurprise, setShowSurprise] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const pageRef = useRef(null);
+
+  // --- DATE GATE: Wishes tab opens officially on July 10, 2026 (Vietnam time) ---
+  const WISHES_UNLOCK_DATE = new Date('2026-07-10T00:00:00+07:00');
+  const [isWishesOpen, setIsWishesOpen] = useState(() => new Date() >= WISHES_UNLOCK_DATE);
 
   useEffect(() => {
     let timeout;
@@ -200,13 +205,16 @@ export default function Home() {
 
         {/* Tab 4: Wishes (via Tab4Wishes component) */}
         <div className={`transition-all duration-1000 absolute inset-0 ${activeTab === 3 ? 'opacity-100 z-20 pointer-events-auto' : 'opacity-0 pointer-events-none z-0'}`}>
-          <Tab4Wishes isUnlocked={isUnlocked} setIsUnlocked={setIsUnlocked} />
+          {isWishesOpen
+            ? <Tab4Wishes isUnlocked={isUnlocked} setIsUnlocked={setIsUnlocked} />
+            : <WishesComingSoon onUnlocked={() => setIsWishesOpen(true)} />
+          }
         </div>
       </div>
 
 
       {/* --- MENU CHUYỂN TAB (Bị ẩn đi khi ở Trang Chủ) --- */}
-      <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} handlePrevTab={handlePrevTab} handleNextTab={handleNextTab} isLanding={isLanding} />
+      <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} handlePrevTab={handlePrevTab} handleNextTab={handleNextTab} isLanding={isLanding} isWishesOpen={isWishesOpen} />
 
 
       {/* DÁN CỤC POPUP VÀO ĐÂY (NẰM BÊN TRONG MAIN) */}

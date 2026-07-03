@@ -2,7 +2,7 @@
 
 import { useEffect, useCallback } from 'react';
 
-export default function TabNavigation({ activeTab, setActiveTab, handlePrevTab, handleNextTab, isLanding }) {
+export default function TabNavigation({ activeTab, setActiveTab, handlePrevTab, handleNextTab, isLanding, isWishesOpen }) {
     const handleKeyDown = useCallback((e) => {
         if (isLanding) return; // Don't navigate if in landing page
         if (e.key === 'ArrowLeft') {
@@ -35,17 +35,29 @@ export default function TabNavigation({ activeTab, setActiveTab, handlePrevTab, 
             </button>
 
             <div className="flex items-center gap-2.5 md:gap-3.5">
-                {[0, 1, 2, 3].map((tabIndex) => (
-                    <button
-                        key={tabIndex}
-                        onClick={() => setActiveTab(tabIndex)}
-                        className={`rounded-full transition-all duration-500 ease-out focus:outline-none cursor-pointer ${activeTab === tabIndex
-                                ? 'w-7 h-2 md:w-9 md:h-2.5 bg-gradient-to-r from-[#ff99c4] to-[#ffb3d1] shadow-[0_0_15px_#ff99c4] scale-110'
-                                : 'w-2.5 h-2.5 bg-[#64d9ff]/30 hover:bg-[#64d9ff]/70 hover:shadow-[0_0_10px_#64d9ff]'
+                {[0, 1, 2, 3].map((tabIndex) => {
+                    const isLocked = tabIndex === 3 && !isWishesOpen;
+                    const isActive = activeTab === tabIndex;
+                    return (
+                        <button
+                            key={tabIndex}
+                            onClick={() => setActiveTab(tabIndex)}
+                            className={`relative flex items-center justify-center rounded-full transition-all duration-500 ease-out focus:outline-none cursor-pointer ${
+                                isActive
+                                    ? 'w-7 h-2 md:w-9 md:h-2.5 bg-gradient-to-r from-[#ff99c4] to-[#ffb3d1] shadow-[0_0_15px_#ff99c4] scale-110'
+                                    : isLocked
+                                    ? 'w-6 h-6 bg-[#64d9ff]/10 hover:bg-[#ff99c4]/15 hover:shadow-[0_0_10px_rgba(255,153,196,0.4)] border border-[#ff99c4]/30'
+                                    : 'w-2.5 h-2.5 bg-[#64d9ff]/30 hover:bg-[#64d9ff]/70 hover:shadow-[0_0_10px_#64d9ff]'
                             }`}
-                        aria-label={`Tab ${tabIndex + 1}`}
-                    />
-                ))}
+                            aria-label={isLocked ? 'Tab Wishes (Chưa mở)' : `Tab ${tabIndex + 1}`}
+                            title={isLocked ? 'Mở vào ngày 10/7/2026 🔒' : undefined}
+                        >
+                            {isLocked && (
+                                <span className="text-[10px] leading-none" style={{ filter: 'drop-shadow(0 0 4px rgba(255,153,196,0.6))' }}>🔒</span>
+                            )}
+                        </button>
+                    );
+                })}
             </div>
 
             <button

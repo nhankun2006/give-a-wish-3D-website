@@ -1,0 +1,196 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+
+// Target date: July 10, 2026 at 00:00:00 Vietnam time (UTC+7)
+const UNLOCK_DATE = new Date('2026-07-10T00:00:00+07:00');
+
+function getTimeLeft() {
+  const now = new Date();
+  const diff = UNLOCK_DATE - now;
+  if (diff <= 0) return null; // Already unlocked
+
+  const days    = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours   = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+  return { days, hours, minutes, seconds };
+}
+
+function CountdownUnit({ value, label }) {
+  return (
+    <motion.div
+      key={value}
+      className="flex flex-col items-center"
+    >
+      <motion.div
+        key={value}
+        initial={{ y: -8, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.3, ease: 'easeOut' }}
+        className="relative w-16 h-16 md:w-20 md:h-20 flex items-center justify-center rounded-2xl"
+        style={{
+          background: 'rgba(100, 217, 255, 0.08)',
+          border: '1.5px solid rgba(100, 217, 255, 0.3)',
+          boxShadow: '0 0 20px rgba(100, 217, 255, 0.1), inset 0 1px 0 rgba(255,255,255,0.08)',
+          backdropFilter: 'blur(8px)',
+        }}
+      >
+        {/* Glass shimmer */}
+        <div className="absolute inset-x-2 top-1 h-1/3 rounded-xl bg-white/5 pointer-events-none" />
+        <span className="relative z-10 text-2xl md:text-3xl font-black text-white tabular-nums" style={{ textShadow: '0 0 20px rgba(100,217,255,0.8)' }}>
+          {String(value).padStart(2, '0')}
+        </span>
+      </motion.div>
+      <span className="mt-2 text-[10px] md:text-xs font-semibold tracking-widest uppercase" style={{ color: 'rgba(100,217,255,0.5)' }}>
+        {label}
+      </span>
+    </motion.div>
+  );
+}
+
+export default function WishesComingSoon({ onUnlocked }) {
+  const [timeLeft, setTimeLeft] = useState(getTimeLeft());
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      const t = getTimeLeft();
+      setTimeLeft(t);
+      if (!t && onUnlocked) {
+        onUnlocked(); // Notify parent that wishes are now unlocked
+      }
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [onUnlocked]);
+
+  // Floating particles
+  const particles = Array.from({ length: 12 }, (_, i) => i);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="absolute inset-0 pointer-events-auto flex flex-col items-center justify-center overflow-hidden"
+      style={{
+        background: 'linear-gradient(180deg, rgba(2,44,67,.75) 0%, rgba(1,24,38,.95) 100%)',
+        backdropFilter: 'blur(6px)',
+      }}
+    >
+      {/* Animated background rings */}
+      {[1, 2, 3].map((i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            border: '1px solid rgba(100,217,255,0.08)',
+            width: `${i * 200}px`,
+            height: `${i * 200}px`,
+          }}
+          animate={{ scale: [1, 1.05, 1], opacity: [0.4, 0.2, 0.4] }}
+          transition={{ duration: 3 + i, repeat: Infinity, ease: 'easeInOut', delay: i * 0.5 }}
+        />
+      ))}
+
+      {/* Floating bubbles */}
+      {particles.map((i) => (
+        <motion.div
+          key={i}
+          className="absolute rounded-full pointer-events-none"
+          style={{
+            width: `${4 + Math.random() * 8}px`,
+            height: `${4 + Math.random() * 8}px`,
+            left: `${5 + Math.random() * 90}%`,
+            bottom: '-20px',
+            background: 'rgba(100,217,255,0.15)',
+            border: '1px solid rgba(100,217,255,0.3)',
+          }}
+          animate={{ y: [0, -(300 + Math.random() * 300)], opacity: [0.7, 0] }}
+          transition={{
+            duration: 4 + Math.random() * 5,
+            repeat: Infinity,
+            delay: Math.random() * 6,
+            ease: 'easeOut',
+          }}
+        />
+      ))}
+
+      {/* Main card */}
+      <motion.div
+        initial={{ scale: 0.92, y: 20, opacity: 0 }}
+        animate={{ scale: 1, y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+        className="relative flex flex-col items-center text-center px-8 py-10 mx-4"
+        style={{
+          background: 'rgba(5, 20, 40, 0.6)',
+          border: '1.5px solid rgba(255, 153, 196, 0.25)',
+          borderRadius: '32px',
+          boxShadow: '0 30px 80px rgba(0,0,0,0.5), 0 0 60px rgba(255,153,196,0.05), inset 0 1px 0 rgba(255,255,255,0.06)',
+          backdropFilter: 'blur(20px)',
+          maxWidth: '480px',
+          width: '100%',
+        }}
+      >
+        {/* Glass top shimmer */}
+        <div className="absolute inset-x-8 top-2 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-full pointer-events-none" />
+
+        {/* Lock icon with glow */}
+        <motion.div
+          animate={{ scale: [1, 1.08, 1] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+          className="w-20 h-20 rounded-full flex items-center justify-center mb-6"
+          style={{
+            background: 'radial-gradient(circle, rgba(255,153,196,0.15) 0%, rgba(255,153,196,0.03) 100%)',
+            border: '2px solid rgba(255,153,196,0.3)',
+            boxShadow: '0 0 30px rgba(255,153,196,0.2)',
+          }}
+        >
+          <span className="text-4xl">🔒</span>
+        </motion.div>
+
+        {/* Title */}
+        <h2 className="text-2xl md:text-3xl font-black mb-2" style={{
+          background: 'linear-gradient(135deg, #ff99c4 0%, #ffb6c1 50%, #64d9ff 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+        }}>
+          Hộp Thư Chưa Mở
+        </h2>
+
+        <p className="text-sm md:text-base mb-1 font-medium" style={{ color: 'rgba(100,217,255,0.7)' }}>
+          Lời chúc từ các fan sẽ được mở vào
+        </p>
+        <p className="text-base md:text-lg font-bold mb-8" style={{
+          color: '#ff99c4',
+          textShadow: '0 0 15px rgba(255,153,196,0.4)',
+        }}>
+          🗓️ 10 tháng 7, 2026 &nbsp;—&nbsp; 00:00 🌊
+        </p>
+
+        {/* Countdown */}
+        {timeLeft ? (
+          <div className="flex items-start gap-3 md:gap-4 mb-8">
+            <CountdownUnit value={timeLeft.days}    label="Ngày"   />
+            <div className="text-2xl font-black mt-4" style={{ color: 'rgba(100,217,255,0.4)' }}>:</div>
+            <CountdownUnit value={timeLeft.hours}   label="Giờ"    />
+            <div className="text-2xl font-black mt-4" style={{ color: 'rgba(100,217,255,0.4)' }}>:</div>
+            <CountdownUnit value={timeLeft.minutes} label="Phút"   />
+            <div className="text-2xl font-black mt-4" style={{ color: 'rgba(100,217,255,0.4)' }}>:</div>
+            <CountdownUnit value={timeLeft.seconds} label="Giây"   />
+          </div>
+        ) : (
+          <div className="mb-8 text-lg font-bold" style={{ color: '#64d9ff' }}>
+            🎉 Đã mở! Hãy tải lại trang.
+          </div>
+        )}
+
+        {/* Decorative bottom note */}
+        <p className="text-xs" style={{ color: 'rgba(255,255,255,0.25)', maxWidth: '280px', lineHeight: 1.6 }}>
+          Hộp thư sẽ tự động mở đúng ngày — bạn không cần làm gì cả 🫧
+        </p>
+      </motion.div>
+    </motion.div>
+  );
+}
