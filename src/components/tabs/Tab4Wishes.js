@@ -6,7 +6,7 @@ import { Lock, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 // ─── SONAR CANVAS ────────────────────────────────────────────────────────────
-function SonarCanvas({ triggerRef, onDotClick, wishesRef, newWishIdRef }) {
+function SonarCanvas({ triggerRef, onDotClick, wishesRef, newWishIdRef, readWishesRef }) { // <--- Thêm vào đây // <-- Thêm readWishesRef ở đây
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -125,60 +125,154 @@ function SonarCanvas({ triggerRef, onDotClick, wishesRef, newWishIdRef }) {
       s.dots = s.dots.filter(d => d.life > 0);
       s.dots.forEach(d => {
         d.blink += 0.07; d.life--;
-        // Tính toán độ mờ dần khi bọt biển sắp vỡ
         const a = (d.life / 240) * (0.5 + Math.sin(d.blink) * 0.5);
         
         const isNew = newWishIdRef?.current && d.wish && d.wish.id === newWishIdRef.current;
-        const dotColor = isNew ? PINK : CYAN;
-        const rgbColor = isNew ? '255,153,196' : '100,217,255';
-        
-        // Bơm size to hơn một chút cho mập mạp dễ thương
-        const size = isNew ? 12 : 8; 
+        // KIỂM TRA ĐÃ XEM CHƯA
+        const isRead = d.wish && readWishesRef?.current?.has(d.wish.id); 
 
         ctx.save();
         ctx.globalAlpha = a;
 
-        // 1. Hào quang tỏa sáng xung quanh (Glow)
-        ctx.shadowColor = dotColor;
-        ctx.shadowBlur = isNew ? 25 : 15;
+         if (isRead) {
+  // ─── BỌTĐÃ ĐỌC: SAN HÔ HỒNG TO & RỌ (Tĩnh tại, chỉ lấp lánh) ───
+  const coralGlow = Math.sin(d.blink * 2.5) * 0.5 + 0.5; // Chỉ sáng lên/tắt
+  
+  ctx.globalAlpha = a * 0.85;
+  
+  // 👈 THÂN SAN HÔ (6 chi nhánh - TĨNH TẠI)
+  for (let i = 0; i < 6; i++) {
+    const branchAngle = (Math.PI * 2 / 6) * i - Math.PI / 2;
+    const branchLength = 7; // 👈 BỎ lắc lư, cố định
+    const branchX = d.x + Math.cos(branchAngle) * branchLength;
+    const branchY = d.y + Math.sin(branchAngle) * branchLength; // 👈 BỎ coralSway
+    
+    // Chi nhánh CHÍNH
+    ctx.strokeStyle = 'rgba(255, 153, 196, 0.95)';
+    ctx.lineWidth = 3;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(d.x, d.y);
+    ctx.lineTo(branchX, branchY);
+    ctx.stroke();
+    
+    // Viền chi nhánh
+    ctx.globalAlpha = a * 0.6;
+    ctx.strokeStyle = 'rgba(255, 120, 170, 0.7)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(d.x, d.y);
+    ctx.lineTo(branchX, branchY);
+    ctx.stroke();
+    
+    // BÔNG HOA ở đầu chi nhánh
+    ctx.globalAlpha = a * 0.9;
+    ctx.fillStyle = 'rgba(255, 200, 220, 1)';
+    ctx.beginPath();
+    ctx.arc(branchX, branchY, 2.5, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Viền bông hoa
+    ctx.globalAlpha = a * 0.8;
+    ctx.strokeStyle = 'rgba(255, 153, 196, 0.9)';
+    ctx.lineWidth = 1.2;
+    ctx.stroke();
+    
+    // Sáng lên ở tâm bông (lấp lánh nhẹ)
+    ctx.globalAlpha = a * coralGlow * 0.8;
+    ctx.fillStyle = 'rgba(255, 220, 235, 0.9)';
+    ctx.beginPath();
+    ctx.arc(branchX, branchY, 1.2, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  
+  // THÂN SAN HÔ CHÍNH
+  ctx.globalAlpha = a * 0.85;
+  ctx.fillStyle = 'rgba(255, 153, 196, 0.8)';
+  ctx.beginPath();
+  ctx.arc(d.x, d.y, 3.5, 0, Math.PI * 2);
+  ctx.fill();
+  
+  // Viền thân
+  ctx.globalAlpha = a * 0.7;
+  ctx.strokeStyle = 'rgba(255, 100, 160, 0.9)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  
+  // Tâm thân sáng
+  ctx.globalAlpha = a * coralGlow * 0.7;
+  ctx.fillStyle = 'rgba(255, 220, 235, 0.85)';
+  ctx.beginPath();
+  ctx.arc(d.x, d.y, 1.8, 0, Math.PI * 2);
+  ctx.fill();
 
-        // 2. Lõi bong bóng trong mờ (như bong bóng thật)
-        ctx.fillStyle = `rgba(${rgbColor}, 0.25)`;
-        ctx.beginPath(); ctx.arc(d.x, d.y, size, 0, Math.PI * 2); ctx.fill();
+  // HALO HỒNG (3 vòng lấp lánh)
+  for (let ring = 1; ring <= 3; ring++) {
+    ctx.globalAlpha = a * coralGlow * (1 - ring / 4) * 0.65;
+    ctx.strokeStyle = `rgba(255, 200, 220, ${0.9 - ring * 0.2})`;
+    ctx.lineWidth = 2 - ring * 0.4;
+    ctx.beginPath();
+    ctx.arc(d.x, d.y, 7 + ring * 4, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  
+  // CHẤM SÁNG NHỎ XUNG QUANH
+  ctx.globalAlpha = a * coralGlow * 0.7;
+  for (let i = 0; i < 8; i++) {
+    const sparkAngle = d.blink * 1.2 + (Math.PI * 2 / 8) * i;
+    const sparkDist = 12;
+    const sparkX = d.x + Math.cos(sparkAngle) * sparkDist;
+    const sparkY = d.y + Math.sin(sparkAngle) * sparkDist;
+    
+    ctx.fillStyle = 'rgba(255, 200, 220, 0.8)';
+    ctx.beginPath();
+    ctx.arc(sparkX, sparkY, 0.8 + coralGlow * 0.5, 0, Math.PI * 2);
+    ctx.fill();
+  }
 
-        // 3. Viền bong bóng sắc nét
-        ctx.shadowBlur = 0; // Tắt glow để vẽ viền không bị nhòe
-        ctx.strokeStyle = dotColor;
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
+} else {
+          // ... (Toàn bộ code bọt biển chưa đọc lấp lánh giữ nguyên ở đây) ...
+          // ... (Phần code lấp lánh của bọt chưa đọc giữ nguyên) ...
+          // ─── GIAO DIỆN BỌT CHƯA ĐỌC (Lấp lánh) ───
+          const dotColor = isNew ? PINK : CYAN;
+          const rgbColor = isNew ? '255,153,196' : '100,217,255';
+          const size = isNew ? 12 : 8; 
 
-        // 4. HIỆU ỨNG PHA LÊ CĂNG MỌNG (Vệt sáng phản chiếu)
-        // Vệt sáng to ở góc trái trên
-        ctx.beginPath();
-        ctx.arc(d.x, d.y, size * 0.65, Math.PI * 1.05, Math.PI * 1.55);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'; // Trắng tinh lấp lánh
-        ctx.lineWidth = 2.5;
-        ctx.lineCap = 'round'; // Bo tròn 2 đầu vệt sáng
-        ctx.stroke();
-        
-        // Vệt sáng nhỏ ở góc phải dưới
-        ctx.beginPath();
-        ctx.arc(d.x, d.y, size * 0.55, Math.PI * 0.15, Math.PI * 0.45);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
-        ctx.lineWidth = 1.2;
-        ctx.stroke();
+          ctx.shadowColor = dotColor;
+          ctx.shadowBlur = isNew ? 25 : 15;
 
-        // 5. ICON CHO LỜI CHÚC MỚI
-        if (isNew) {
-            ctx.font = '11px Arial';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            
-            // Hiệu ứng trái tim đập thình thịch
-            const heartScale = 1 + Math.sin(d.blink * 3) * 0.25; 
-            ctx.translate(d.x, d.y);
-            ctx.scale(heartScale, heartScale);
-            ctx.fillText('💖', 0, 0); // Vẽ trái tim vào giữa bong bóng
+          ctx.fillStyle = `rgba(${rgbColor}, 0.25)`;
+          ctx.beginPath(); ctx.arc(d.x, d.y, size, 0, Math.PI * 2); ctx.fill();
+
+          ctx.shadowBlur = 0; 
+          ctx.strokeStyle = dotColor;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          // Hiệu ứng pha lê
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, size * 0.65, Math.PI * 1.05, Math.PI * 1.55);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)'; 
+          ctx.lineWidth = 2.5;
+          ctx.lineCap = 'round';
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.arc(d.x, d.y, size * 0.55, Math.PI * 0.15, Math.PI * 0.45);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+
+          if (isNew) {
+              ctx.font = '11px Arial';
+              ctx.textAlign = 'center';
+              ctx.textBaseline = 'middle';
+              const heartScale = 1 + Math.sin(d.blink * 3) * 0.25; 
+              ctx.translate(d.x, d.y);
+              ctx.scale(heartScale, heartScale);
+              ctx.fillText('💖', 0, 0);
+          }
         }
 
         ctx.restore();
@@ -244,10 +338,12 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
   const [currentWish, setCurrentWish] = useState(null);
   const [revealed, setRevealed] = useState(false);
 
-
+const [currentWishIndex, setCurrentWishIndex] = useState(-1);
   const [newWishId, setNewWishId] = useState(null);
   const newWishIdRef = useRef(null);
   useEffect(() => { newWishIdRef.current = newWishId; }, [newWishId]);
+  
+  
   // form
   const [formOpen, setFormOpen] = useState(false);
   const [newName, setNewName] = useState('');
@@ -255,27 +351,57 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
   const [formNote, setFormNote] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleDotClick = useCallback((wish) => {
-    if (!wish) return;
-    setCurrentWish(wish);
-    setRevealed(true);
-  }, []);
+const [historyOpen, setHistoryOpen] = useState(false);
+const [viewedWishes, setViewedWishes] = useState([]);
+const [searchTerm, setSearchTerm] = useState('');
+const [readCount, setReadCount] = useState(0); // 👈 THÊM DÒNG NÀY
 
-  // 👈 DÁN THÊM HÀM NÀY VÀO ĐÂY: Hàm để nhảy sang bọt biển ngẫu nhiên
-  const handleRandomWish = (e) => {
-    e.stopPropagation(); // Ngăn click xuyên xuống canvas
-    if (!wishes || wishes.length <= 1) return;
-    let nextWish;
-    // Bốc ngẫu nhiên cho đến khi ra một lời chúc khác với cái đang mở
-    do {
-      nextWish = wishes[Math.floor(Math.random() * wishes.length)];
-    } while (currentWish && nextWish.id === currentWish.id);
-    setCurrentWish(nextWish);
-  };
+// Cập nhật danh sách thư đã đọc khi wishes hoặc readCount thay đổi
+useEffect(() => {
+  if (wishes && readWishesRef.current.size > 0) {
+    const viewed = wishes.filter(w => readWishesRef.current.has(w.id));
+    setViewedWishes(viewed);
+  }
+}, [wishes, readCount]); // 👈 THÊM readCount VÀO ĐÂY
+
+  const handleDotClick = useCallback((wish) => {
+  if (!wish) return;
+  readWishesRef.current.add(wish.id);
+  setReadCount(c => c + 1); // 👈 THÊM DÒNG NÀY
+  setCurrentWish(wish);
+  setCurrentWishIndex(wishes.findIndex(w => w.id === wish.id));
+  setRevealed(true);
+}, []);
+
+  const handlePrevWish = (e) => {
+  e.stopPropagation();
+  if (!wishes || wishes.length === 0) return;
+  let newIndex = currentWishIndex - 1;
+  if (newIndex < 0) newIndex = wishes.length - 1;
+  const prevWish = wishes[newIndex];
+  readWishesRef.current.add(prevWish.id);
+  setReadCount(c => c + 1);
+  setCurrentWish(prevWish);
+  setCurrentWishIndex(newIndex);
+};
+
+const handleNextWish = (e) => {
+  e.stopPropagation();
+  if (!wishes || wishes.length === 0) return;
+  let newIndex = currentWishIndex + 1;
+  if (newIndex >= wishes.length) newIndex = 0;
+  const nextWish = wishes[newIndex];
+  readWishesRef.current.add(nextWish.id);
+  setReadCount(c => c + 1);
+  setCurrentWish(nextWish);
+  setCurrentWishIndex(newIndex);
+};
 
   const triggerRef = useRef(null);
   const wishesRef = useRef([]); // fires canvas animation
   const autoRef = useRef(null);
+
+  const readWishesRef = useRef(new Set());
 
   // ── fetch
   useEffect(() => { if (isUnlocked) fetchWishes(); }, [isUnlocked]);
@@ -373,8 +499,14 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
         /* ══════════════════ SONAR SCREEN ══════════════════ */
         <div className="absolute inset-0" style={{ background: 'rgba(2, 20, 40, 0.4)', backdropFilter: 'blur(3px)' }}>
 
-          {/* canvas layer */}
-          <SonarCanvas triggerRef={triggerRef} onDotClick={handleDotClick} wishesRef={wishesRef} newWishIdRef={newWishIdRef} />
+          {/* SỬA LẠI THÀNH THẾ NÀY */}
+  <SonarCanvas 
+    triggerRef={triggerRef} 
+    onDotClick={handleDotClick} 
+    wishesRef={wishesRef} 
+    newWishIdRef={newWishIdRef} 
+    readWishesRef={readWishesRef} // <--- THÊM DÒNG NÀY VÀO ĐÂY
+  />
 
           {/* scan-line overlay (Đổi thành màu xanh dương nhạt) */}
           <div style={{
@@ -383,14 +515,24 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
             animation: 'scandown 3s linear infinite',
           }} />
 
-          {/* ── NÚT GỬI LỜI CHÚC (Đã làm cute) */}
-          <div className="absolute top-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20">
-            <button
-              onClick={() => setFormOpen(o => !o)}
-              className="px-6 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-[#ff99c4]/50 text-[#ff99c4] font-bold shadow-[0_0_15px_rgba(255,153,196,0.3)] hover:bg-[#ff99c4] hover:text-[#021428] transition-all hover:scale-105 flex items-center gap-2"
-            >
-              💌 Thả Bọt Biển
-            </button>
+          
+<div className="absolute top-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20">
+  <div style={{ display: 'flex', gap: '12px' }}>
+    <button
+      onClick={() => setFormOpen(o => !o)}
+      className="px-6 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-[#ff99c4]/50 text-[#ff99c4] font-bold shadow-[0_0_15px_rgba(255,153,196,0.3)] hover:bg-[#ff99c4] hover:text-[#021428] transition-all hover:scale-105 flex items-center gap-2"
+    >
+      💌 Thả Bọt Biển
+    </button>
+
+    <button
+      onClick={() => setHistoryOpen(o => !o)}
+      className="px-6 py-2.5 rounded-full bg-white/10 backdrop-blur-md border border-[#64d9ff]/50 text-[#64d9ff] font-bold shadow-[0_0_15px_rgba(100,217,255,0.3)] hover:bg-[#64d9ff] hover:text-[#021428] transition-all hover:scale-105 flex items-center gap-2"
+    >
+      📚 Thư Đã Xem ({viewedWishes.length})
+    </button>
+  </div>
+
 
             <AnimatePresence>
               {formOpen && (
@@ -455,6 +597,113 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
             </AnimatePresence>
           </div>
 
+          {/* 👈 MODAL XEM LẠI THƯ CŨ */}
+          <AnimatePresence>
+            {historyOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                style={{
+                  position: 'fixed',
+                  top: '80px',
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  width: '500px',
+                  maxWidth: '90vw',
+                  maxHeight: '70vh',
+                  background: 'rgba(10, 25, 47, 0.95)',
+                  backdropFilter: 'blur(12px)',
+                  border: '2px solid rgba(100, 217, 255, 0.5)',
+                  borderRadius: '20px',
+                  padding: '20px',
+                  zIndex: 100,
+                  boxShadow: '0 20px 60px rgba(0, 0, 0, 0.6)',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '15px',
+                }}
+              >
+                {/* Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(100,217,255,0.3)', paddingBottom: '12px' }}>
+                  <span style={{ ...mono, fontSize: 16, color: '#64d9ff', fontWeight: 'bold', textTransform: 'uppercase' }}>
+                    📚 Thư Đã Đọc ({viewedWishes.length})
+                  </span>
+                  <button
+                    onClick={() => setHistoryOpen(false)}
+                    style={{ background: 'none', border: 'none', color: '#64d9ff', cursor: 'pointer', fontSize: '24px', lineHeight: 1 }}
+                  >
+                    ×
+                  </button>
+                </div>
+
+                {/* Search */}
+                <input
+                  type="text"
+                  placeholder="Tìm tên hoặc nội dung..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  style={{
+                    ...mono,
+                    background: 'rgba(255,255,255,0.08)',
+                    border: '1px solid rgba(100,217,255,0.3)',
+                    color: '#fff',
+                    fontSize: '14px',
+                    padding: '10px 12px',
+                    borderRadius: '8px',
+                    outline: 'none',
+                  }}
+                />
+
+                {/* List thư */}
+                <div style={{ overflowY: 'auto', maxHeight: 'calc(70vh - 180px)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {viewedWishes
+                    .filter(w => 
+                      w.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                      w.message.toLowerCase().includes(searchTerm.toLowerCase())
+                    )
+                    .map((wish) => (
+                      <div
+                        key={wish.id}
+                        onClick={() => {
+                          setCurrentWish(wish);
+                          setRevealed(true);
+                          setHistoryOpen(false);
+                        }}
+                        style={{
+                          background: 'rgba(100, 217, 255, 0.1)',
+                          border: '1px solid rgba(100, 217, 255, 0.3)',
+                          borderRadius: '10px',
+                          padding: '12px',
+                          cursor: 'pointer',
+                          transition: '0.2s',
+                        }}
+                        onMouseOver={(e) => e.currentTarget.style.background = 'rgba(100, 217, 255, 0.2)'}
+                        onMouseOut={(e) => e.currentTarget.style.background = 'rgba(100, 217, 255, 0.1)'}
+                      >
+                        <div style={{ fontSize: '13px', color: '#64d9ff', fontWeight: 'bold', marginBottom: '4px' }}>
+                          💌 {wish.name}
+                        </div>
+                        <div style={{ fontSize: '12px', color: '#fff', opacity: 0.7, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {wish.message.substring(0, 60)}...
+                        </div>
+                      </div>
+                    ))}
+                  {viewedWishes.filter(w => 
+                    w.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    w.message.toLowerCase().includes(searchTerm.toLowerCase())
+                  ).length === 0 && (
+                    <div style={{ textAlign: 'center', color: '#64d9ff', opacity: 0.6, fontSize: '14px', padding: '20px' }}>
+                      Không tìm thấy thư nào
+                    </div>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* --- POPUP LÁ THƯ QUÝ GIÁ (Dễ thương & Sang trọng) --- */}
+
           {/* --- POPUP LÁ THƯ QUÝ GIÁ (Dễ thương & Sang trọng) --- */}
           <div style={{
             position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
@@ -488,11 +737,6 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                   {/* Icon trang trí phía trên */}
                   <div style={{ fontSize: '30px' }}>💌</div>
 
-                  Để lá thư vẫn giữ được các đoạn xuống dòng (như người viết thư nhấn Enter) mà vẫn đảm bảo việc căn giữa hoặc căn lề đúng ý, bạn hãy thay thế phần hiển thị nội dung thư bằng cách sử dụng white-space: pre-wrap;. Cách này sẽ giúp trình duyệt tôn trọng mọi khoảng trắng và dấu xuống dòng trong nội dung lời chúc.
-
-Đây là phần code đã được tinh chỉnh cho SonarCanvas:
-
-JavaScript
                   {/* VÙNG CUỘN - TỰ ĐỘNG CĂN GIỮA NẾU THƯ NGẮN & GIỮ ĐÚNG NGUYÊN DẤU XUỐNG DÒNG */}
                   <div className="cute-scroll" style={{ 
                     width: '100%', 
@@ -526,26 +770,30 @@ JavaScript
 
                   {/* 2 nút 🐡 và 🐳 siêu bự ở dưới */}
                   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '30px', marginTop: '20px' }}>
-                    <button onClick={handleRandomWish} style={{
-                        background: '#fff', border: '3px solid #ff99c4',
-                        borderRadius: '50%', width: '60px', height: '60px', fontSize: '30px',
-                        cursor: 'pointer', transition: '0.3s', boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
-                      }}
-                      onMouseOver={e => e.currentTarget.style.transform = 'scale(1.15) rotate(-10deg)'}
-                      onMouseOut={e => e.currentTarget.style.transform = 'scale(1) rotate(0deg)'}>
-                      🐡
-                    </button>
-                    
-                    <button onClick={handleRandomWish} style={{
-                        background: '#fff', border: '3px solid #64d9ff',
-                        borderRadius: '50%', width: '60px', height: '60px', fontSize: '30px',
-                        cursor: 'pointer', transition: '0.3s', boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
-                      }}
-                      onMouseOver={e => e.currentTarget.style.transform = 'scale(1.15) rotate(10deg)'}
-                      onMouseOut={e => e.currentTarget.style.transform = 'scale(1) rotate(0deg)'}>
-                      🐳
-                    </button>
-                  </div>
+  <button onClick={handlePrevWish} style={{
+      background: '#fff', border: '3px solid #ff99c4',
+      borderRadius: '50%', width: '60px', height: '60px', fontSize: '30px',
+      cursor: 'pointer', transition: '0.3s', boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+    }}
+    onMouseOver={e => e.currentTarget.style.transform = 'scale(1.15) rotate(-10deg)'}
+    onMouseOut={e => e.currentTarget.style.transform = 'scale(1) rotate(0deg)'}>
+    🐡
+  </button>
+  
+  <div style={{ fontSize: '12px', color: '#ff99c4', fontWeight: 'bold', minWidth: '40px', textAlign: 'center' }}>
+    {currentWishIndex + 1} / {wishes.length}
+  </div>
+  
+  <button onClick={handleNextWish} style={{
+      background: '#fff', border: '3px solid #64d9ff',
+      borderRadius: '50%', width: '60px', height: '60px', fontSize: '30px',
+      cursor: 'pointer', transition: '0.3s', boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
+    }}
+    onMouseOver={e => e.currentTarget.style.transform = 'scale(1.15) rotate(10deg)'}
+    onMouseOut={e => e.currentTarget.style.transform = 'scale(1) rotate(0deg)'}>
+    🐳
+  </button>
+</div>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -554,6 +802,22 @@ JavaScript
 
           {/* keyframe & custom scrollbar (Sửa màu cuộn thành Hồng/Cyan) */}
           <style>{`
+
+          .history-scroll::-webkit-scrollbar {
+              width: 6px;
+            }
+            .history-scroll::-webkit-scrollbar-track {
+              background: rgba(100, 217, 255, 0.1);
+              border-radius: 10px;
+            }
+            .history-scroll::-webkit-scrollbar-thumb {
+              background: #64d9ff;
+              border-radius: 10px;
+            }
+            .history-scroll::-webkit-scrollbar-thumb:hover {
+              background: #a1eeff;
+            }
+              
             @keyframes scandown {
               0%   { top: 0;    opacity: .8 }
               90%  { opacity: .5 }

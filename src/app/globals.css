@@ -405,3 +405,83 @@ button, a {
 @keyframes sway { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
 @keyframes floatUp { 0% { transform: translateY(0) scale(1); opacity: 0.6; } 100% { transform: translateY(-15px) scale(0.5); opacity: 0; } }
 @keyframes gentleRipple { 0% { width: 120px; height: 120px; opacity: 0.8; border-width: 3px; } 100% { width: 700px; height: 700px; opacity: 0; border-width: 0px; } }
+
+/* Hiệu ứng gợn sóng tỏa ra rồi biến mất tại vị trí sinh vật xuất hiện */
+@keyframes sonar-wave {
+  0% {
+    transform: translate(-50%, -50%) scale(0.2);
+    opacity: 0.8;
+    border-width: 4px;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+    border-width: 1px;
+  }
+}
+
+.spawn-ripple {
+  position: absolute;
+  border: 2px solid rgba(164, 242, 255, 0.6); /* Màu xanh nước biển nhạt phát sáng */
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+  animation: sonar-wave 1.2s ease-out forwards; /* Chạy đúng 1 lần rồi giữ trạng thái cuối (opacity: 0) */
+}
+
+/* Gợn sóng lan tỏa */
+.spawn-ripple {
+  position: absolute;
+  border-radius: 50%;
+  border: 3px solid rgba(100, 217, 255, 0.7);
+  animation: rippleExpand 1.2s ease-out forwards;
+  pointer-events: none;
+  box-shadow: 
+    0 0 15px rgba(100, 217, 255, 0.5),
+    inset 0 0 10px rgba(100, 217, 255, 0.3);
+}
+
+@keyframes rippleExpand {
+  0% {
+    transform: scale(0.3);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+/* Smooth animation cho sinh vật */
+.creature {
+  will-change: transform;
+}
+
+/* Hiệu ứng bơi/trôi nổi mượt mà cho sinh vật biển */
+@keyframes ocean-float {
+    0% {
+        transform: translate(0px, 0px) rotate(0deg);
+    }
+    33% {
+        transform: translate(15px, -20px) rotate(3deg);
+    }
+    66% {
+        transform: translate(-10px, 15px) rotate(-2deg);
+    }
+    100% {
+        transform: translate(0px, 0px) rotate(0deg);
+    }
+}
+
+/* Các sinh vật nằm ở đáy (cua, sao biển) thì chỉ nhúc nhích nhẹ */
+@keyframes ocean-sway {
+    0% {
+        transform: translateX(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateX(5px) rotate(2deg);
+    }
+    100% {
+        transform: translateX(0px) rotate(0deg);
+    }
+}
