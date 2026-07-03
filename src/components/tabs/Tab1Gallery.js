@@ -60,7 +60,7 @@ export default function Tab1Gallery({ activeTab, setSelectedImage }) {
 
         <div className="flex flex-col items-center justify-center text-center w-full pt-6 pb-2 md:pt-8 shrink-0 z-10">
   <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-[#0369a1] drop-shadow-md tracking-wide font-sans">
-    Góc nhỏ của dâng
+    Góc Nhỏ Của Dâng
   </h1>
 
   <p className="mt-2 text-[#0284c7] font-bold text-xs md:text-sm bg-[#e0f2fe] px-6 py-1.5 rounded-full shadow-sm backdrop-blur-md border border-white/40">
