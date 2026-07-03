@@ -3,23 +3,23 @@
 export default function LandingScreen({ isLanding, setIsLanding }) {
     return (
         <div
-            className={`absolute inset-0 z-40 flex flex-col items-center justify-center transition-opacity duration-[1200ms] ease-in-out ${isLanding
+            className={`absolute inset-0 z-40 flex flex-col items-center justify-center overflow-y-auto transition-opacity duration-[1200ms] ease-in-out py-4 ${isLanding
                 ? 'opacity-100 pointer-events-auto'
                 : 'opacity-0 pointer-events-none'
                 }`}
         >
             {/* Tiêu đề chính - Cảm hứng San hô & Bọt biển */}
-            <h1 className="text-5xl md:text-7xl font-black text-[#ff99c4] mb-3 text-center tracking-wider [text-shadow:_2px_2px_0_#fff,_5px_5px_0_rgba(100,217,255,0.6)] hover:scale-105 hover:-translate-y-2 transition-all duration-300 cursor-default">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-[#ff99c4] mb-3 text-center tracking-wider [text-shadow:_2px_2px_0_#fff,_5px_5px_0_rgba(100,217,255,0.6)] hover:scale-105 hover:-translate-y-2 transition-all duration-300 cursor-default">
                 Thanh Âm Đại Dương 
             </h1>
 
             {/* Câu quote tiếng Anh - Sáng trong như nước */}
-            <p className="text-lg md:text-xl font-bold italic mb-8 text-[#aee4ff] drop-shadow-[0_0_10px_rgba(100,217,255,0.8)] text-center tracking-wider">
+            <p className="text-base sm:text-lg md:text-xl font-bold italic mb-5 md:mb-8 text-[#aee4ff] drop-shadow-[0_0_10px_rgba(100,217,255,0.8)] text-center tracking-wider">
                 "Charting new seas, anchored in love" 
             </p>
 
             {/* 🌊 Khối nội dung chính - Giao diện Quả Bong Bóng Nước */}
-            <div className="relative flex flex-col items-center justify-center bg-white/10 backdrop-blur-md border-[2px] border-white/40 rounded-[3rem] md:rounded-[4rem] p-8 md:p-10 max-w-2xl mx-4 mb-10 shadow-[0_0_30px_rgba(100,217,255,0.2),inset_0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,153,196,0.3)] transition-all duration-500 group overflow-hidden">
+            <div className="relative flex flex-col items-center justify-center bg-white/10 backdrop-blur-md border-[2px] border-white/40 rounded-[3rem] md:rounded-[4rem] p-5 sm:p-7 md:p-10 max-w-2xl mx-4 mb-5 md:mb-10 shadow-[0_0_30px_rgba(100,217,255,0.2),inset_0_0_20px_rgba(255,255,255,0.2)] hover:shadow-[0_0_40px_rgba(255,153,196,0.3)] transition-all duration-500 group overflow-hidden">
                 
                 {/* Vệt sáng phản chiếu (Tạo cảm giác bong bóng 3D) */}
                 <div className="absolute top-4 left-8 w-20 h-4 bg-white/40 rounded-full blur-[2px] rotate-[-15deg] pointer-events-none"></div>
@@ -46,7 +46,7 @@ export default function LandingScreen({ isLanding, setIsLanding }) {
             {/* Nút Ngọc Trai Kích Hoạt */}
             <button
                 onClick={() => setIsLanding(false)}
-                className="relative group flex items-center justify-center w-48 h-48 rounded-full bg-gradient-to-br from-white/10 to-white/5 border border-white/20 backdrop-blur-sm shadow-[0_0_40px_rgba(100,217,255,0.3)] hover:shadow-[0_0_60px_rgba(255,153,196,0.6)] transition-all duration-500 hover:scale-110 cursor-pointer focus:outline-none"
+                className="relative group flex items-center justify-center w-36 h-36 sm:w-40 sm:h-40 md:w-48 md:h-48 rounded-full bg-gradient-to-br from-white/10 to-white/5 border border-white/20 backdrop-blur-sm shadow-[0_0_40px_rgba(100,217,255,0.3)] hover:shadow-[0_0_60px_rgba(255,153,196,0.6)] transition-all duration-500 hover:scale-110 cursor-pointer focus:outline-none"
             >
                 <div className="absolute inset-0 rounded-full border-[3px] border-[#ff99c4]/50 group-hover:border-[#64d9ff] animate-ping opacity-30"></div>
                 <div className="text-center">

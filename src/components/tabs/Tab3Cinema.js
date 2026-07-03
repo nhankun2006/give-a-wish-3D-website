@@ -31,7 +31,7 @@ style={{
 }}
     >
 
-<div className="absolute left-4 top-1/2 -translate-y-1/2 w-44 pointer-events-none animate-float">
+<div className="hidden sm:block absolute left-4 top-1/2 -translate-y-1/2 w-36 md:w-44 pointer-events-none animate-float">
   <svg
     viewBox="0 0 320 180"
     className="w-full drop-shadow-[0_8px_20px_rgba(0,180,255,0.35)]"
@@ -135,7 +135,7 @@ style={{
 
 
       {/* LỚP 2: NỘI DUNG - Giữ nguyên hiệu ứng scale to/nhỏ của bạn */}
-      <div className={`transition-transform duration-1000 w-full max-w-5xl px-4 -translate-y-8 ${activeTab === 2 ? 'scale-100' : 'scale-110'}`}>
+      <div className={`transition-transform duration-1000 w-full max-w-5xl px-4 ${activeTab === 2 ? 'scale-100' : 'scale-110'}`}>
         <div className="
 relative
 bg-[#0a192f]/60
@@ -143,7 +143,7 @@ backdrop-blur-2xl
 rounded-[48px]
 border-[3px]
 border-[#64ffda]/30
-p-6 md:p-8
+p-4 sm:p-5 md:p-8
 w-[92%]
 md:w-[95%]
 mx-auto
@@ -222,7 +222,7 @@ className="
           </div>
 
           <h2
-            className="text-4xl md:text-5xl font-extrabold text-center mb-8 tracking-wide"
+            className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-center mb-5 md:mb-8 tracking-wide"
             style={{
               color: "#e6f1ff",
               textShadow: `
