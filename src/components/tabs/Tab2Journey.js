@@ -14,7 +14,7 @@ const fanMessages = [
   {
     id: "2",
     name: "katmeyy_",
-    icon: "🫧",
+    icon: "🐟",
     accent: "#64d9ff",
     accentRgb: "100,217,255",
     delay: "1.5s",
@@ -79,7 +79,7 @@ const fanMessages = [
   {
     id: "10",
     name: "ng.uyen8291",
-    icon: "🪼",
+    icon: "🦐",
     accent: "#e6a8d7",
     accentRgb: "230,168,215",
     delay: "0.2s"
@@ -87,7 +87,7 @@ const fanMessages = [
   {
     id: "11",
     name: "hatde_coco",
-    icon: "🪸",
+    icon: "🦞",
     accent: "#f3e5ab",
     accentRgb: "243,229,171",
     delay: "2.5s"
@@ -447,16 +447,16 @@ export default function Tab2Journey({ activeTab }) {
               style={{ backgroundColor: selectedFan.accent }}
             >
               <span className="text-white text-lg md:text-xl tracking-[0.2em] font-bold uppercase drop-shadow-md flex items-center gap-2">
-                {selectedFan.id === 1
+                {selectedFan.id === "1"
                   ? "🎀"
-                  : selectedFan.id === 2
-                    ? "🫧"
+                  : selectedFan.id === "2"
+                    ? "🐟"
                     : "🌊"}{" "}
                 Gửi từ đại dương{" "}
-                {selectedFan.id === 1
+                {selectedFan.id === "1"
                   ? "🎀"
-                  : selectedFan.id === 2
-                    ? "🫧"
+                  : selectedFan.id === "2"
+                    ? "🐟"
                     : "🌊"}
               </span>
               {/* Nếp gấp ruy băng hai bên */}
@@ -624,7 +624,7 @@ export default function Tab2Journey({ activeTab }) {
                 {selectedFan.id === "1"
                   ? "🎀"
                   : selectedFan.id === "2"
-                    ? "🫧"
+                    ? "🐟"
                     : "💌"}
               </button>
 
