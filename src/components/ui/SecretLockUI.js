@@ -286,6 +286,7 @@ export default function SecretLockUI({ setShowSurprise, isLocked, setIsLocked })
           className="chest-btn group relative flex flex-col items-center focus:outline-none"
           style={{ cursor: isLocked ? 'not-allowed' : 'pointer', opacity: isLocked ? 0.65 : 1, transition: 'opacity 0.5s' }}
           title={isLocked ? 'Mở lúc 0h ngày 10/7' : lidOpen ? 'Đóng Rương Lại' : 'Kho Báu Bí Mật'}
+          suppressHydrationWarning
         >
           {/* Ambient halo */}
           <div className="absolute pointer-events-none"
@@ -430,6 +431,7 @@ export default function SecretLockUI({ setShowSurprise, isLocked, setIsLocked })
                   textShadow:'0 1px 2px rgba(255,255,255,.22)',
                 }}
                 onClick={handleUnlock}
+                suppressHydrationWarning
               >
                 🔓 Mở Kho Báu
               </button>
