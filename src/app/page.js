@@ -41,9 +41,11 @@ export default function Home() {
   const [selectedImage, setSelectedImage] = useState(null);
   const pageRef = useRef(null);
 
-  // --- DATE GATE: Wishes tab opens officially on July 10, 2026 (Vietnam time) ---
-  const WISHES_UNLOCK_DATE = new Date('2026-07-10T00:00:00+07:00');
-  const [isWishesOpen, setIsWishesOpen] = useState(() => new Date() >= WISHES_UNLOCK_DATE);
+  // DATE GATE: Wishes + Cinema features unlock on July 10, 2026 00:00 Vietnam (UTC+7)
+  // Date.UTC() is used instead of ISO string '...+07:00' because Safari/WebKit
+  // does not reliably parse timezone-offset strings. Date.UTC() is engine-agnostic.
+  const WISHES_UNLOCK_DATE = new Date(Date.UTC(2026, 6, 9, 17, 0, 0));
+  const [isWishesOpen, setIsWishesOpen] = useState(() => new Date() >= new Date(Date.UTC(2026, 6, 9, 17, 0, 0)));
 
   useEffect(() => {
     let timeout;
@@ -93,6 +95,7 @@ export default function Home() {
             stagger: 0.15, 
             ease: "power2.out", 
             delay: 1.3,
+            
             onComplete: function() {
               const target = this.targets()[0]; 
               
@@ -121,12 +124,19 @@ export default function Home() {
         }
       }, 100); // 100ms là đủ để React gắn xong DOM
     }, pageRef);
-
     return () => {
-      clearTimeout(timeout); // Dọn dẹp timeout nếu người dùng tắt trang nhanh
+      clearTimeout(timeout);
       ctx.revert();
     };
   }, []);
+
+
+    useEffect(() => {
+    gsap.killTweensOf('.splash-particle');
+    gsap.killTweensOf('.spawn-ripple');
+    
+    document.querySelectorAll('.splash-particle, .spawn-ripple').forEach(el => el.remove());
+  }, [activeTab]);
 
   const handleNextTab = () => setActiveTab((prev) => (prev + 1) % 4);
   const handlePrevTab = () => setActiveTab((prev) => (prev === 0 ? 3 : prev - 1));
@@ -168,12 +178,14 @@ export default function Home() {
     setIsLanding(true);
     setActiveTab(0);
   }}
-  className={`absolute top-5 left-5 z-50 group transition-all duration-500 ${
+  className={`absolute top-5 left-5 z-50 group cursor-pointer transition-all duration-500 ${
     isLanding
       ? "opacity-0 -translate-y-10 pointer-events-none"
       : "opacity-100 translate-y-0"
   }`}
 >
+  {/* Ripple ring expands on hover */}
+  <div className="absolute inset-0 rounded-full border-2 border-[#ff99c4]/0 group-hover:border-[#ff99c4]/60 group-hover:scale-[1.18] transition-all duration-500 pointer-events-none" />
   <div
     className="
       relative overflow-hidden
@@ -181,15 +193,17 @@ export default function Home() {
       px-5 py-2.5
       rounded-full
       border-2 border-[#f7b7cf]
+      group-hover:border-[#ff99c4]
       bg-gradient-to-b
       from-[#d8f8ff]
       via-[#bdeff8]
       to-[#9fe1ee]
       backdrop-blur-xl
       shadow-[0_4px_20px_rgba(255,170,200,.45),inset_0_1px_2px_rgba(255,255,255,.9)]
-      transition-all duration-300
+      group-hover:shadow-[0_0_28px_rgba(255,153,196,.85),0_0_55px_rgba(255,153,196,.3),inset_0_1px_2px_rgba(255,255,255,.9)]
       group-hover:scale-105
-      group-hover:shadow-[0_0_25px_rgba(255,180,210,.8)]
+      group-hover:-translate-y-0.5
+      transition-all duration-300
     "
   >
     {/* ánh sáng mặt kính */}
@@ -201,7 +215,7 @@ export default function Home() {
     <div className="absolute right-5 bottom-2 w-2 h-2 rounded-full bg-white/50" />
 
     {/* icon */}
-    <span className="relative z-10 text-2xl group-hover:-translate-y-0.5 transition-transform">
+    <span className="relative z-10 text-2xl group-hover:-translate-y-1 group-hover:scale-110 transition-transform duration-300">
       🐬
     </span>
 
