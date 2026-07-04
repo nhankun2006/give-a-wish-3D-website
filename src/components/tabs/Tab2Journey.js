@@ -14,7 +14,7 @@ const fanMessages = [
   {
     id: "2",
     name: "katmeyy_",
-    icon: "🫧",
+    icon: "🐟",
     accent: "#64d9ff",
     accentRgb: "100,217,255",
     delay: "1.5s",
@@ -79,7 +79,7 @@ const fanMessages = [
   {
     id: "10",
     name: "ng.uyen8291",
-    icon: "🪼",
+    icon: "🦐",
     accent: "#e6a8d7",
     accentRgb: "230,168,215",
     delay: "0.2s"
@@ -87,7 +87,7 @@ const fanMessages = [
   {
     id: "11",
     name: "hatde_coco",
-    icon: "🪸",
+    icon: "🦞",
     accent: "#f3e5ab",
     accentRgb: "243,229,171",
     delay: "2.5s"
@@ -303,12 +303,12 @@ export default function Tab2Journey({ activeTab }) {
 ))}
         <div className="min-h-full flex flex-col items-center justify-center py-16 md:py-24">
           {/* HEADER SECTION */}
-          <div className="text-center mb-4 mt-8 md:mt-2 relative px-4 w-full max-w-4xl mx-auto flex-shrink-0">
+          <div className="text-center mb-4 mt-6 md:mt-2 relative px-4 w-full max-w-4xl mx-auto flex-shrink-0">
             
 <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/40 shadow-lg mb-5">
   <span>💖</span>
   <span
-    className="font-bold uppercase tracking-wide text-[#ff7eb6]"
+    className="font-bold uppercase tracking-wide text-[#ff7eb6] text-sm md:text-base"
     style={{
       textShadow: `
         0 0 6px rgba(255,255,255,.9),
@@ -323,7 +323,7 @@ export default function Tab2Journey({ activeTab }) {
 
 
             <h2
-  className="text-3xl md:text-5xl font-extrabold text-[#f78fb3] mb-4 pb-1"
+  className="text-xl sm:text-2xl md:text-3xl font-extrabold text-[#f78fb3] mb-4 pb-1"
   style={{
     textShadow: `
       0 2px 0 rgba(255,255,255,.95),
@@ -340,7 +340,7 @@ export default function Tab2Journey({ activeTab }) {
   Trạm Gom Yêu Thương
 </h2>
             <p
-  className="text-white text-sm md:text-base font-semibold max-w-lg mx-auto"
+  className="text-white text-xs md:text-sm font-semibold max-w-lg mx-auto"
   style={{
     textShadow: `
       0 0 8px rgba(255,255,255,.9),
@@ -359,7 +359,7 @@ export default function Tab2Journey({ activeTab }) {
 
           {/* DYNAMIC BUBBLES CONTAINER */}
           <div className="relative w-full max-w-5xl mx-auto mt-8 z-10">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6 md:gap-10 pb-16 pt-8 px-4 justify-items-center">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-5 md:gap-8 pb-12 pt-6 px-4 justify-items-center">
               {fanMessages.map((fan, index) => (
                 <div
                   key={fan.id}
@@ -372,9 +372,9 @@ export default function Tab2Journey({ activeTab }) {
                     opacity: 0,
                   }}
                 >
-                  {/* Bubble Shape (Giao diện bong bóng xà phòng dễ thương) */}
+                  {/* Bubble Shape */}
                   <div
-                    className="w-24 h-24 md:w-32 md:h-32 rounded-full backdrop-blur-sm border-2 flex items-center justify-center text-4xl md:text-5xl transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-4 group-hover:rotate-[5deg] relative"
+                    className="w-20 h-20 sm:w-24 sm:h-24 md:w-28 md:h-28 rounded-full backdrop-blur-sm border-2 flex items-center justify-center text-3xl sm:text-4xl md:text-5xl transition-all duration-500 group-hover:scale-110 group-hover:-translate-y-4 group-hover:rotate-[5deg] relative"
                     style={{
                       
                       background: `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.3), transparent 70%), rgba(${fan.accentRgb}, 0.15)`,
@@ -421,7 +421,7 @@ export default function Tab2Journey({ activeTab }) {
       {/* === READING MODAL (Full fan message) === */}
       {selectedFan && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-8 pb-24 md:pb-32"
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-8 pb-20 md:pb-28"
           onClick={() => handleOpenLetter(null)}
           style={{ animation: "fadeIn 0.3s ease-out" }}
         >
@@ -430,7 +430,7 @@ export default function Tab2Journey({ activeTab }) {
 
           {/* Modal content - Bức thư dễ thương */}
           <div
-            className="relative w-full max-w-4xl max-h-[86vh] flex flex-col rounded-3xl overflow-hidden text-[#5a4a42]"
+            className="relative w-full max-w-4xl max-h-[90dvh] flex flex-col rounded-3xl overflow-hidden text-[#5a4a42]"
             onClick={(e) => e.stopPropagation()}
             style={{
               animation: "modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
@@ -447,16 +447,16 @@ export default function Tab2Journey({ activeTab }) {
               style={{ backgroundColor: selectedFan.accent }}
             >
               <span className="text-white text-lg md:text-xl tracking-[0.2em] font-bold uppercase drop-shadow-md flex items-center gap-2">
-                {selectedFan.id === 1
+                {selectedFan.id === "1"
                   ? "🎀"
-                  : selectedFan.id === 2
-                    ? "🫧"
+                  : selectedFan.id === "2"
+                    ? "🐟"
                     : "🌊"}{" "}
                 Gửi từ đại dương{" "}
-                {selectedFan.id === 1
+                {selectedFan.id === "1"
                   ? "🎀"
-                  : selectedFan.id === 2
-                    ? "🫧"
+                  : selectedFan.id === "2"
+                    ? "🐟"
                     : "🌊"}
               </span>
               {/* Nếp gấp ruy băng hai bên */}
@@ -624,7 +624,7 @@ export default function Tab2Journey({ activeTab }) {
                 {selectedFan.id === "1"
                   ? "🎀"
                   : selectedFan.id === "2"
-                    ? "🫧"
+                    ? "🐟"
                     : "💌"}
               </button>
 

@@ -11,7 +11,7 @@ export default function Tab1Gallery({ activeTab, setSelectedImage }) {
     <div className="flex justify-center items-center w-full h-full p-1">
       <div
         onClick={() => setSelectedImage(img)}
-        className={`relative bg-[#fafafa] p-1.5 pb-5 md:p-2 md:pb-8 rounded-sm shadow-lg transition-all duration-300 cursor-pointer hover:scale-125 hover:z-50 hover:shadow-[0_0_30px_rgba(56,189,248,0.6)] group wave-float w-full max-w-[120px] md:max-w-[150px] ${rotate}`}
+        className={`relative bg-[#fafafa] p-1.5 pb-5 md:p-2 md:pb-8 rounded-sm shadow-lg transition-all duration-300 cursor-pointer hover:scale-125 hover:z-50 hover:shadow-[0_0_30px_rgba(56,189,248,0.6)] group wave-float w-full max-w-[90px] sm:max-w-[110px] md:max-w-[140px] ${rotate}`}
         style={{ animationDelay: delay }}
       >
         {/* Đinh ghim 3D siêu cute */}
@@ -59,7 +59,7 @@ export default function Tab1Gallery({ activeTab, setSelectedImage }) {
         <div className="absolute bottom-[40%] left-[40%] text-3xl opacity-30 wave-float pointer-events-none" style={{ animationDelay: '3s' }}>🐟</div>
 
         <div className="flex flex-col items-center justify-center text-center w-full pt-6 pb-2 md:pt-8 shrink-0 z-10">
-  <h1 className="text-3xl md:text-5xl lg:text-6xl font-extrabold text-[#0369a1] drop-shadow-md tracking-wide font-sans">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-extrabold text-[#0369a1] drop-shadow-md tracking-wide font-sans">
     Góc Nhỏ Của Dâng
   </h1>
 
@@ -71,7 +71,7 @@ export default function Tab1Gallery({ activeTab, setSelectedImage }) {
         {/* NỘI DUNG GRID - Tự động co giãn vừa đúng 1 khung hình */}
         <div className="flex-1 min-h-0 w-full max-w-7xl mx-auto flex flex-col justify-center pb-4 z-10">
           {/* Lưới 5 cột x 3 hàng */}
-          <div className="grid grid-cols-3 md:grid-cols-5 grid-rows-5 md:grid-rows-3 gap-2 md:gap-4 p-2 w-full h-full items-center justify-items-center">
+          <div className="grid grid-cols-3 md:grid-cols-5 grid-rows-5 md:grid-rows-3 gap-1 sm:gap-2 md:gap-3 p-2 w-full h-full items-center justify-items-center">
             
             {/* Hàng 1 */}
             <Polaroid img={images[0]} rotate="-rotate-3" tapeColor="bg-[#38bdf8]" delay="0s" />

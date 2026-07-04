@@ -29,7 +29,7 @@ function CountdownUnit({ value, label }) {
         initial={{ y: -8, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.3, ease: 'easeOut' }}
-        className="relative w-16 h-16 md:w-20 md:h-20 flex items-center justify-center rounded-2xl"
+        className="relative w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 lg:w-20 lg:h-20 flex items-center justify-center rounded-2xl"
         style={{
           background: 'rgba(100, 217, 255, 0.08)',
           border: '1.5px solid rgba(100, 217, 255, 0.3)',
@@ -95,7 +95,7 @@ export default function WishesComingSoon({ onUnlocked }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 pointer-events-auto flex flex-col items-center justify-center overflow-hidden"
+      className="absolute inset-0 pointer-events-auto flex flex-col items-center justify-center overflow-y-auto overflow-x-hidden py-4"
       style={{
         background: 'linear-gradient(180deg, rgba(2,44,67,.75) 0%, rgba(1,24,38,.95) 100%)',
         backdropFilter: 'blur(6px)',
@@ -147,7 +147,7 @@ export default function WishesComingSoon({ onUnlocked }) {
         initial={{ scale: 0.92, y: 20, opacity: 0 }}
         animate={{ scale: 1, y: 0, opacity: 1 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
-        className="relative flex flex-col items-center text-center px-8 py-10 mx-4"
+        className="relative flex flex-col items-center text-center px-5 py-7 sm:px-7 sm:py-9 md:px-8 md:py-10 mx-4"
         style={{
           background: 'rgba(5, 20, 40, 0.6)',
           border: '1.5px solid rgba(255, 153, 196, 0.25)',
@@ -155,7 +155,7 @@ export default function WishesComingSoon({ onUnlocked }) {
           boxShadow: '0 30px 80px rgba(0,0,0,0.5), 0 0 60px rgba(255,153,196,0.05), inset 0 1px 0 rgba(255,255,255,0.06)',
           backdropFilter: 'blur(20px)',
           maxWidth: '480px',
-          width: '100%',
+          width: 'calc(100% - 2rem)',
         }}
       >
         {/* Glass top shimmer */}
