@@ -31,6 +31,7 @@ export default function TabNavigation({ activeTab, setActiveTab, handlePrevTab, 
                 onClick={handlePrevTab}
                 className="relative flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/5 border-[1.5px] border-white/40 shadow-[inset_-2px_-2px_6px_rgba(255,255,255,0.1),inset_2px_2px_6px_rgba(255,255,255,0.5)] hover:bg-white/20 transition-all focus:outline-none cursor-pointer group"
                 aria-label="Previous Tab"
+                suppressHydrationWarning
             >
                 <div className="absolute top-1.5 left-1.5 w-2.5 h-1.5 bg-white rounded-full rotate-[-30deg] opacity-90 blur-[0.5px]"></div>
                 <div className="absolute bottom-1 right-1.5 w-1.5 h-1 bg-white rounded-full rotate-[-30deg] opacity-60 blur-[0.5px]"></div>
@@ -49,6 +50,7 @@ export default function TabNavigation({ activeTab, setActiveTab, handlePrevTab, 
                                 : 'w-2.5 h-2.5 md:w-3 md:h-3 rounded-full bg-[#a5f3ff]/60 border border-white/40 hover:bg-[#a5f3ff] shadow-[0_0_5px_rgba(165,243,255,0.4)]'
                         }`}
                         aria-label={`Tab ${tabIndex + 1}`}
+                        suppressHydrationWarning
                     >
                         {activeTab === tabIndex && (
                             <>
@@ -67,6 +69,7 @@ export default function TabNavigation({ activeTab, setActiveTab, handlePrevTab, 
                 onClick={handleNextTab}
                 className="relative flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full bg-white/5 border-[1.5px] border-white/40 shadow-[inset_-2px_-2px_6px_rgba(255,255,255,0.1),inset_2px_2px_6px_rgba(255,255,255,0.5)] hover:bg-white/20 transition-all focus:outline-none cursor-pointer group"
                 aria-label="Next Tab"
+                suppressHydrationWarning
             >
                 <div className="absolute top-1.5 left-1.5 w-2.5 h-1.5 bg-white rounded-full rotate-[-30deg] opacity-90 blur-[0.5px]"></div>
                 <div className="absolute bottom-1 right-1.5 w-1.5 h-1 bg-white rounded-full rotate-[-30deg] opacity-60 blur-[0.5px]"></div>
