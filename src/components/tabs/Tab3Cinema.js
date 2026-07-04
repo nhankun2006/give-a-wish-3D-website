@@ -6,7 +6,7 @@ import SecretLockUI from '@/components/ui/SecretLockUI';
 
 export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise }) {
   const [openCurtain, setOpenCurtain] = useState(false);
-  const [isLocked, setIsLocked] = useState(true);
+  // isLocked is now driven by the curtainLocked time gate below — no separate state needed
 
   // July 10 00:00 Vietnam time (UTC+7) = July 9 17:00 UTC
   const UNLOCK_TIME = new Date('2026-07-10T00:00:00+07:00');
@@ -212,9 +212,10 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
 
           <SecretLockUI
             setShowSurprise={setShowSurprise}
-            isLocked={isLocked}
-            setIsLocked={setIsLocked}
+            isLocked={curtainLocked ?? true}
+            setIsLocked={() => {}}
           />
+
 
           <h2
             className="text-4xl md:text-5xl font-extrabold text-center mb-8 tracking-wide"
