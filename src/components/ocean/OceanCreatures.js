@@ -90,15 +90,46 @@ export default function OceanCreatures() {
         const delayBeforeSplash = 1300 + 1500 + (index * 200);
 
         const t1 = setTimeout(() => {
-        // ... code tạo ripple ...
-        const t2 = setTimeout(() => ripple.remove(), 1200);
-        timeoutsRef.current.push(t2);
+            if (!isMounted.current) return;
 
-        const t3 = setTimeout(() => {
-            createWaterSplash(creature);
-        }, 1200);
-        timeoutsRef.current.push(t3);
-    }, delayBeforeSplash);
+            // Tạo gợn sóng tại vị trí sinh vật biển
+            const rect = creature.getBoundingClientRect();
+            const cx = rect.left + rect.width / 2;
+            const cy = rect.top + rect.height / 2;
+
+            const ripple = document.createElement('div');
+            ripple.className = 'spawn-ripple';
+            ripple.style.cssText = `
+                position: fixed;
+                left: ${cx}px;
+                top: ${cy}px;
+                width: 0px;
+                height: 0px;
+                border-radius: 50%;
+                border: 3px solid rgba(100,217,255,0.7);
+                box-shadow: 0 0 12px rgba(100,217,255,0.5);
+                pointer-events: none;
+                z-index: 99998;
+                transform: translate(-50%, -50%);
+            `;
+            document.body.appendChild(ripple);
+
+            gsap.to(ripple, {
+                width: 160,
+                height: 160,
+                opacity: 0,
+                duration: 1.2,
+                ease: 'power2.out',
+            });
+
+            const t2 = setTimeout(() => ripple.remove(), 1200);
+            timeoutsRef.current.push(t2);
+
+            const t3 = setTimeout(() => {
+                createWaterSplash(creature);
+            }, 1200);
+            timeoutsRef.current.push(t3);
+        }, delayBeforeSplash);
 
     timeoutsRef.current.push(t1); 
         });
