@@ -168,12 +168,14 @@ export default function Home() {
     setIsLanding(true);
     setActiveTab(0);
   }}
-  className={`absolute top-5 left-5 z-50 group transition-all duration-500 ${
+  className={`absolute top-5 left-5 z-50 group cursor-pointer transition-all duration-500 ${
     isLanding
       ? "opacity-0 -translate-y-10 pointer-events-none"
       : "opacity-100 translate-y-0"
   }`}
 >
+  {/* Ripple ring expands on hover */}
+  <div className="absolute inset-0 rounded-full border-2 border-[#ff99c4]/0 group-hover:border-[#ff99c4]/60 group-hover:scale-[1.18] transition-all duration-500 pointer-events-none" />
   <div
     className="
       relative overflow-hidden
@@ -181,15 +183,17 @@ export default function Home() {
       px-5 py-2.5
       rounded-full
       border-2 border-[#f7b7cf]
+      group-hover:border-[#ff99c4]
       bg-gradient-to-b
       from-[#d8f8ff]
       via-[#bdeff8]
       to-[#9fe1ee]
       backdrop-blur-xl
       shadow-[0_4px_20px_rgba(255,170,200,.45),inset_0_1px_2px_rgba(255,255,255,.9)]
-      transition-all duration-300
+      group-hover:shadow-[0_0_28px_rgba(255,153,196,.85),0_0_55px_rgba(255,153,196,.3),inset_0_1px_2px_rgba(255,255,255,.9)]
       group-hover:scale-105
-      group-hover:shadow-[0_0_25px_rgba(255,180,210,.8)]
+      group-hover:-translate-y-0.5
+      transition-all duration-300
     "
   >
     {/* ánh sáng mặt kính */}
@@ -201,7 +205,7 @@ export default function Home() {
     <div className="absolute right-5 bottom-2 w-2 h-2 rounded-full bg-white/50" />
 
     {/* icon */}
-    <span className="relative z-10 text-2xl group-hover:-translate-y-0.5 transition-transform">
+    <span className="relative z-10 text-2xl group-hover:-translate-y-1 group-hover:scale-110 transition-transform duration-300">
       🐬
     </span>
 

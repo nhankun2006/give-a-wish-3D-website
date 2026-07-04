@@ -202,22 +202,31 @@ shadow-lg
                     .fromTo('.step-2', { opacity: 0, scale: 0.2 }, { opacity: 1, scale: 1, duration: 1.5, ease: "elastic.out(1, 0.3)" });
                 }, 150);
               }}
-              // Sửa className của div bọc nội dung (div ngay sau tấm kính mờ backdrop-blur-2xl)
-// Sửa className của div bọc nút "Trạm Bí Mật":
-className="
-  relative
-  bg-gradient-to-r from-[#ff99c4]/80 to-[#64d9ff]/80
-  backdrop-blur-md
-  rounded-full
-  border-[3px] border-white/50
-  px-8 py-4
-  text-white font-black text-xl tracking-wide
-  shadow-[0_10px_25px_rgba(255,153,196,0.5),inset_0_4px_10px_rgba(255,255,255,0.6)]
-  overflow-visible
-  hover:scale-105 transition-transform duration-300
-"
+              className="
+                group
+                relative
+                cursor-pointer
+                bg-gradient-to-r from-[#ff99c4]/80 to-[#64d9ff]/80
+                backdrop-blur-md
+                rounded-full
+                border-[3px] border-white/50
+                hover:border-white/80
+                px-8 py-4
+                text-white font-black text-xl tracking-wide
+                shadow-[0_10px_25px_rgba(255,153,196,0.5),inset_0_4px_10px_rgba(255,255,255,0.6)]
+                hover:shadow-[0_0_35px_rgba(255,153,196,0.9),0_0_70px_rgba(100,217,255,0.5),inset_0_4px_10px_rgba(255,255,255,0.8)]
+                hover:scale-110
+                hover:-translate-y-1
+                active:scale-95
+                transition-all duration-300
+                overflow-visible
+              "
             >
-              Trạm Bí Mật! 🎁
+              {/* Outer pulse ring */}
+              <span className="absolute inset-0 rounded-full border-2 border-white/0 group-hover:border-white/40 group-hover:scale-125 transition-all duration-500 pointer-events-none" />
+              <span className="relative z-10 group-hover:[text-shadow:0_0_12px_rgba(255,255,255,0.9)] transition-all duration-300">
+                Trạm Bí Mật! 🎁
+              </span>
             </button>
           </div>
 
