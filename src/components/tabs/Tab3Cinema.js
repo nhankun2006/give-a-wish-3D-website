@@ -1,12 +1,47 @@
 'use client';
 
 import gsap from 'gsap';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SecretLockUI from '@/components/ui/SecretLockUI';
 
 export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise }) {
   const [openCurtain, setOpenCurtain] = useState(false);
   const [isLocked, setIsLocked] = useState(true);
+
+  // July 10 00:00 Vietnam time (UTC+7) = July 9 17:00 UTC
+  const UNLOCK_TIME = new Date('2026-07-10T00:00:00+07:00');
+
+  // null = not yet determined (SSR safe), then boolean on client
+  const [curtainLocked, setCurtainLocked] = useState(null);
+  const [countdown, setCountdown] = useState('');
+
+  useEffect(() => {
+    const tick = () => {
+      const now = new Date();
+      const diff = UNLOCK_TIME - now;
+      if (diff <= 0) {
+        setCurtainLocked(false);
+        setCountdown('');
+      } else {
+        setCurtainLocked(true);
+        const totalSec = Math.floor(diff / 1000);
+        const d = Math.floor(totalSec / 86400);
+        const h = Math.floor((totalSec % 86400) / 3600);
+        const m = Math.floor((totalSec % 3600) / 60);
+        const s = totalSec % 60;
+        const parts = [];
+        if (d > 0) parts.push(`${d}n`);
+        parts.push(`${String(h).padStart(2,'0')}h`);
+        parts.push(`${String(m).padStart(2,'0')}m`);
+        parts.push(`${String(s).padStart(2,'0')}s`);
+        setCountdown(parts.join(' '));
+      }
+    };
+    tick();
+    const id = setInterval(tick, 1000);
+    return () => clearInterval(id);
+  }, []);
+
   return (
     /* LỚP 1: NỀN FULL MÀN HÌNH - Bổ sung 'inset-0' và màu nền đại dương kẹo ngọt che kín trang chủ */
     <div
@@ -219,8 +254,13 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
           >
             {/* ================= BẮT ĐẦU: RÈM BONG BÓNG ĐẠI DƯƠNG (BẢN ĐẶC BIỆT) ================= */}
             <div
-              className={`absolute inset-0 z-20 flex items-center justify-center cursor-pointer overflow-hidden transition-all duration-[1500ms] ${openCurtain ? 'pointer-events-none' : ''}`}
-              onClick={() => setOpenCurtain(true)}
+              className={`absolute inset-0 z-20 flex items-center justify-center overflow-hidden transition-all duration-[1500ms] ${
+                openCurtain ? 'pointer-events-none' : curtainLocked ? 'cursor-not-allowed' : 'cursor-pointer'
+              }`}
+              onClick={() => {
+                if (curtainLocked) return;
+                setOpenCurtain(true);
+              }}
             >
               {/* Rèm Trái (Nước biển lấp lánh) */}
               <div className={`absolute top-0 left-0 w-1/2 h-full bg-gradient-to-br from-cyan-300 via-blue-400 to-sky-500 border-r-[6px] border-white/60 transition-transform duration-[1500ms] ease-[cubic-bezier(0.4,0,0.2,1)] origin-left shadow-[10px_0_30px_rgba(34,211,238,0.6)] flex items-center justify-end overflow-hidden ${openCurtain ? '-translate-x-full' : 'translate-x-0'}`}>
@@ -430,27 +470,44 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
                 <div className="w-3 h-full bg-gradient-to-b from-white/10 to-white/50 blur-[2px] absolute left-1"></div>
               </div>
 
-              {/* Chiếc nơ Ngọc Trai Nàng Tiên Cá */}
-              <div className={`relative z-30 transition-all duration-1000 ease-in-out flex flex-col items-center ${openCurtain ? 'opacity-0 scale-50 -translate-y-12' : 'opacity-100 scale-100 hover:scale-110 hover:-translate-y-2'}`}>
+              {/* WOW Bow + label — locked state shows countdown, unlocked shows normal */}
+              <div className={`relative z-30 transition-all duration-1000 ease-in-out flex flex-col items-center ${
+                openCurtain
+                  ? 'opacity-0 scale-50 -translate-y-12'
+                  : curtainLocked
+                  ? 'opacity-70 scale-100'               /* dimmed, no hover when locked */
+                  : 'opacity-100 scale-100 hover:scale-110 hover:-translate-y-2'
+              }`}>
 
                 {/* Hình thù chiếc nơ */}
                 <div className="flex items-center justify-center animate-[pulse_2.5s_infinite]">
-                  {/* Cánh nơ trái (Màu hồng kẹo ngọt) */}
+                  {/* Cánh nơ trái */}
                   <div className="w-0 h-0 border-y-[24px] border-y-transparent border-r-[44px] border-r-pink-300 drop-shadow-[0_0_15px_rgba(253,164,175,0.9)]"></div>
 
                   {/* Hạt ngọc trai khổng lồ ở giữa */}
                   <div className="w-14 h-14 bg-[radial-gradient(circle_at_30%_30%,_#ffffff,_#fbcfe8,_#f472b6)] rounded-full border-2 border-white/80 shadow-[0_0_25px_rgba(255,255,255,0.9),inset_-4px_-4px_8px_rgba(0,0,0,0.15)] z-10 -mx-3 flex items-center justify-center text-pink-700 font-black text-sm tracking-wider">
-                    WOW
+                    {curtainLocked ? '🔒' : 'WOW'}
                   </div>
 
-                  {/* Cánh nơ phải (Màu hồng kẹo ngọt) */}
+                  {/* Cánh nơ phải */}
                   <div className="w-0 h-0 border-y-[24px] border-y-transparent border-l-[44px] border-l-pink-300 drop-shadow-[0_0_15px_rgba(253,164,175,0.9)]"></div>
                 </div>
 
-                {/* Chữ hướng dẫn kute bong bóng */}
-                <span className="mt-5 text-cyan-900 font-extrabold tracking-widest text-sm bg-white/50 px-6 py-2 rounded-full backdrop-blur-md border-[2px] border-white/70 shadow-[0_5px_15px_rgba(34,211,238,0.5),inset_0_0_8px_rgba(255,255,255,1)]">
-                  MỞ RÈM ĐẠI DƯƠNG 
-                </span>
+                {/* Label: countdown khi khóa, hướng dẫn khi mở */}
+                {curtainLocked ? (
+                  <div className="mt-5 flex flex-col items-center gap-1">
+                    <span className="text-cyan-900 font-extrabold tracking-widest text-xs bg-white/50 px-4 py-1.5 rounded-full backdrop-blur-md border-[2px] border-white/70 shadow-[inset_0_0_8px_rgba(255,255,255,1)]">
+                      🕐 Mở lúc 0h ngày 10/7
+                    </span>
+                    <span className="text-white font-black text-sm tracking-widest drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] tabular-nums">
+                      {countdown}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="mt-5 text-cyan-900 font-extrabold tracking-widest text-sm bg-white/50 px-6 py-2 rounded-full backdrop-blur-md border-[2px] border-white/70 shadow-[0_5px_15px_rgba(34,211,238,0.5),inset_0_0_8px_rgba(255,255,255,1)]">
+                    MỞ RÈM ĐẠI DƯƠNG 🌊
+                  </span>
+                )}
               </div>
             </div>
             {/* ================= KẾT THÚC: RÈM BONG BÓNG ĐẠI DƯƠNG (BẢN ĐẶC BIỆT) ================= */}
