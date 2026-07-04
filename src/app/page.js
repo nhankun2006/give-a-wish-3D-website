@@ -93,6 +93,7 @@ export default function Home() {
             stagger: 0.15, 
             ease: "power2.out", 
             delay: 1.3,
+            
             onComplete: function() {
               const target = this.targets()[0]; 
               
@@ -121,12 +122,19 @@ export default function Home() {
         }
       }, 100); // 100ms là đủ để React gắn xong DOM
     }, pageRef);
-
     return () => {
-      clearTimeout(timeout); // Dọn dẹp timeout nếu người dùng tắt trang nhanh
+      clearTimeout(timeout);
       ctx.revert();
     };
   }, []);
+
+
+    useEffect(() => {
+    gsap.killTweensOf('.splash-particle');
+    gsap.killTweensOf('.spawn-ripple');
+    
+    document.querySelectorAll('.splash-particle, .spawn-ripple').forEach(el => el.remove());
+  }, [activeTab]);
 
   const handleNextTab = () => setActiveTab((prev) => (prev + 1) % 4);
   const handlePrevTab = () => setActiveTab((prev) => (prev === 0 ? 3 : prev - 1));

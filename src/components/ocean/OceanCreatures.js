@@ -35,29 +35,93 @@ const creatures = [
 
 export default function OceanCreatures() {
     const creatureRefs = useRef([]);
+    const timeoutsRef = useRef([]); 
+    const isMounted = useRef(true); 
 
-    useEffect(() => {
-        creatureRefs.current.forEach((creature, index) => {
-            if (!creature) return;
+    // ⬅️ ĐỊNH NGHĨA HÀM TRƯỚC
+    const createWaterSplash = (element) => {
+    if (!isMounted.current) return;
+    const creatureRect = element.getBoundingClientRect();
+    const centerX = creatureRect.left + creatureRect.width / 2;
+    const centerY = creatureRect.top + creatureRect.height / 2;
 
-            // ⬅️ TẠO GỢN SÓNG MỘT LẦN KHI LOAD
-            setTimeout(() => {
-                const ripple = document.createElement('div');
-                ripple.className = 'spawn-ripple';
-                ripple.style.width = creature.offsetWidth + 'px';
-                ripple.style.height = creature.offsetWidth + 'px';
-                ripple.style.left = '50%';
-                ripple.style.top = '50%';
-                ripple.style.transform = 'translate(-50%, -50%)';
+    for (let i = 0; i < 5; i++) {  // ⬅️ CHỈ 5 HẠT
+        const particle = document.createElement('div');
+        particle.className = 'splash-particle'; 
+        const size = 20 + Math.random() * 15;  // 20-35px
+        
+        particle.style.cssText = `
+            position: fixed;
+            left: ${centerX}px;
+            top: ${centerY}px;
+            width: ${size}px;
+            height: ${size}px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 40% 40%, rgba(255,255,255,0.8), rgba(100,217,255,0.6));
+            box-shadow: 0 0 ${size}px rgba(100,217,255,0.7);
+            pointer-events: none;
+            z-index: 99999;
+            transform: translate(-50%, -50%);
+        `;
 
-                creature.appendChild(ripple);
-                setTimeout(() => ripple.remove(), 1200); // ⬅️ XÓA GỢN SAU 1.2s
-            }, index * 200); // ⬅️ LẦN LƯỢT TẠO GỢN SÓ
+        document.body.appendChild(particle);
+
+        const angle = (i / 5) * Math.PI * 2;
+        const distance = 120;
+        const vx = Math.cos(angle) * distance;
+        const vy = Math.sin(angle) * distance;
+
+        gsap.to(particle, {
+            x: vx,
+            y: vy,
+            opacity: 0,
+            scale: 0.3,
+            duration: 1.2,
+            ease: 'power2.out',
+            onComplete: () => particle.remove()
         });
-    }, []);
+    }
+};
+    useEffect(() => {
+    creatureRefs.current.forEach((creature, index) => {
+        if (!creature) return;
 
-    return (
-        <>
+        // ⬅️ DELAY CHUNG: 1.3s (delay animation) + 1.5s (duration di chuyển) + 200ms (stagger) = 2.8s + 200ms*index
+        const delayBeforeSplash = 1300 + 1500 + (index * 200);
+
+        const t1 = setTimeout(() => {
+        // ... code tạo ripple ...
+        const t2 = setTimeout(() => ripple.remove(), 1200);
+        timeoutsRef.current.push(t2);
+
+        const t3 = setTimeout(() => {
+            createWaterSplash(creature);
+        }, 1200);
+        timeoutsRef.current.push(t3);
+    }, delayBeforeSplash);
+
+    timeoutsRef.current.push(t1); 
+        });
+        return () => {
+            isMounted.current = false; // ⬅️ Báo hiệu: Đã tắt tab, mọi người ngừng hoạt động!
+
+            // 1. Tắt hết đồng hồ đếm ngược
+            timeoutsRef.current.forEach(clearTimeout);
+            timeoutsRef.current = [];
+            
+            // 2. Tắt hẳn động cơ GSAP đang chạy ngầm cho các giọt nước và gợn sóng
+            gsap.killTweensOf('.splash-particle');
+            gsap.killTweensOf('.spawn-ripple');
+            
+            // 3. Quét sạch 100% tàn dư còn sót lại trên màn hình
+            const strayParticles = document.querySelectorAll('.splash-particle, .spawn-ripple');
+            strayParticles.forEach(p => p.remove());
+        };
+}, []);
+
+   return (
+    <>
+        <div className="creatures-layer">  {/* ⬅️ THÊM CONTAINER NÀY */}
             {creatures.map((item, i) => (
                 <div
                     key={i}
@@ -75,9 +139,10 @@ export default function OceanCreatures() {
                     {item.type === 'crab' && <Crab style={{ width: '100%' }} />}
                 </div>
             ))}
+        </div>
 
-            <Coral style={{ left: '5%', bottom: '3%', width: '130px' }} />
-            <Coral style={{ right: '6%', bottom: '1%', width: '150px' }} />
-        </>
-    );
+        <Coral style={{ left: '5%', bottom: '3%', width: '130px' }} />
+        <Coral style={{ right: '6%', bottom: '1%', width: '150px' }} />
+    </>
+);
 }

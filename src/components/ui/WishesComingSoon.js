@@ -192,7 +192,7 @@ export default function WishesComingSoon({ onUnlocked }) {
           color: '#ff99c4',
           textShadow: '0 0 15px rgba(255,153,196,0.4)',
         }}>
-          🗓️ 10 tháng 7, 2026 &nbsp;—&nbsp; 00:00 🌊
+          🗓️ 10 tháng 7, 2026 &nbsp;—&nbsp; 00:00 
         </p>
 
         {/* Countdown — only rendered after mount to avoid SSR/client time mismatch */}
