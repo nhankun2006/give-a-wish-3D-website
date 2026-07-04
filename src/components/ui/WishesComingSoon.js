@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
-// Target date: July 10, 2026 at 00:00:00 Vietnam time (UTC+7)
-const UNLOCK_DATE = new Date('2026-07-10T00:00:00+07:00');
+// July 10, 2026 00:00 Vietnam (UTC+7) = July 9, 2026 17:00:00 UTC
+// Date.UTC() avoids Safari/WebKit ISO timezone-offset parsing bugs.
+const UNLOCK_DATE = new Date(Date.UTC(2026, 6, 9, 17, 0, 0));
 
 function getTimeLeft() {
   const now = new Date();

@@ -5,12 +5,17 @@ import { useState, useEffect } from 'react';
 import SecretLockUI from '@/components/ui/SecretLockUI';
 import { motion } from 'framer-motion';
 
+
+// July 10, 2026 00:00 Vietnam (UTC+7) = July 9, 2026 17:00:00 UTC
+// Using Date.UTC() instead of an ISO string with +07:00 offset because
+// Safari/WebKit does NOT reliably parse timezone-offset strings — returns
+// Invalid Date on iOS ≤14 and silently wrong values on some older versions.
+// Date.UTC() is numeric and works identically in V8, SpiderMonkey, and JavaScriptCore.
+const UNLOCK_TIME = new Date(Date.UTC(2026, 6, 9, 17, 0, 0));
+
 export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise }) {
   const [openCurtain, setOpenCurtain] = useState(false);
-  const [isLocked, setIsLocked] = useState(true);
-
-  // July 10 00:00 Vietnam time (UTC+7) = July 9 17:00 UTC
-  const UNLOCK_TIME = new Date('2026-07-10T00:00:00+07:00');
+  // isLocked is now driven by curtainLocked time gate — no separate state needed
 
   // null = not yet determined (SSR safe), then boolean on client
   const [curtainLocked, setCurtainLocked] = useState(null);
@@ -213,9 +218,10 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
 
           <SecretLockUI
             setShowSurprise={setShowSurprise}
-            isLocked={isLocked}
-            setIsLocked={setIsLocked}
+            isLocked={curtainLocked ?? true}
+            setIsLocked={() => {}}
           />
+
 
           <h2
             className="text-4xl md:text-5xl font-extrabold text-center mb-8 tracking-wide"

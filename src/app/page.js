@@ -41,9 +41,11 @@ export default function Home() {
   const [selectedImage, setSelectedImage] = useState(null);
   const pageRef = useRef(null);
 
-  // --- DATE GATE: Wishes tab opens officially on July 10, 2026 (Vietnam time) ---
-  const WISHES_UNLOCK_DATE = new Date('2026-07-10T00:00:00+07:00');
-  const [isWishesOpen, setIsWishesOpen] = useState(() => new Date() >= WISHES_UNLOCK_DATE);
+  // DATE GATE: Wishes + Cinema features unlock on July 10, 2026 00:00 Vietnam (UTC+7)
+  // Date.UTC() is used instead of ISO string '...+07:00' because Safari/WebKit
+  // does not reliably parse timezone-offset strings. Date.UTC() is engine-agnostic.
+  const WISHES_UNLOCK_DATE = new Date(Date.UTC(2026, 6, 9, 17, 0, 0));
+  const [isWishesOpen, setIsWishesOpen] = useState(() => new Date() >= new Date(Date.UTC(2026, 6, 9, 17, 0, 0)));
 
   useEffect(() => {
     let timeout;

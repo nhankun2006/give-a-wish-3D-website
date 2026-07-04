@@ -282,9 +282,10 @@ export default function SecretLockUI({ setShowSurprise, isLocked, setIsLocked })
 
         {/* CHEST BUTTON */}
         <button
-          onClick={togglePanel}
+          onClick={isLocked ? undefined : togglePanel}
           className="chest-btn group relative flex flex-col items-center focus:outline-none"
-          title={lidOpen ? "Đóng Rương Lại" : "Kho Báu Bí Mật"}
+          style={{ cursor: isLocked ? 'not-allowed' : 'pointer', opacity: isLocked ? 0.65 : 1, transition: 'opacity 0.5s' }}
+          title={isLocked ? 'Mở lúc 0h ngày 10/7' : lidOpen ? 'Đóng Rương Lại' : 'Kho Báu Bí Mật'}
         >
           {/* Ambient halo */}
           <div className="absolute pointer-events-none"
@@ -343,15 +344,16 @@ export default function SecretLockUI({ setShowSurprise, isLocked, setIsLocked })
 
           {/* Label */}
           <div
-            className={`mt-2 px-3 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all duration-300 ${panelOpen || lidOpen ?'opacity-0 scale-90':''}`}
+            className={`mt-2 px-3 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all duration-300 ${panelOpen || lidOpen ? 'opacity-0 scale-90' : ''}`}
             style={{
-              background:'rgba(0,0,0,.42)', color:'#fde68a',
-              backdropFilter:'blur(8px)',
-              border:'1px solid rgba(251,191,36,.35)',
-              textShadow:'0 0 9px rgba(251,191,36,.7)',
+              background: 'rgba(0,0,0,.42)',
+              color: isLocked ? '#fca5a5' : '#fde68a',
+              backdropFilter: 'blur(8px)',
+              border: isLocked ? '1px solid rgba(248,113,113,.4)' : '1px solid rgba(251,191,36,.35)',
+              textShadow: isLocked ? '0 0 9px rgba(248,113,113,.5)' : '0 0 9px rgba(251,191,36,.7)',
             }}
           >
-            🗝️ Kho Báu Bí Mật
+            {isLocked ? '🔒 Mở lúc 0h 10/7' : '🗝️ Kho Báu Bí Mật'}
           </div>
         </button>
 
