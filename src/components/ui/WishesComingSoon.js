@@ -95,7 +95,7 @@ export default function WishesComingSoon({ onUnlocked }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 pointer-events-auto flex flex-col items-center justify-center overflow-y-auto overflow-x-hidden py-4"
+      className="fixed inset-0 h-screen w-screen pointer-events-auto flex flex-col items-center justify-center overflow-hidden"
       style={{
         background: 'linear-gradient(180deg, rgba(2,44,67,.75) 0%, rgba(1,24,38,.95) 100%)',
         backdropFilter: 'blur(6px)',
@@ -131,7 +131,7 @@ export default function WishesComingSoon({ onUnlocked }) {
               background: 'rgba(100,217,255,0.15)',
               border: '1px solid rgba(100,217,255,0.3)',
             }}
-            animate={{ y: [0, -450], opacity: [0.7, 0] }}
+            animate={{ y: [0, '-110vh'], opacity: [0.7, 0] }}
             transition={{
               duration: p.dur,
               repeat: Infinity,
