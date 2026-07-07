@@ -252,7 +252,7 @@ export default function Home() {
 
         {/* Tab 4: Wishes (via Tab4Wishes component) */}
         <div className={`transition-all duration-1000 absolute inset-0 ${activeTab === 3 ? 'opacity-100 z-20 pointer-events-auto' : 'opacity-0 pointer-events-none z-0'}`}>
-          {isWishesOpen
+          {true // isWishesOpen
             ? <Tab4Wishes isUnlocked={isUnlocked} setIsUnlocked={setIsUnlocked} />
             : <WishesComingSoon onUnlocked={() => setIsWishesOpen(true)} />
           }
