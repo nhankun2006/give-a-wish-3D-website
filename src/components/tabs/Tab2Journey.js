@@ -305,21 +305,21 @@ export default function Tab2Journey({ activeTab }) {
           {/* HEADER SECTION */}
           <div className="text-center mb-4 mt-6 md:mt-2 relative px-4 w-full max-w-4xl mx-auto flex-shrink-0">
             
-<div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/40 shadow-lg mb-5">
-  <span>💖</span>
-  <span
-    className="font-bold uppercase tracking-wide text-[#ff7eb6] text-sm md:text-base"
-    style={{
-      textShadow: `
-        0 0 6px rgba(255,255,255,.9),
-        0 0 12px rgba(255,126,182,.8),
-        0 2px 8px rgba(255,126,182,.5)
-      `,
-    }}
-  >
-    Từ Trái Tim Đại Dương
-  </span>
-</div>
+          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-white/20 backdrop-blur-md border border-white/40 shadow-lg mb-5">
+            <span>💖</span>
+            <span
+              className="font-bold uppercase tracking-wide text-[#ff4d94] text-sm md:text-base"
+              style={{
+                textShadow: `
+                  0 1px 2px rgba(0,0,0,0.2), 
+                  0 0 8px rgba(255,126,182,0.8), 
+                  0 0 15px rgba(255,255,255,0.3) 
+                `,
+              }}
+            >
+              Từ Trái Tim Đại Dương
+            </span>
+          </div>
 
 
             <h2
@@ -353,7 +353,7 @@ export default function Tab2Journey({ activeTab }) {
     opacity: 0,
   }}
 >
-  Mỗi bọt bong bóng lấp lánh là một lời nhắn ôm ấp vô vàng  <br />   yêu thương gửi đến Dâng
+  Mỗi bong bóng lấp lánh là một lời nhắn ôm ấp vô vàng  <br />   yêu thương gửi đến Dâng
 </p>
           </div>
 
@@ -430,7 +430,7 @@ export default function Tab2Journey({ activeTab }) {
 
           {/* Modal content - Bức thư dễ thương */}
           <div
-            className="relative w-full max-w-4xl max-h-[90dvh] flex flex-col rounded-3xl overflow-hidden text-[#5a4a42]"
+            className="relative w-full max-w-[983px] max-h-[88dvh] flex flex-col rounded-3xl overflow-hidden text-[#5a4a42]"
             onClick={(e) => e.stopPropagation()}
             style={{
               animation: "modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)",
@@ -447,18 +447,20 @@ export default function Tab2Journey({ activeTab }) {
               style={{ backgroundColor: selectedFan.accent }}
             >
               <span className="text-white text-lg md:text-xl tracking-[0.2em] font-bold uppercase drop-shadow-md flex items-center gap-2">
-                {selectedFan.id === "1"
-                  ? "🎀"
-                  : selectedFan.id === "2"
-                    ? "🐟"
-                    : "🌊"}{" "}
-                Gửi từ đại dương{" "}
-                {selectedFan.id === "1"
-                  ? "🎀"
-                  : selectedFan.id === "2"
-                    ? "🐟"
-                    : "🌊"}
-              </span>
+              {selectedFan.icon.startsWith("/") ? (
+                <img src={selectedFan.icon} alt="icon" className="w-6 h-6 md:w-7 md:h-7 object-contain" />
+              ) : (
+                selectedFan.icon
+              )}
+              
+              Gửi từ đại dương
+              
+              {selectedFan.icon.startsWith("/") ? (
+                <img src={selectedFan.icon} alt="icon" className="w-6 h-6 md:w-7 md:h-7 object-contain" />
+              ) : (
+                selectedFan.icon
+              )}
+            </span>
               {/* Nếp gấp ruy băng hai bên */}
               <div className="absolute -bottom-2 left-4 w-4 h-4 rotate-45 bg-black/20 z-[-1]"></div>
               <div className="absolute -bottom-2 right-4 w-4 h-4 rotate-45 bg-black/20 z-[-1]"></div>

@@ -1,36 +1,36 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import dynamic from 'next/dynamic';
 
-import { Canvas } from '@react-three/fiber';
+import { Canvas, useFrame } from '@react-three/fiber';
+import * as THREE from 'three';
 import gsap from 'gsap';
 
-// === LAZY LOAD: Tab components (chỉ tải khi người dùng lặn xuống) ===
-const Tab1Gallery = dynamic(() => import('@/components/tabs/Tab1Gallery'));
-const Tab2Journey = dynamic(() => import('@/components/tabs/Tab2Journey'));
-const Tab3Cinema  = dynamic(() => import('@/components/tabs/Tab3Cinema'));
-const Tab4Wishes  = dynamic(() => import('@/components/tabs/Tab4Wishes'));
+// Import các components tabs
+import Tab1Gallery from '@/components/tabs/Tab1Gallery';
+import Tab2Journey from '@/components/tabs/Tab2Journey';
+import Tab3Cinema from '@/components/tabs/Tab3Cinema';
+import Tab4Wishes from '@/components/tabs/Tab4Wishes';
 
-// === LAZY LOAD: 3D model — ssr:false vì dùng WebGL (browser-only) ===
-const CameraController = dynamic(
-  () => import('@/components/models/CameraController'),
-  { ssr: false }
-);
+// Import các components models 
+// import CameraController from '@/components/models/CameraController';
 
-// === LAZY LOAD: Ocean effects — ssr:false vì chỉ chạy trên browser ===
-const Bubbles        = dynamic(() => import('@/components/ocean/Bubbles'),        { ssr: false });
-const Ripples        = dynamic(() => import('@/components/ocean/Ripples'),        { ssr: false });
-const OceanCreatures = dynamic(() => import('@/components/ocean/OceanCreatures'), { ssr: false });
+// Import các components ocean
+import Fish from '@/components/ocean/Fish';
+import Jellyfish from '@/components/ocean/Jellyfish';
+import Starfish from '@/components/ocean/Starfish';
+import Crab from '@/components/ocean/Crab';
+import Coral from '@/components/ocean/Coral';
+import Bubbles from '@/components/ocean/Bubbles';
+import Ripples from '@/components/ocean/Ripples';
+import OceanCreatures from '@/components/ocean/OceanCreatures';
 
-// === STATIC IMPORT: UI cốt lõi — cần render ngay từ đầu ===
+// Import các components ui
 import LandingScreen from '@/components/ui/LandingScreen';
-import ImagePopup    from '@/components/ui/ImagePopup';
+import ImagePopup from '@/components/ui/ImagePopup';
+import SurpriseScreen from '@/components/ui/SurpriseScreen';
 import TabNavigation from '@/components/ui/TabNavigation';
-
-// === LAZY LOAD: Component hiển thị có điều kiện — không cần tải ngay ===
-const SurpriseScreen    = dynamic(() => import('@/components/ui/SurpriseScreen'));
-const WishesComingSoon  = dynamic(() => import('@/components/ui/WishesComingSoon'));
+import WishesComingSoon from '@/components/ui/WishesComingSoon';
 
 // === GIAO DIỆN CHÍNH ===
 export default function Home() {
@@ -163,6 +163,7 @@ export default function Home() {
       </div>
 
       {/* --- LỚP 2: KHÔNG GIAN 3D XOAY 360 --- */}
+      {/*
       <div className={`absolute inset-0 z-10 transition-opacity duration-1000 ${isLanding ? 'opacity-0' : 'opacity-100'}`}>
         <Canvas>
           <ambientLight intensity={0.7} />
@@ -172,13 +173,14 @@ export default function Home() {
 
         </Canvas>
       </div>
+      */}
 
       <button
   onClick={() => {
     setIsLanding(true);
     setActiveTab(0);
   }}
-  className={`absolute top-5 left-5 z-50 group cursor-pointer transition-all duration-500 ${
+  className={`absolute top-5 left-1 z-50 group cursor-pointer transition-all duration-500 ${
     isLanding
       ? "opacity-0 -translate-y-10 pointer-events-none"
       : "opacity-100 translate-y-0"
@@ -252,7 +254,7 @@ export default function Home() {
 
         {/* Tab 4: Wishes (via Tab4Wishes component) */}
         <div className={`transition-all duration-1000 absolute inset-0 ${activeTab === 3 ? 'opacity-100 z-20 pointer-events-auto' : 'opacity-0 pointer-events-none z-0'}`}>
-          {true // isWishesOpen
+          {true
             ? <Tab4Wishes isUnlocked={isUnlocked} setIsUnlocked={setIsUnlocked} />
             : <WishesComingSoon onUnlocked={() => setIsWishesOpen(true)} />
           }
@@ -268,7 +270,11 @@ export default function Home() {
       <ImagePopup
         selectedImage={selectedImage}
         setSelectedImage={setSelectedImage}
-        images={['IMG_0166.JPG', 'IMG_1008.JPG', 'IMG_1824.JPG', 'IMG_3536.JPG', 'IMG_3779.JPG', 'IMG_4246.JPG', 'IMG_4247.JPG', 'IMG_9281.JPG']} // Truyền mảng hình vào
+        images={[
+          'IMG_0166.JPG', 'IMG_1008.JPG', 'IMG_1824.JPG', 'IMG_3536.JPG', 
+          'IMG_3779.JPG', 'IMG_4246.JPG', 'IMG_4247.JPG', 'IMG_9281.JPG', 
+          'IMG_111.JPG', 'IMG_222.JPG' 
+        ]} 
       />
 
       {/* LỚP MÀN HÌNH CHE TOÀN BỘ WEB KHI KÍCH HOẠT QUÀ TẶNG (Concept Đại Dương Kute) */}

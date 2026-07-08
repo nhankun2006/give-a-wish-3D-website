@@ -539,17 +539,12 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
                         transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                         className="mt-6 flex items-center justify-center text-cyan-800 font-extrabold tracking-widest text-sm bg-gradient-to-br from-white to-cyan-100 px-8 py-3 rounded-full backdrop-blur-md border-[3px] border-white shadow-[0_8px_25px_rgba(34,211,238,0.5),inset_0_0_15px_rgba(255,255,255,0.9)] cursor-pointer"
                       >
-                        MỞ RÈM ĐẠI DƯƠNG 🌊
+                        MỞ RÈM ĐẠI DƯƠNG
                       </motion.span>
                     )}
               </div>
             </div>
             {/* ================= KẾT THÚC: RÈM BONG BÓNG ĐẠI DƯƠNG (BẢN ĐẶC BIỆT) ================= */}
-
-
-
-
-
 
             <iframe
               className="absolute top-0 left-0 w-full h-full z-10"
@@ -559,17 +554,9 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
             ></iframe>
-
-
           </div>
-
-
-
         </div>
       </div>
-
-
-
 
       {/* VỊ TRÍ 3: TRẠM SẠC SỨA BIỂN BIOMIMETIC (Ý TƯỞNG MỚI ĐỘC LẠ & KUTE)        */}
       {/* ========================================================================= */}

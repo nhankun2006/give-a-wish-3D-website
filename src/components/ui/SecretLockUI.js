@@ -2,39 +2,6 @@
 import { useState, useEffect } from 'react';
 import gsap from 'gsap';
 
-const css = `
-  @keyframes bob {
-    0%,100% { transform: translateY(0px);  }
-    50%      { transform: translateY(-5px); }
-  }
-  @keyframes glow-pulse {
-    0%,100% { opacity: .35; }
-    50%      { opacity: .75; }
-  }
-  @keyframes chain-drop {
-    0%   { opacity:1; transform: translateY(0)    scaleX(1);    }
-    18%  { opacity:1; transform: translateY(6px)  scaleX(.97);  }
-    100% { opacity:0; transform: translateY(52px) scaleX(.7);   }
-  }
-  @keyframes lid-open {
-    0%   { transform: perspective(240px) rotateX(0deg);    }
-    100% { transform: perspective(240px) rotateX(-108deg); }
-  }
-  @keyframes light-burst {
-    0%   { opacity:0; transform: scaleY(0);   }
-    35%  { opacity:1; transform: scaleY(1.2); }
-    100% { opacity:0; transform: scaleY(3.2); }
-  }
-  @keyframes float-up {
-    0%   { transform: translateY(0)     translateX(0)         scale(1);  opacity:.85; }
-    100% { transform: translateY(-52px) translateX(var(--dx)) scale(0);  opacity:0;   }
-  }
-  @keyframes shimmer {
-    0%   { background-position: 200% center; }
-    100% { background-position:-200% center; }
-  }
-`;
-
 function SvgDefs() {
   return (
     <svg width="0" height="0"
@@ -237,7 +204,7 @@ export default function SecretLockUI({ setShowSurprise, isLocked, setIsLocked })
   }, [isLocked]);
   const correctPassword = 'tamtrieu';
 
-  // ĐÃ SỬA: Bấm vào để đóng rương lại như ban đầu
+  // Bấm vào để đóng rương lại như ban đầu
   const togglePanel = () => {
     if (!lidOpen) {
       setPanelOpen(v => !v);
@@ -275,10 +242,9 @@ export default function SecretLockUI({ setShowSurprise, isLocked, setIsLocked })
 
   return (
     <>
-      <style>{css}</style>
       <SvgDefs />
 
-      <div className="absolute -bottom-9 -right-70 z-50 flex flex-col-reverse items-center">
+      <div className="absolute -bottom-0 -right-55 z-50 flex flex-col-reverse items-center">
 
         {/* CHEST BUTTON */}
         <button
@@ -343,106 +309,7 @@ export default function SecretLockUI({ setShowSurprise, isLocked, setIsLocked })
             <Particle color="#fb7185" top="46px" left="5px"   dx="11px"  delay={1.6}  size={4}/>
           </div>
 
-          {/* Label */}
-          <div
-            className={`mt-2 px-3 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all duration-300 ${panelOpen || lidOpen ? 'opacity-0 scale-90' : ''}`}
-            style={{
-              background: 'rgba(0,0,0,.42)',
-              color: isLocked ? '#fca5a5' : '#fde68a',
-              backdropFilter: 'blur(8px)',
-              border: isLocked ? '1px solid rgba(248,113,113,.4)' : '1px solid rgba(251,191,36,.35)',
-              textShadow: isLocked ? '0 0 9px rgba(248,113,113,.5)' : '0 0 9px rgba(251,191,36,.7)',
-            }}
-          >
-            {isLocked ? '🔒 Mở lúc 0h 10/7' : '🗝️ Kho Báu Bí Mật'}
-          </div>
         </button>
-
-        {/* PASSWORD PANEL */}
-        <div
-          className={`mb-3 transition-all duration-500 ${panelOpen && !lidOpen
-            ?'opacity-100 scale-100 translate-y-0 pointer-events-auto'
-            :'opacity-0 scale-75 translate-y-4 pointer-events-none'
-          }`}
-          style={{ transformOrigin:'bottom center', transitionTimingFunction:'cubic-bezier(.34,1.56,.64,1)' }}
-        >
-          <div className="relative w-56 rounded-[20px] overflow-hidden"
-            style={{
-              background:'linear-gradient(150deg,rgba(18,6,1,.95) 0%,rgba(48,16,4,.9) 55%,rgba(18,6,1,.95) 100%)',
-              backdropFilter:'blur(22px)',
-              border:'2px solid rgba(251,191,36,.4)',
-              boxShadow:'0 18px 55px rgba(0,0,0,.78),0 0 30px rgba(251,191,36,.14),inset 0 1px 0 rgba(251,191,36,.2)',
-            }}>
-            <div className="w-full h-1.5"
-              style={{ background:'linear-gradient(90deg,#78350f,#d97706,#fde68a,#fde68a,#d97706,#78350f)' }}/>
-            <div className="px-4 py-3.5">
-              <div className="flex items-center gap-2.5 mb-3">
-                <span className="text-2xl" style={{ filter:'drop-shadow(0 0 8px rgba(251,191,36,.8))' }}>🗝️</span>
-                <div>
-                  <p className="font-extrabold text-sm leading-tight"
-                    style={{ color:'#fde68a', textShadow:'0 0 10px rgba(251,191,36,.55)' }}>
-                    Trạm Bí Mật
-                  </p>
-                  <p className="text-[9px] leading-tight" style={{ color:'rgba(253,230,138,.5)' }}>
-                    Nhập mật khẩu để mở kho báu...
-                  </p>
-                </div>
-              </div>
-              <div className="w-full h-px mb-3"
-                style={{ background:'linear-gradient(90deg,transparent,rgba(251,191,36,.35),transparent)' }}/>
-              <div className="mb-2.5">
-
-                
-                <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                onKeyDown={e => e.key==='Enter' && handleUnlock()}
-                placeholder="✦ ✦ ✦ ✦ ✦"
-                maxLength={20}
-                autoFocus={panelOpen}
-                suppressHydrationWarning  // ⬅️ THÊM DÒng này
-                className="w-full px-3 py-2.5 rounded-xl font-bold text-center text-sm focus:outline-none transition-all duration-300"
-                style={{
-                  background:'rgba(251,191,36,.07)',
-                  border: error ? '1.5px solid rgba(248,113,113,.8)' : '1.5px solid rgba(251,191,36,.35)',
-                  color:'#fde68a', caretColor:'#fbbf24',
-                  boxShadow: error
-                    ? 'inset 0 2px 8px rgba(239,68,68,.2),0 0 14px rgba(239,68,68,.2)'
-                    : 'inset 0 2px 10px rgba(0,0,0,.55)',
-                }}
-              />
-
-              </div>
-              {error && (
-                <div className="mb-2.5 px-2 py-1.5 rounded-xl text-center text-[10px] font-bold"
-                  style={{ background:'rgba(239,68,68,.18)', border:'1px solid rgba(248,113,113,.35)', color:'#fca5a5' }}>
-                  🔒 Sai rồi! Thử lại nha~
-                </div>
-              )}
-              <button
-                className="w-full py-2.5 rounded-xl font-extrabold text-xs tracking-widest transition-all duration-200 hover:scale-105 active:scale-95 relative overflow-hidden"
-                style={{
-                  background:'linear-gradient(90deg,#78350f,#d97706,#fbbf24,#fde68a,#fbbf24,#d97706,#78350f)',
-                  backgroundSize:'300% auto',
-                  color:'#180800',
-                  boxShadow:'0 4px 20px rgba(251,191,36,.45),inset 0 1px 2px rgba(255,255,255,.32)',
-                  animation:'shimmer 3s linear infinite',
-                  textShadow:'0 1px 2px rgba(255,255,255,.22)',
-                }}
-                onClick={handleUnlock}
-                suppressHydrationWarning
-              >
-                🔓 Mở Kho Báu
-              </button>
-              <p className="text-center text-[9px] mt-2 font-medium" style={{ color:'rgba(253,230,138,.38)' }}>
-                💡 Tên của người đặc biệt 
-              </p>
-            </div>
-            <div className="w-full h-1.5"
-              style={{ background:'linear-gradient(90deg,#78350f,#d97706,#fde68a,#fde68a,#d97706,#78350f)' }}/>
-          </div>
-        </div>
       </div>
     </>
   );
