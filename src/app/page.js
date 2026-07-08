@@ -1,36 +1,36 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
 
-import { Canvas, useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
+import { Canvas } from '@react-three/fiber';
 import gsap from 'gsap';
 
-// Import các components tabs
-import Tab1Gallery from '@/components/tabs/Tab1Gallery';
-import Tab2Journey from '@/components/tabs/Tab2Journey';
-import Tab3Cinema from '@/components/tabs/Tab3Cinema';
-import Tab4Wishes from '@/components/tabs/Tab4Wishes';
+// === LAZY LOAD: Tab components (chỉ tải khi người dùng lặn xuống) ===
+const Tab1Gallery = dynamic(() => import('@/components/tabs/Tab1Gallery'));
+const Tab2Journey = dynamic(() => import('@/components/tabs/Tab2Journey'));
+const Tab3Cinema  = dynamic(() => import('@/components/tabs/Tab3Cinema'));
+const Tab4Wishes  = dynamic(() => import('@/components/tabs/Tab4Wishes'));
 
-// Import các components models 
-import CameraController from '@/components/models/CameraController';
+// === LAZY LOAD: 3D model — ssr:false vì dùng WebGL (browser-only) ===
+const CameraController = dynamic(
+  () => import('@/components/models/CameraController'),
+  { ssr: false }
+);
 
-// Import các components ocean
-import Fish from '@/components/ocean/Fish';
-import Jellyfish from '@/components/ocean/Jellyfish';
-import Starfish from '@/components/ocean/Starfish';
-import Crab from '@/components/ocean/Crab';
-import Coral from '@/components/ocean/Coral';
-import Bubbles from '@/components/ocean/Bubbles';
-import Ripples from '@/components/ocean/Ripples';
-import OceanCreatures from '@/components/ocean/OceanCreatures';
+// === LAZY LOAD: Ocean effects — ssr:false vì chỉ chạy trên browser ===
+const Bubbles        = dynamic(() => import('@/components/ocean/Bubbles'),        { ssr: false });
+const Ripples        = dynamic(() => import('@/components/ocean/Ripples'),        { ssr: false });
+const OceanCreatures = dynamic(() => import('@/components/ocean/OceanCreatures'), { ssr: false });
 
-// Import các components ui
+// === STATIC IMPORT: UI cốt lõi — cần render ngay từ đầu ===
 import LandingScreen from '@/components/ui/LandingScreen';
-import ImagePopup from '@/components/ui/ImagePopup';
-import SurpriseScreen from '@/components/ui/SurpriseScreen';
+import ImagePopup    from '@/components/ui/ImagePopup';
 import TabNavigation from '@/components/ui/TabNavigation';
-import WishesComingSoon from '@/components/ui/WishesComingSoon';
+
+// === LAZY LOAD: Component hiển thị có điều kiện — không cần tải ngay ===
+const SurpriseScreen    = dynamic(() => import('@/components/ui/SurpriseScreen'));
+const WishesComingSoon  = dynamic(() => import('@/components/ui/WishesComingSoon'));
 
 // === GIAO DIỆN CHÍNH ===
 export default function Home() {
@@ -252,7 +252,7 @@ export default function Home() {
 
         {/* Tab 4: Wishes (via Tab4Wishes component) */}
         <div className={`transition-all duration-1000 absolute inset-0 ${activeTab === 3 ? 'opacity-100 z-20 pointer-events-auto' : 'opacity-0 pointer-events-none z-0'}`}>
-          {isWishesOpen
+          {true // isWishesOpen
             ? <Tab4Wishes isUnlocked={isUnlocked} setIsUnlocked={setIsUnlocked} />
             : <WishesComingSoon onUnlocked={() => setIsWishesOpen(true)} />
           }

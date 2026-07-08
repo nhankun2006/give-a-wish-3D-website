@@ -29,7 +29,7 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
         setCurtainLocked(false);
         setCountdown('');
       } else {
-        setCurtainLocked(true);
+        setCurtainLocked(false);
         const totalSec = Math.floor(diff / 1000);
         const d = Math.floor(totalSec / 86400);
         const h = Math.floor((totalSec % 86400) / 3600);
