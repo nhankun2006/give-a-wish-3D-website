@@ -2,38 +2,6 @@
 import { useState, useEffect } from 'react';
 import gsap from 'gsap';
 
-const css = `
-  @keyframes bob {
-    0%,100% { transform: translateY(0px);  }
-    50%      { transform: translateY(-5px); }
-  }
-  @keyframes glow-pulse {
-    0%,100% { opacity: .35; }
-    50%      { opacity: .75; }
-  }
-  @keyframes chain-drop {
-    0%   { opacity:1; transform: translateY(0)    scaleX(1);    }
-    18%  { opacity:1; transform: translateY(6px)  scaleX(.97);  }
-    100% { opacity:0; transform: translateY(52px) scaleX(.7);   }
-  }
-  @keyframes lid-open {
-    0%   { transform: perspective(240px) rotateX(0deg);    }
-    100% { transform: perspective(240px) rotateX(-108deg); }
-  }
-  @keyframes light-burst {
-    0%   { opacity:0; transform: scaleY(0);   }
-    35%  { opacity:1; transform: scaleY(1.2); }
-    100% { opacity:0; transform: scaleY(3.2); }
-  }
-  @keyframes float-up {
-    0%   { transform: translateY(0)     translateX(0)         scale(1);  opacity:.85; }
-    100% { transform: translateY(-52px) translateX(var(--dx)) scale(0);  opacity:0;   }
-  }
-  @keyframes shimmer {
-    0%   { background-position: 200% center; }
-    100% { background-position:-200% center; }
-  }
-`;
 
 function SvgDefs() {
   return (
@@ -275,7 +243,6 @@ export default function SecretLockUI({ setShowSurprise, isLocked, setIsLocked })
 
   return (
     <>
-      <style>{css}</style>
       <SvgDefs />
 
       <div className="absolute -bottom-9 -right-70 z-50 flex flex-col-reverse items-center">

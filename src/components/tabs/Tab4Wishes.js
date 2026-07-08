@@ -797,47 +797,6 @@ const handleNextWish = (e) => {
                 </motion.div>
               )}
             </AnimatePresence>
-          
-          </div>
-
-          {/* keyframe & custom scrollbar (Sửa màu cuộn thành Hồng/Cyan) */}
-          <style>{`
-
-          .history-scroll::-webkit-scrollbar {
-              width: 6px;
-            }
-            .history-scroll::-webkit-scrollbar-track {
-              background: rgba(100, 217, 255, 0.1);
-              border-radius: 10px;
-            }
-            .history-scroll::-webkit-scrollbar-thumb {
-              background: #64d9ff;
-              border-radius: 10px;
-            }
-            .history-scroll::-webkit-scrollbar-thumb:hover {
-              background: #a1eeff;
-            }
-              
-            @keyframes scandown {
-              0%   { top: 0;    opacity: .8 }
-              90%  { opacity: .5 }
-              100% { top: 100%; opacity: 0 }
-            }
-            .cute-scroll::-webkit-scrollbar {
-              width: 6px;
-            }
-            .cute-scroll::-webkit-scrollbar-track {
-              background: rgba(100, 217, 255, 0.1);
-              border-radius: 10px;
-            }
-            .cute-scroll::-webkit-scrollbar-thumb {
-              background: #ff99c4;
-              border-radius: 10px;
-            }
-            .cute-scroll::-webkit-scrollbar-thumb:hover {
-              background: #ffb6c1;
-            }
-          `}</style>
         </div>
       )}
     </motion.div>

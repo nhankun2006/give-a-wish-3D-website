@@ -114,34 +114,6 @@ export default function Tab1Gallery({ activeTab, setSelectedImage }) {
           </div>
         </div>
       </div>
-
-      <style>{`
-        
-        .deep-sea-bg {
-  background: linear-gradient(
-    180deg,
-    #ecfeff 0%,
-    #a5f3fc 35%,
-    #67e8f9 65%,
-    #f9a8d4 100%
-  );
-}
-
-        /* Hiệu ứng trôi nhè nhẹ của nước biển */
-        @keyframes waveFloat {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-8px); }
-          100% { transform: translateY(0px); }
-        }
-
-        .wave-float {
-          animation: waveFloat 5s ease-in-out infinite;
-        }
-
-        .wave-float:hover {
-          animation-play-state: paused;
-        }
-      `}</style>
     </div>
   );
 }
