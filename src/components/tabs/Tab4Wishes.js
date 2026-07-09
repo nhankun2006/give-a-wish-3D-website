@@ -51,6 +51,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [readCount, setReadCount] = useState(0);
   const [scrollMode, setScrollMode] = useState(false);
+  const [canvasHeight, setCanvasHeight] = useState('100vh');
   // Refs
   const triggerRef = useRef(null);
   const wishesRef = useRef([]);
@@ -67,6 +68,16 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
       setViewedWishes(viewed);
     }
   }, [wishes, readCount]);
+
+  useEffect(() => {
+    if (wishes && wishes.length > 0) {
+      const maxRow = Math.ceil(wishes.length / 5);
+      const neededHeight = 250 + (maxRow * 65);
+      setCanvasHeight(`max(100vh, ${neededHeight}px)`);
+    } else {
+      setCanvasHeight('100vh');
+    }
+  }, [wishes]);
 
   // Actions
   const fetchWishes = async () => {
@@ -229,24 +240,27 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
           hint={hint} handleUnlock={handleUnlock} 
         />
       ) : (
-        <div className="absolute inset-0" style={{ background: 'rgba(2, 20, 40, 0.4)', backdropFilter: 'blur(3px)' }}>
-          <SonarCanvas 
-          triggerRef={triggerRef} 
-          onDotClick={handleDotClick} 
-          wishesRef={wishesRef} 
-          newWishIdRef={newWishIdRef} 
-          readWishesRef={readWishesRef}
-          onAllDotsFinished={() => setScrollMode(true)}
-        />
+        <div className="absolute inset-0 overflow-y-auto overflow-x-hidden scroll-smooth" style={{ background: 'rgba(2, 20, 40, 0.4)', backdropFilter: 'blur(3px)' }}>
+          <div style={{ height: canvasHeight, position: 'relative', width: '100%' }}>
+            <SonarCanvas 
+              triggerRef={triggerRef} 
+              onDotClick={handleDotClick} 
+              wishesRef={wishesRef} 
+              newWishIdRef={newWishIdRef} 
+              readWishesRef={readWishesRef}
+              onAllDotsFinished={() => setScrollMode(true)}
+            />
+          </div>
 
           <div style={{
-            position: 'absolute', left: 0, right: 0, height: 1, pointerEvents: 'none',
+            position: 'fixed', top: 0, left: 0, right: 0, height: 1, pointerEvents: 'none',
             background: 'linear-gradient(90deg,transparent,rgba(100,217,255,.15),rgba(100,217,255,.4),rgba(100,217,255,.15),transparent)',
             animation: 'scandown 3s linear infinite',
+            zIndex: 10
           }} />
 
           {/* Buttons Trên Cùng */}
-          <div className="absolute top-1 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20">
+          <div className="fixed top-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20">
             <div style={{ display: 'flex', gap: '270px' }}>
               <button
   onClick={() => {

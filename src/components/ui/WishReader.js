@@ -13,7 +13,7 @@ export default function WishReader({
 }) {
   return (
     <div style={{
-      position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
+      position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
       padding: '50px', borderRadius: '40px',
       background: '#ffffff',
       border: '8px solid #ff99c4',
