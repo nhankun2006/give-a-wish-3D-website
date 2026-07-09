@@ -36,16 +36,16 @@ async function mistralModerationCheck(text) {
               APPROVE messages that are:
               - Birthday wishes, congratulations, blessings
               - Kind, friendly, supportive words
-              - Simple words like "Đẹp", "Xinh", "Chúc mừng", "Hạnh phúc", "Tuyệt vời", "Xin chào"
+              - Simple positive words like "Đẹp", "Xinh", "Chúc mừng", "Hạnh phúc", "Tuyệt vời"
               - Any short positive Vietnamese or English phrase
 
-              BLOCK only messages that CLEARLY contain:
+              BLOCK messages that contain:
               - Obvious insults or profanity
               - Sexual content
               - Spam or advertisements with URLs/phone numbers
               - Threats or harassment
-
-              When in doubt, APPROVE. Vietnamese words are usually fine.
+              - Neutral, random, or non-sense words that have no meaning (e.g. keyboard mashing)
+              - Messages without any clear positive or birthday-related context
 
               Reply with exactly one word — APPROVED or BLOCKED`,
           },
