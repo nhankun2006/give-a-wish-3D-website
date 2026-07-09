@@ -29,7 +29,7 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
         setCurtainLocked(false);
         setCountdown('');
       } else {
-        setCurtainLocked(false);
+        setCurtainLocked(true);
         const totalSec = Math.floor(diff / 1000);
         const d = Math.floor(totalSec / 86400);
         const h = Math.floor((totalSec % 86400) / 3600);
@@ -552,7 +552,7 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
 
             <iframe
               id="cinema-video"
-              className="absolute top-1/2 left-1/2 w-[125%] h-[125%] -translate-x-1/2 -translate-y-1/2 z-10"
+              className="absolute bottom-0 left-1/2 w-[112%] h-[112%] -translate-x-1/2 z-10 pointer-events-none"
               src="https://www.youtube.com/embed/P2HjinruBm0?controls=0&modestbranding=1&rel=0&showinfo=0&enablejsapi=1"
               title="YouTube video player"
               frameBorder="0"
