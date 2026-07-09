@@ -7,11 +7,11 @@ import './Tab4Wishes.css';
 import SonarCanvas from '@/components/ui/SonarCanvas';
 import LockScreen from '@/components/ui/LockScreen';
 import WishReader from '@/components/ui/WishReader';
-
 const mono = { fontFamily: "inherit", fontWeight: "500" };
 
 export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
   // Lock state
+
   const [passcode, setPasscode] = useState('');
   const [hint, setHint] = useState('');
   const correctPasscode = '1007';
@@ -50,7 +50,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
   const [viewedWishes, setViewedWishes] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [readCount, setReadCount] = useState(0);
-
+  const [scrollMode, setScrollMode] = useState(false);
   // Refs
   const triggerRef = useRef(null);
   const wishesRef = useRef([]);
@@ -169,7 +169,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
       if (isEditing) {
         // LOGIC SỬA THƯ
         const { error } = await supabase.from('wishes').update({ name: newName.trim(), message: newMsg.trim() }).eq('id', editWishId);
-        if (error) throw error;
+        if (error) throw new Error('Không thể sửa lời chúc lúc này. Vui lòng thử lại.');
         setFormNote('Đã sửa lời chúc thành công!');
       } else {
         // LOGIC TẠO MỚI
@@ -178,7 +178,12 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: newName.trim() || 'Fan ẩn danh', message: newMsg.trim() }),
         });
-        if (!res.ok) throw new Error();
+        
+        // 🌟 BẮT LỖI TỪ API TRẢ VỀ
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || 'Gửi tín hiệu thất bại, thử lại nhé.');
+        }
         setFormNote('Tín hiệu đã gửi!');
       }
 
@@ -198,9 +203,12 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
       setTimeout(() => {
         handleCloseForm();
       }, 1000); // Đợi 1s cho user đọc formNote rồi đóng
-    } catch {
-      setFormNote('Lỗi rồi, thử lại giúp mình nhé');
-    } finally { setIsSubmitting(false); }
+    } catch (err) {
+      // 🌟 HIỂN THỊ LỖI CỤ THỂ CHO NGƯỜI DÙNG
+      setFormNote(err.message || 'Lỗi rồi, thử lại giúp mình nhé');
+    } finally { 
+      setIsSubmitting(false); 
+    }
   };
 
   // Lọc ra các thư cá nhân để hiển thị ở Tab 2
@@ -223,12 +231,13 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
       ) : (
         <div className="absolute inset-0" style={{ background: 'rgba(2, 20, 40, 0.4)', backdropFilter: 'blur(3px)' }}>
           <SonarCanvas 
-            triggerRef={triggerRef} 
-            onDotClick={handleDotClick} 
-            wishesRef={wishesRef} 
-            newWishIdRef={newWishIdRef} 
-            readWishesRef={readWishesRef} 
-          />
+          triggerRef={triggerRef} 
+          onDotClick={handleDotClick} 
+          wishesRef={wishesRef} 
+          newWishIdRef={newWishIdRef} 
+          readWishesRef={readWishesRef}
+          onAllDotsFinished={() => setScrollMode(true)}
+        />
 
           <div style={{
             position: 'absolute', left: 0, right: 0, height: 1, pointerEvents: 'none',
@@ -448,8 +457,8 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                             boxShadow: isEditing ? '0 8px 0 #b34774, 0 15px 20px rgba(0,0,0,0.3)' : '0 8px 0 #007099, 0 15px 20px rgba(0,0,0,0.3)'
                           }}
                         >
-                          <span className="text-2xl drop-shadow-md">{isSubmitting ? '🫧' : (isEditing ? '🎀' : '🎀')}</span>
-                          <span>{isSubmitting ? 'ĐANG LẶN XUỐNG BIỂN...' : (isEditing ? 'LƯU LỜI YÊU THƯƠNG' : 'THẢ XUỐNG BIỂN XANH')}</span>
+                          <span className="text-2xl drop-shadow-md">{isSubmitting ? '🎀' : (isEditing ? '🎀' : '🎀')}</span>
+                          <span>{isSubmitting ? 'ĐANG LẶN XUỐNG BIỂN...' : (isEditing ? 'LƯU LỜI YÊU THƯƠNG' : 'THẢ BỌT BIỂN XANH')}</span>
                         </button>
 
                         {formNote && (
@@ -616,6 +625,17 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
 
 
 
+{/* COMPONENT ĐỌC THƯ */}
+<WishReader 
+  currentWish={currentWish} 
+  revealed={revealed} 
+  setRevealed={setRevealed} 
+  wishesLength={wishes.length}
+  currentWishIndex={currentWishIndex}
+  handlePrevWish={handlePrevWish}
+  handleNextWish={handleNextWish}
+  confetti={confetti}
+/>
           {/* COMPONENT ĐỌC THƯ */}
           <WishReader 
             currentWish={currentWish} 
