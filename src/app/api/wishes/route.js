@@ -11,7 +11,6 @@ const supabaseAdmin = createClient(
 async function mistralModerationCheck(text) {
   const apiKey = process.env.MISTRAL_API_KEY;
 
-  // If API key not yet added, skip AI check and approve by default
   if (!apiKey || apiKey === 'your_mistral_api_key_here') {
     console.warn('[Moderation] MISTRAL_API_KEY not set — skipping AI check, auto-approving.');
     return true;
@@ -36,16 +35,16 @@ async function mistralModerationCheck(text) {
               APPROVE messages that are:
               - Birthday wishes, congratulations, blessings
               - Kind, friendly, supportive words
-              - Simple words like "Đẹp", "Xinh", "Chúc mừng", "Hạnh phúc", "Tuyệt vời", "Xin chào"
+              - Simple positive words like "Đẹp", "Xinh", "Chúc mừng", "Hạnh phúc", "Tuyệt vời"
               - Any short positive Vietnamese or English phrase
 
-              BLOCK only messages that CLEARLY contain:
+              BLOCK messages that contain:
               - Obvious insults or profanity
               - Sexual content
               - Spam or advertisements with URLs/phone numbers
               - Threats or harassment
-
-              When in doubt, APPROVE. Vietnamese words are usually fine.
+              - Neutral, random, or non-sense words that have no meaning (e.g. keyboard mashing)
+              - Messages without any clear positive or birthday-related context
 
               Reply with exactly one word — APPROVED or BLOCKED`,
           },
@@ -63,7 +62,7 @@ async function mistralModerationCheck(text) {
 
     if (!response.ok) {
       console.error('[Moderation] Mistral API returned status:', response.status);
-      return false; // Fail safe — keep as unapproved if AI is unreachable
+      return false; 
     }
 
     const data = await response.json();
@@ -72,7 +71,7 @@ async function mistralModerationCheck(text) {
     return verdict === 'APPROVED';
   } catch (error) {
     console.error('[Moderation] Mistral API error:', error.message);
-    return true; // Timeout thì auto approve thay vì block
+    return true; 
   }
 }
 
@@ -81,18 +80,18 @@ export async function POST(request) {
   try {
     const { name, message } = await request.json();
 
-    // 1. Basic server-side validation (redundant with client but necessary for security)
+    // 1. Basic server-side validation
     if (!message || message.trim().length === 0) {
-      return NextResponse.json({ error: 'Message is required.' }, { status: 400 });
+      return NextResponse.json({ error: 'Úi, bọt biển không thấy chữ nào cả! Bạn viết gì đó vào thư nha ' }, { status: 400 });
     }
     const wordCount = message.trim() === '' ? 0 : message.trim().split(/\s+/).length;
     if (wordCount > 1000) {
-      return NextResponse.json({ error: 'Lời chúc không được vượt quá 1000 từ.' }, { status: 400 });
+      return NextResponse.json({ error: 'Đại dương bao la nhưng chai thủy tinh chỉ chứa được 1000 từ thôi nè, bạn tóm tắt lại chút xíu nha ' }, { status: 400 });
     }
     const longWord = message.split(/\s+/).find((word) => word.length > 16);
     if (longWord) {
       return NextResponse.json(
-        { error: `Word too long: "${longWord.slice(0, 16)}..." — max 16 characters per word.` },
+        { error: 'Ây da, có từ dài hơn cả bé cá voi kìa (tối đa 16 ký tự). Bạn thêm khoảng trắng vào nha ' },
         { status: 400 }
       );
     }
@@ -104,19 +103,19 @@ export async function POST(request) {
 
     if (!isApproved) {
       return NextResponse.json(
-        { error: 'Your wish contains inappropriate or toxic content and cannot be submitted.' },
+        { error: 'Bạch tuộc gác cổng báo ríu rít: Lời chúc này nước hơi đục á! Bạn chỉnh lại cho trong veo nha ' },
         { status: 400 }
       );
     }
 
-    // 3. Insert into Supabase using admin client (bypasses RLS safely)
+    // 3. Insert into Supabase using admin client
     const { data, error } = await supabaseAdmin
       .from('wishes')
       .insert([
         {
-          name: (name || '').trim() || 'Fan ẩn danh',
+          name: (name || '').trim() || 'Fan Ẩn Danh', // Đổi chút tên mặc định cho cute
           message: message.trim(),
-          is_approved: true, // Now always true since it passed the check
+          is_approved: true, 
           image_url: null,
         },
       ])
@@ -128,6 +127,6 @@ export async function POST(request) {
     return NextResponse.json({ success: true, data });
   } catch (err) {
     console.error('[API /wishes] Unexpected error:', err.message);
-    return NextResponse.json({ error: 'Failed to submit wish. Please try again.' }, { status: 500 });
+    return NextResponse.json({ error: 'Sóng đánh mạnh quá làm trôi mất thư rồi! Bạn đợi biển êm rồi gửi lại nha ' }, { status: 500 });
   }
 }

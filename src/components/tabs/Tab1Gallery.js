@@ -51,7 +51,7 @@ export default function Tab1Gallery({ activeTab, setSelectedImage }) {
       <div className="w-full h-full rounded-none border-[4px] border-[#38bdf8]/30 overflow-hidden relative deep-sea-bg flex flex-col">
         
         {/* Elements trang trí mờ ảo dưới đáy biển */}
-        <div className="absolute top-[8%] left-[5%] text-4xl opacity-70 wave-float pointer-events-none">🐢</div>
+        <div className="absolute top-[12%] left-[5%] text-4xl opacity-70 wave-float pointer-events-none">🐢</div>
         <div className="absolute top-[5%] right-[8%] text-5xl opacity-60 wave-float pointer-events-none" style={{ animationDelay: '1s' }}>🐳</div>
         <div className="absolute bottom-[22%] left-[5%] text-5xl opacity-70 wave-float pointer-events-none" style={{ animationDelay: '2s' }}>🦑</div>
         <div className="absolute top-[35%] left-[3%] text-2xl opacity-50 wave-float pointer-events-none" style={{ animationDelay: '0.5s' }}>🫧</div>
@@ -76,13 +76,12 @@ export default function Tab1Gallery({ activeTab, setSelectedImage }) {
             {/* Hàng 1 */}
             <Polaroid img={images[0]} rotate="-rotate-3" tapeColor="bg-[#38bdf8]" delay="0s" />
             
-            {/* Khung Text 2 (Chiếm 2 cột) */}
-            <div className="col-span-2 bg-[#f0f9ff]/90 backdrop-blur-md rounded-2xl p-3 md:p-5 shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-[#bae6fd] -rotate-1 relative w-full h-full min-h-[130px] flex flex-col items-center justify-center group hover:scale-105 transition-transform duration-300">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-xl drop-shadow-md">🦀</div>
-              <p className="text-[#0369a1] font-bold text-xs md:text-sm lg:text-base italic leading-relaxed text-center">
-                "Những năm tháng, cũng chỉ là con số nếu mình dừng lại, mình bỏ cuộc. Nhưng nếu mình cứ đi, cứ kiên định với điều mình chọn thì những con số đó sẽ thật ý nghĩa và là giá trị bền vững của chính mình"
-              </p>
-            </div>
+            <div className="col-span-2 bg-[#f0f9ff]/90 backdrop-blur-md rounded-2xl p-3 md:p-5 shadow-[0_4px_15px_rgba(0,0,0,0.1)] border border-[#bae6fd] relative w-full h-full min-h-[120px] flex flex-col items-center justify-center group hover:scale-105 transition-transform duration-300">
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-xl drop-shadow-md">🦀</div>
+            <p className="text-[#0369a1] font-bold text-xs md:text-sm lg:text-base leading-relaxed text-center">
+              "Những năm tháng, cũng chỉ là con số nếu mình dừng lại, mình bỏ cuộc. Nhưng nếu mình cứ đi, cứ kiên định với điều mình chọn thì những con số đó sẽ thật ý nghĩa và là giá trị bền vững của chính mình"
+            </p>
+          </div>
             
             <Polaroid img={images[1]} rotate="rotate-2" tapeColor="bg-[#f472b6]" delay="0.2s" />
             <Polaroid img={images[2]} rotate="-rotate-1" tapeColor="bg-[#34d399]" delay="0.4s" />
@@ -95,53 +94,32 @@ export default function Tab1Gallery({ activeTab, setSelectedImage }) {
             <Polaroid img={images[7]} rotate="rotate-2" tapeColor="bg-[#34d399]" delay="1.4s" />
 
             {/* Hàng 3 */}
-            <Polaroid img={images[8]} rotate="-rotate-1" tapeColor="bg-[#fbbf24]" delay="1.6s" />
-            <Polaroid img={images[9]} rotate="rotate-3" tapeColor="bg-[#a78bfa]" delay="1.8s" />
-            
-            {/* Khung Text 2 (Chiếm 2 cột) */}
-<div className="col-span-2 -translate-y-2 bg-[#0c4a6e]/50 backdrop-blur-md rounded-2xl p-3 md:p-5 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-[#f472b6]/30 -rotate-1 relative w-full h-full min-h-[130px] flex flex-col items-center justify-center group hover:scale-105 transition-transform duration-300">
+{/* Đưa con bạch tuộc lên đầu để chèn khoảng trống bên trái */}
+<div className="translate-x-[1150px] flex justify-center items-center w-full h-full text-4xl wave-float opacity-100 cursor-default" style={{ animationDelay: '2s' }}>
+  🐙
+</div>
+
+<div className="translate-x-[-150px]">
+  <Polaroid img={images[8]} rotate="-rotate-1" tapeColor="bg-[#fbbf24]" delay="1.6s" />
+</div>
+
+<div className="translate-x-[410px]">
+  <Polaroid img={images[9]} rotate="rotate-3" tapeColor="bg-[#a78bfa]" delay="1.8s" />
+</div>
+
+{/* Khung Text 2 (Chiếm 2 cột) */}
+<div className="col-span-2 -translate-y-[35px] translate-x-[-380px] bg-[#0c4a6e]/50 backdrop-blur-md rounded-2xl p-3 md:p-5 shadow-[0_4px_15px_rgba(0,0,0,0.3)] border border-[#f472b6]/30 relative w-[100%] mx-auto h-auto min-h-[125px] flex flex-col items-center justify-center group hover:scale-105 transition-transform duration-300">
   <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-xl drop-shadow-md">🦀</div>
   <p className="text-[#fbcfe8] font-bold text-xs md:text-sm lg:text-base italic leading-relaxed text-center">
-  "Chỉ cần biết bên trong mình đã trưởng thành, thì mình sẽ có niềm tin để bước ra vùng an toàn"
-</p>
+    "Chỉ cần biết bên trong mình đã trưởng thành, thì mình sẽ có niềm tin để bước ra vùng an toàn"
+  </p>
 </div>
-            
-            {/* Ô trang trí cuối cùng cân bằng lưới */}
-            <div className="flex justify-center items-center w-full h-full text-4xl wave-float opacity-80 cursor-default" style={{ animationDelay: '2s' }}>
-              🐙
-            </div>
+
+{/* NHỚ XÓA ô con bạch tuộc ở dưới cùng đi nha vì mình đã dời nó lên trên rồi */}
 
           </div>
         </div>
       </div>
-
-      <style>{`
-        
-        .deep-sea-bg {
-  background: linear-gradient(
-    180deg,
-    #ecfeff 0%,
-    #a5f3fc 35%,
-    #67e8f9 65%,
-    #f9a8d4 100%
-  );
-}
-
-        /* Hiệu ứng trôi nhè nhẹ của nước biển */
-        @keyframes waveFloat {
-          0% { transform: translateY(0px); }
-          50% { transform: translateY(-8px); }
-          100% { transform: translateY(0px); }
-        }
-
-        .wave-float {
-          animation: waveFloat 5s ease-in-out infinite;
-        }
-
-        .wave-float:hover {
-          animation-play-state: paused;
-        }
-      `}</style>
     </div>
   );
 }

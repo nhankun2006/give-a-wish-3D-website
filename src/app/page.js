@@ -13,7 +13,7 @@ import Tab3Cinema from '@/components/tabs/Tab3Cinema';
 import Tab4Wishes from '@/components/tabs/Tab4Wishes';
 
 // Import các components models 
-import CameraController from '@/components/models/CameraController';
+// import CameraController from '@/components/models/CameraController';
 
 // Import các components ocean
 import Fish from '@/components/ocean/Fish';
@@ -28,7 +28,6 @@ import OceanCreatures from '@/components/ocean/OceanCreatures';
 // Import các components ui
 import LandingScreen from '@/components/ui/LandingScreen';
 import ImagePopup from '@/components/ui/ImagePopup';
-import SurpriseScreen from '@/components/ui/SurpriseScreen';
 import TabNavigation from '@/components/ui/TabNavigation';
 import WishesComingSoon from '@/components/ui/WishesComingSoon';
 
@@ -162,78 +161,67 @@ export default function Home() {
 
       </div>
 
-      {/* --- LỚP 2: KHÔNG GIAN 3D XOAY 360 --- */}
-      <div className={`absolute inset-0 z-10 transition-opacity duration-1000 ${isLanding ? 'opacity-0' : 'opacity-100'}`}>
-        <Canvas>
-          <ambientLight intensity={0.7} />
-          <directionalLight position={[3, 5, 2]} intensity={0.6} color="#ff99c4" />
-          <directionalLight position={[-3, -5, -2]} intensity={0.4} color="#64d9ff" />
-          <CameraController activeTab={activeTab} />
+              <button
+          onClick={() => {
+            setIsLanding(true);
+            setActiveTab(0);
+          }}
+          className={`absolute top-5 left-1 z-50 group cursor-pointer transition-all duration-500 ${
+            isLanding
+              ? "opacity-0 -translate-y-10 pointer-events-none"
+              : "opacity-100 translate-y-0"
+          }`}
+        >
+          {/* Ripple ring expands on hover */}
+          <div className="absolute inset-0 rounded-full border-2 border-[#ff99c4]/0 group-hover:border-[#ff99c4]/60 group-hover:scale-[1.18] transition-all duration-500 pointer-events-none" />
+          <div
+            className="
+              relative overflow-hidden
+              flex items-center gap-3
+              px-5 py-2.5
+              rounded-full
+              border-2 border-[#f7b7cf]
+              group-hover:border-[#ff99c4]
+              bg-gradient-to-b
+              from-[#d8f8ff]
+              via-[#bdeff8]
+              to-[#9fe1ee]
+              backdrop-blur-xl
+              shadow-[0_4px_20px_rgba(255,170,200,.45),inset_0_1px_2px_rgba(255,255,255,.9)]
+              group-hover:shadow-[0_0_28px_rgba(255,153,196,.85),0_0_55px_rgba(255,153,196,.3),inset_0_1px_2px_rgba(255,255,255,.9)]
+              group-hover:scale-105
+              group-hover:-translate-y-0.5
+              transition-all duration-300
+            "
+          >
+            {/* ánh sáng mặt kính */}
+            <div className="absolute inset-x-3 top-1 h-1/2 rounded-full bg-white/35 blur-md pointer-events-none" />
 
-        </Canvas>
-      </div>
+            {/* bong bóng */}
+            <div className="absolute left-8 top-2 w-2 h-2 rounded-full bg-white/70" />
+            <div className="absolute right-10 top-3 w-1.5 h-1.5 rounded-full bg-white/60" />
+            <div className="absolute right-5 bottom-2 w-2 h-2 rounded-full bg-white/50" />
 
-      <button
-  onClick={() => {
-    setIsLanding(true);
-    setActiveTab(0);
-  }}
-  className={`absolute top-5 left-5 z-50 group cursor-pointer transition-all duration-500 ${
-    isLanding
-      ? "opacity-0 -translate-y-10 pointer-events-none"
-      : "opacity-100 translate-y-0"
-  }`}
->
-  {/* Ripple ring expands on hover */}
-  <div className="absolute inset-0 rounded-full border-2 border-[#ff99c4]/0 group-hover:border-[#ff99c4]/60 group-hover:scale-[1.18] transition-all duration-500 pointer-events-none" />
-  <div
-    className="
-      relative overflow-hidden
-      flex items-center gap-3
-      px-5 py-2.5
-      rounded-full
-      border-2 border-[#f7b7cf]
-      group-hover:border-[#ff99c4]
-      bg-gradient-to-b
-      from-[#d8f8ff]
-      via-[#bdeff8]
-      to-[#9fe1ee]
-      backdrop-blur-xl
-      shadow-[0_4px_20px_rgba(255,170,200,.45),inset_0_1px_2px_rgba(255,255,255,.9)]
-      group-hover:shadow-[0_0_28px_rgba(255,153,196,.85),0_0_55px_rgba(255,153,196,.3),inset_0_1px_2px_rgba(255,255,255,.9)]
-      group-hover:scale-105
-      group-hover:-translate-y-0.5
-      transition-all duration-300
-    "
-  >
-    {/* ánh sáng mặt kính */}
-    <div className="absolute inset-x-3 top-1 h-1/2 rounded-full bg-white/35 blur-md pointer-events-none" />
+            {/* icon */}
+            <span className="relative z-10 text-2xl group-hover:-translate-y-1 group-hover:scale-110 transition-transform duration-300">
+              🐬
+            </span>
 
-    {/* bong bóng */}
-    <div className="absolute left-8 top-2 w-2 h-2 rounded-full bg-white/70" />
-    <div className="absolute right-10 top-3 w-1.5 h-1.5 rounded-full bg-white/60" />
-    <div className="absolute right-5 bottom-2 w-2 h-2 rounded-full bg-white/50" />
-
-    {/* icon */}
-    <span className="relative z-10 text-2xl group-hover:-translate-y-1 group-hover:scale-110 transition-transform duration-300">
-      🐬
-    </span>
-
-    {/* text */}
-    <span
-      className="relative z-10 font-extrabold text-lg md:text-xl tracking-wide"
-      style={{
-        color: "#4d7080",
-        textShadow: `
-          0 1px 0 rgba(255,255,255,.95),
-          0 0 6px rgba(255,255,255,.8)
-        `,
-      }}
-    >
-      Nổi Lên Mặt Nước
-    </span>
-  </div>
-</button>
+            {/* text */}
+            <span
+              className="relative z-10 font-extrabold text-lg md:text-xl tracking-wide"
+              style={{
+                color: "#4d7080",
+                textShadow: `
+                  0 1px 0 rgba(255,255,255,.95),
+                  0 0 6px rgba(255,255,255,.8)
+                `,
+              }}
+            >
+              Nổi Lên Mặt Nước
+            </span>
+          </div>
+        </button>
 
       {/* --- LỚP 3: MÀN HÌNH CHỜ (TRANG CHỦ - LANDING PAGE) --- */}
       <LandingScreen isLanding={isLanding} setIsLanding={setIsLanding} />
@@ -252,7 +240,7 @@ export default function Home() {
 
         {/* Tab 4: Wishes (via Tab4Wishes component) */}
         <div className={`transition-all duration-1000 absolute inset-0 ${activeTab === 3 ? 'opacity-100 z-20 pointer-events-auto' : 'opacity-0 pointer-events-none z-0'}`}>
-          {isWishesOpen
+          {true
             ? <Tab4Wishes isUnlocked={isUnlocked} setIsUnlocked={setIsUnlocked} />
             : <WishesComingSoon onUnlocked={() => setIsWishesOpen(true)} />
           }
@@ -268,7 +256,11 @@ export default function Home() {
       <ImagePopup
         selectedImage={selectedImage}
         setSelectedImage={setSelectedImage}
-        images={['IMG_0166.JPG', 'IMG_1008.JPG', 'IMG_1824.JPG', 'IMG_3536.JPG', 'IMG_3779.JPG', 'IMG_4246.JPG', 'IMG_4247.JPG', 'IMG_9281.JPG']} // Truyền mảng hình vào
+        images={[
+          'IMG_0166.JPG', 'IMG_1008.JPG', 'IMG_1824.JPG', 'IMG_3536.JPG', 
+          'IMG_3779.JPG', 'IMG_4246.JPG', 'IMG_4247.JPG', 'IMG_9281.JPG', 
+          'IMG_111.JPG', 'IMG_222.JPG' 
+        ]} 
       />
 
       {/* LỚP MÀN HÌNH CHE TOÀN BỘ WEB KHI KÍCH HOẠT QUÀ TẶNG (Concept Đại Dương Kute) */}
