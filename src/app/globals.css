@@ -587,3 +587,12 @@ button, a {
   0%   { background-position: 200% center; }
   100% { background-position:-200% center; }
 }
+
+/* Thêm vào file CSS chung nếu cần */
+.scrollbar-none::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+.scrollbar-none {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
