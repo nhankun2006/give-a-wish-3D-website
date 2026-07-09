@@ -3,6 +3,7 @@
 import gsap from 'gsap';
 import { useState, useEffect } from 'react';
 import SecretLockUI from '@/components/ui/SecretLockUI';
+import { motion } from 'framer-motion';
 
 
 // July 10, 2026 00:00 Vietnam (UTC+7) = July 9, 2026 17:00:00 UTC
@@ -499,29 +500,51 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
                   <div className="w-0 h-0 border-y-[24px] border-y-transparent border-l-[44px] border-l-pink-300 drop-shadow-[0_0_15px_rgba(253,164,175,0.9)]"></div>
                 </div>
 
-                {/* Label: countdown khi khóa, hướng dẫn khi mở */}
-                {curtainLocked ? (
-                  <div className="mt-5 flex flex-col items-center gap-1">
-                    <span className="text-cyan-900 font-extrabold tracking-widest text-xs bg-white/50 px-4 py-1.5 rounded-full backdrop-blur-md border-[2px] border-white/70 shadow-[inset_0_0_8px_rgba(255,255,255,1)]">
-                      🕐 Mở lúc 0h ngày 10/7
-                    </span>
-                    <span className="text-white font-black text-sm tracking-widest drop-shadow-[0_0_8px_rgba(255,255,255,0.8)] tabular-nums">
-                      {countdown}
-                    </span>
-                  </div>
-                ) : (
-                  <span className="mt-5 text-cyan-900 font-extrabold tracking-widest text-sm bg-white/50 px-6 py-2 rounded-full backdrop-blur-md border-[2px] border-white/70 shadow-[0_5px_15px_rgba(34,211,238,0.5),inset_0_0_8px_rgba(255,255,255,1)]">
-                    MỞ RÈM ĐẠI DƯƠNG 🌊
-                  </span>
-                )}
+               {/* Label: countdown khi khóa, hướng dẫn khi mở */}
+                    {curtainLocked ? (
+                      <motion.div 
+                        animate={{ y: [0, -8, 0] }} 
+                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                        className="mt-5 flex flex-col items-center gap-4"
+                      >
+                        {/* Thẻ thông báo: Kiểu dải ruy băng lấp lánh trên cát */}
+                        <div className="relative group">
+                          {/* Vòng sáng hào quang mờ phía sau */}
+                          <div className="absolute inset-0 bg-gradient-to-r from-cyan-300 via-blue-300 to-sky-300 rounded-full blur-md opacity-50 animate-pulse" />
+                          
+                          {/* Thẻ chính màu vỏ sò */}
+                          <div className="relative flex items-center gap-2 bg-gradient-to-br from-white to-cyan-50 px-6 py-2.5 rounded-full border-[3px] border-cyan-200/80 shadow-[0_8px_20px_rgba(34,211,238,0.25)]">
+                            <span className="text-xl animate-bounce" style={{ animationDuration: '2s' }}></span>
+                            <span className="text-cyan-800 font-extrabold tracking-wide text-xs sm:text-sm uppercase drop-shadow-sm">
+                              Mở lúc 0h ngày 10/7
+                            </span>
+                            <span className="text-xl animate-bounce" style={{ animationDuration: '2.5s' }}></span>
+                          </div>
+                        </div>
+
+                        {/* Khung đồng hồ: Kiểu giọt nước khổng lồ dưới biển sâu */}
+                        <div className="relative px-8 py-3 md:py-4 bg-cyan-950/40 backdrop-blur-xl rounded-[2rem] border-2 border-cyan-300/50 shadow-[inset_0_0_20px_rgba(34,211,238,0.4),0_10px_30px_rgba(8,145,178,0.3)] overflow-hidden flex items-center justify-center min-w-[200px]">
+                          {/* Hiệu ứng vệt sáng phản chiếu của mặt nước */}
+                          <div className="absolute top-0 left-0 w-full h-[45%] bg-gradient-to-b from-white/30 to-transparent opacity-80 pointer-events-none rounded-t-[2rem]" />
+                          
+                          {/* Chữ số đồng hồ đếm ngược */}
+                          <span className="relative z-10 text-cyan-50 font-black text-lg sm:text-xl tracking-widest drop-shadow-[0_0_15px_rgba(103,232,249,1)] tabular-nums">
+                            {countdown}
+                          </span>
+                        </div>
+                      </motion.div>
+                    ) : (
+                      <motion.span 
+                        animate={{ scale: [1, 1.05, 1] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                        className="mt-6 flex items-center justify-center text-cyan-800 font-extrabold tracking-widest text-sm bg-gradient-to-br from-white to-cyan-100 px-8 py-3 rounded-full backdrop-blur-md border-[3px] border-white shadow-[0_8px_25px_rgba(34,211,238,0.5),inset_0_0_15px_rgba(255,255,255,0.9)] cursor-pointer"
+                      >
+                        MỞ RÈM ĐẠI DƯƠNG
+                      </motion.span>
+                    )}
               </div>
             </div>
             {/* ================= KẾT THÚC: RÈM BONG BÓNG ĐẠI DƯƠNG (BẢN ĐẶC BIỆT) ================= */}
-
-
-
-
-
 
             <iframe
               className="absolute top-0 left-0 w-full h-full z-10"
@@ -531,17 +554,9 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowFullScreen
             ></iframe>
-
-
           </div>
-
-
-
         </div>
       </div>
-
-
-
 
       {/* VỊ TRÍ 3: TRẠM SẠC SỨA BIỂN BIOMIMETIC (Ý TƯỞNG MỚI ĐỘC LẠ & KUTE)        */}
       {/* ========================================================================= */}

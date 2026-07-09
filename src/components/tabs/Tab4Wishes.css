@@ -1,0 +1,73 @@
+/* Scrollbar cho history modal */
+:global(.history-scroll::-webkit-scrollbar) {
+  width: 6px;
+}
+
+:global(.history-scroll::-webkit-scrollbar-track) {
+  background: rgba(100, 217, 255, 0.1);
+  border-radius: 10px;
+}
+
+:global(.history-scroll::-webkit-scrollbar-thumb) {
+  background: #64d9ff;
+  border-radius: 10px;
+}
+
+:global(.history-scroll::-webkit-scrollbar-thumb:hover) {
+  background: #a1eeff;
+}
+
+/* Animation cho scan line */
+@keyframes scandown {
+  0% {
+    top: 0;
+    opacity: 0.8;
+  }
+  90% {
+    opacity: 0.5;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.cute-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+/* Scrollbar cho wish message */
+:global(.cute-scroll::-webkit-scrollbar) {
+  width: 6px;
+}
+
+:global(.cute-scroll::-webkit-scrollbar-track) {
+  background: rgba(100, 217, 255, 0.1);
+  border-radius: 10px;
+}
+
+:global(.cute-scroll::-webkit-scrollbar-thumb) {
+  background: #ff99c4;
+  border-radius: 10px;
+}
+
+:global(.cute-scroll::-webkit-scrollbar-thumb:hover) {
+  background: #ffb6c1;
+}
+/* THÊM DÒNG NÀY */
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(600px) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.confetti-piece {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+}
