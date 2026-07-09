@@ -267,6 +267,10 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
               onClick={() => {
                 if (curtainLocked) return;
                 setOpenCurtain(true);
+                const iframe = document.getElementById('cinema-video');
+                if (iframe && iframe.contentWindow) {
+                  iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                }
               }}
             >
               {/* Rèm Trái (Nước biển lấp lánh) */}
@@ -547,8 +551,9 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
             {/* ================= KẾT THÚC: RÈM BONG BÓNG ĐẠI DƯƠNG (BẢN ĐẶC BIỆT) ================= */}
 
             <iframe
-              className="absolute top-0 left-0 w-full h-full z-10"
-              src="https://www.youtube.com/embed/8sVtL0o-v7U"
+              id="cinema-video"
+              className="absolute top-1/2 left-1/2 w-[125%] h-[125%] -translate-x-1/2 -translate-y-1/2 z-10"
+              src="https://www.youtube.com/embed/P2HjinruBm0?controls=0&modestbranding=1&rel=0&showinfo=0&enablejsapi=1"
               title="YouTube video player"
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
