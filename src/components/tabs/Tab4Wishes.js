@@ -346,7 +346,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                       padding: '24px 32px',
                       width: '980px', 
                       maxWidth: '92vw', 
-                      height: '80vh', 
+                      height: '70vh', 
                       gap: '16px',
                       /* 🌟 BÓNG ĐỔ NHIỀU LỚP: Tạo cảm giác chiếc hộp nổi bần bật lên hẳn màn hình */
                       boxShadow: `
@@ -432,7 +432,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                           style={{ 
                             ...mono, 
                             flex: 1,
-                            minHeight: '220px',
+                            minHeight: '120px',
                             background: '#FFF', borderRadius: '24px', 
                             border: '4px solid #64d9ff', color: '#1A548B', 
                             fontSize: 16, fontWeight: '600', padding: '20px 24px', outline: 'none', width: '100%', resize: 'none', lineHeight: 1.6, 
