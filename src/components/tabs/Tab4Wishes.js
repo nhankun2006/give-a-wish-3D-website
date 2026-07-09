@@ -238,7 +238,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
 
           {/* Buttons Trên Cùng */}
           <div className="absolute top-1 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-20">
-            <div style={{ display: 'flex', gap: '12px' }}>
+            <div style={{ display: 'flex', gap: '270px' }}>
               <button
   onClick={() => {
     setFormOpen(true);
@@ -518,7 +518,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
       transition={{ type: "spring", bounce: 0.5, duration: 0.6 }} // Nảy mềm mượt như thạch
       style={{
         /* --- GIỮ NGUYÊN KÍCH THƯỚC BẢN GỐC --- */
-        position: 'fixed', top: '80px', left: '50%', transform: 'translateX(-50%)', width: '500px', maxWidth: '90vw', maxHeight: '80vh',
+        position: 'fixed', top: '80px', left: '60%', transform: 'translateX(-50%)', width: '500px', maxWidth: '90vw', maxHeight: '80vh',
         display: 'flex', flexDirection: 'column', gap: '15px', zIndex: 100, padding: '20px', 
         
         /* --- STYLE BIỂN XINH, SOLID PASTEL CUTE --- */
