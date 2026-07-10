@@ -603,7 +603,7 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
               {/* scale-[1.2] để tràn viền che đi viền đen lề trái/phải nếu có */}
               <div className="w-full h-full pointer-events-none">
                 <YouTube
-                  videoId="hbydeKJJQyY"
+                  videoId="y9bPGFN_5Xc"
                   opts={ytOpts}
                   onReady={(e) => {
                     playerRef.current = e.target;
