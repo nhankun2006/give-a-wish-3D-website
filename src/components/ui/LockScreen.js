@@ -57,7 +57,7 @@ export default function LockScreen({ passcode, setPasscode, hint, handleUnlock }
           Nhập mật mã để xem<br/>nơi cất giữ những lời chúc
         </p>
 
-        <form onSubmit={handleUnlock} className="space-y-4">
+        <form onSubmit={handleUnlock} className="space-y-4" suppressHydrationWarning>
           <input
             type="text" 
             value={passcode} 

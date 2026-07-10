@@ -74,9 +74,7 @@ export default function SonarCanvas({ triggerRef, onDotClick, wishesRef, newWish
     };
 
     const drawDots = () => {
-      s.dots = s.dots.filter(d => d.life > 0);
       s.dots.forEach(d => {
-        d.life--;
         // d.blink vẫn giữ để dùng cho sparkle, nhưng thêm shake cho rung ring
         d.shake = (d.shake || 0) + 0.1;
         const a = 1;        
@@ -259,8 +257,6 @@ export default function SonarCanvas({ triggerRef, onDotClick, wishesRef, newWish
                 isSuperNew: true, // Đánh dấu hiệu ứng rơi đặc biệt
                 isOwnNew: true
               });
-              // Đồng bộ số đếm spawn
-              s.spawnedCount = currentWishes.length;
             }
           }
         }
