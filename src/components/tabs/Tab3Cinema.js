@@ -602,7 +602,7 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
               {/* scale-[1.2] để tràn viền che đi viền đen lề trái/phải nếu có */}
               <div className="w-full h-full pointer-events-none">
                 <YouTube
-                  videoId="W36j_yXQmAY"
+                  videoId="hbydeKJJQyY"
                   opts={ytOpts}
                   onReady={(e) => {
                     playerRef.current = e.target;
@@ -624,25 +624,25 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
                   className="absolute inset-0 z-20 cursor-pointer bg-transparent"
                 />
               )}
-
-              {/* --- THÊM ĐOẠN NÀY: THANH THỜI GIAN TÙY CHỈNH --- */}
-              {openCurtain && (
-                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[85%] z-30 flex items-center gap-4 bg-black/50 backdrop-blur-md px-5 py-3 rounded-2xl border border-white/20 shadow-[0_4px_20px_rgba(0,0,0,0.5)] transition-opacity duration-300 hover:opacity-100 opacity-60">
-                  <span className="text-white/90 text-sm font-mono min-w-[40px] text-right">{formatTime(progress)}</span>
-                  <input
-                    type="range"
-                    min="0"
-                    max={duration || 100}
-                    value={progress}
-                    onChange={handleSeek}
-                    className="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-cyan-400 hover:accent-cyan-300"
-                  />
-                  <span className="text-white/90 text-sm font-mono min-w-[40px] text-left">{formatTime(duration)}</span>
-                </div>
-              )}
-              {/* ------------------------------------------------ */}
             </div>
           </div>
+
+          {/* --- THANH THỜI GIAN TÙY CHỈNH (Đã chuyển ra ngoài lớp phủ click) --- */}
+          {openCurtain && (
+            <div className="relative mt-6 mx-auto w-[85%] z-30 flex items-center gap-4 bg-black/50 backdrop-blur-md px-5 py-3 rounded-2xl border border-white/20 shadow-[0_4px_20px_rgba(0,0,0,0.5)] transition-opacity duration-300 hover:opacity-100 opacity-60">
+              <span className="text-white/90 text-sm font-mono min-w-[40px] text-right">{formatTime(progress)}</span>
+              <input
+                type="range"
+                min="0"
+                max={duration || 100}
+                value={progress}
+                onChange={handleSeek}
+                className="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-cyan-400 hover:accent-cyan-300"
+              />
+              <span className="text-white/90 text-sm font-mono min-w-[40px] text-left">{formatTime(duration)}</span>
+            </div>
+          )}
+          {/* ------------------------------------------------ */}
         </div>
       </div>
 
