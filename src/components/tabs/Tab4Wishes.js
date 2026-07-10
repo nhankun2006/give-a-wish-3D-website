@@ -29,6 +29,8 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
   
   // Các state để quản lý thư cá nhân
   const [myWishesIds, setMyWishesIds] = useState([]);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editWishId, setEditWishId] = useState(null);
   const [newName, setNewName] = useState('');
   const [newMsg, setNewMsg] = useState('');
   const [formNote, setFormNote] = useState('');
@@ -51,7 +53,16 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
   // UseEffects
   useEffect(() => {
     const stored = localStorage.getItem('myWishesIds');
-    if (stored) setMyWishesIds(JSON.parse(stored));
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        // Normalize array elements to { id, edit_token }
+        const normalized = parsed.map(item => typeof item === 'string' ? { id: item, edit_token: null } : item);
+        setMyWishesIds(normalized);
+      } catch (e) {
+        setMyWishesIds([]);
+      }
+    }
   }, []);
 
   useEffect(() => { newWishIdRef.current = newWishId; }, [newWishId]);
@@ -130,47 +141,102 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
     setCurrentWishIndex(index);
   };
 
+  const handleEditClick = (wish) => {
+    setIsEditing(true);
+    setEditWishId(wish.id);
+    setNewName(wish.name);
+    setNewMsg(wish.message);
+    setActiveTab('create');
+  };
+
+  const handleDeleteWish = async (id, edit_token) => {
+    if (!window.confirm("Bạn có muốn thu hồi lại bọt biển này không?")) return;
+    try {
+      const res = await fetch('/api/wishes', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, edit_token })
+      });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Lỗi khi xóa!');
+      }
+      
+      // Xóa ID khỏi danh sách của mình
+      const updatedIds = myWishesIds.filter(wishObj => wishObj.id !== id);
+      setMyWishesIds(updatedIds);
+      localStorage.setItem('myWishesIds', JSON.stringify(updatedIds));
+      
+      fetchWishes();
+    } catch (e) { 
+      alert(e.message || "Lỗi khi xóa, vui lòng thử lại!"); 
+    }
+  };
+
   const handleCloseForm = () => {
     setFormOpen(false);
+    setIsEditing(false);
     setActiveTab('create');
     setNewName('');
     setNewMsg('');
+    setEditWishId(null);
   };
 
   const handleSubmit = async () => {
     if (!newMsg.trim()) { setFormNote('Chưa có lời chúc!'); return; }
     setIsSubmitting(true);
     try {
-      const res = await fetch('/api/wishes', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: newName.trim() || 'Fan ẩn danh', message: newMsg.trim() }),
-      });
-      
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({}));
-        throw new Error(errData.error || 'Gửi tín hiệu thất bại, thử lại nhé.');
+      if (isEditing) {
+        const editWishObj = myWishesIds.find(w => w.id === editWishId);
+        if (!editWishObj || !editWishObj.edit_token) {
+          throw new Error('Bạn không có quyền sửa thư này (thiếu mã token).');
+        }
+
+        const res = await fetch('/api/wishes', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            id: editWishId, 
+            name: newName.trim(), 
+            message: newMsg.trim(),
+            edit_token: editWishObj.edit_token 
+          }),
+        });
+        
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || 'Sửa thất bại, thử lại nhé.');
+        }
+        setFormNote('Đã sửa lời chúc thành công!');
+        fetchWishes(); // reload data
+      } else {
+        const res = await fetch('/api/wishes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: newName.trim() || 'Fan ẩn danh', message: newMsg.trim() }),
+        });
+        
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || 'Gửi tín hiệu thất bại, thử lại nhé.');
+        }
+        
+        const dataJson = await res.json();
+        const returnedData = dataJson.data;
+        
+        setFormNote('Tín hiệu đã gửi!');
+
+        // Tự động tạo bức thư mới ở local để Canvas vẽ ngay lập tức
+        setWishes(prevWishes => [returnedData, ...prevWishes]);
+        setNewWishId(returnedData.id);
+        
+        const updatedIds = [...myWishesIds, { id: returnedData.id, edit_token: returnedData.edit_token }];
+        setMyWishesIds(updatedIds);
+        localStorage.setItem('myWishesIds', JSON.stringify(updatedIds));
       }
-      setFormNote('Tín hiệu đã gửi!');
 
       setTimeout(() => setFormNote(''), 3000);
       
-      // Tự động tạo bức thư mới ở local để Canvas vẽ ngay lập tức mà không cần chờ Database
-      const tempId = 'new-' + Date.now();
-      const newWishObj = {
-        id: tempId,
-        name: newName.trim() || 'Fan ẩn danh',
-        message: newMsg.trim(),
-        created_at: new Date().toISOString()
-      };
-      
-      // Chèn thẳng vào đầu danh sách thư hiện tại (Các bọt biển cũ giữ nguyên)
-      setWishes(prevWishes => [newWishObj, ...prevWishes]);
-      setNewWishId(tempId);
-      
-      const updatedIds = [...myWishesIds, tempId];
-      setMyWishesIds(updatedIds);
-      localStorage.setItem('myWishesIds', JSON.stringify(updatedIds));
       setTimeout(() => {
         handleCloseForm();
       }, 1000);
@@ -307,7 +373,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                             ...mono, fontSize: 20, color: '#FFF', fontWeight: '900', textTransform: 'uppercase', letterSpacing: 2,
                             textShadow: '0 4px 0 rgba(0,0,0,0.2)'
                           }}>
-                            {activeTab === 'create' ? 'Thả Lời Chúc Mới' : '🗃️ Hộp Thư Bí Mật'}
+                            {activeTab === 'create' ? (isEditing ? '🛠️ Sửa Lời Yêu Thương' : 'Thả Lời Chúc Mới') : '🗃️ Hộp Thư Bí Mật'}
                           </span>
                           <button onClick={handleCloseForm} 
                             className="flex items-center justify-center transition-all duration-200 hover:scale-110 active:scale-95 active:translate-y-1" 
@@ -320,7 +386,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
 
                         {/* TABS */}
                         <div style={{ display: 'flex', gap: '8px', zIndex: 10, marginTop: '-6px' }}>
-                          <button onClick={() => { setActiveTab('create'); setNewName(''); setNewMsg(''); }}
+                          <button onClick={() => { setActiveTab('create'); if (!isEditing) { setNewName(''); setNewMsg(''); } }}
                             className="group relative flex-1 transition-all duration-200 active:translate-y-2 active:shadow-none"
                             style={{
                               ...mono, padding: '12px', borderRadius: '24px', fontWeight: '900', cursor: 'pointer', fontSize: '15px',
@@ -330,7 +396,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                               boxShadow: activeTab === 'create' ? '0 6px 0 #007099' : 'none',
                             }}
                           >
-                            <span className="group-hover:scale-105 inline-block transition-transform">✍️ VIẾT THƯ MỚI</span>
+                            <span className="group-hover:scale-105 inline-block transition-transform">{isEditing ? '✏️ CHỈNH SỬA THƯ' : '✍️ VIẾT THƯ MỚI'}</span>
                           </button>
                           <button onClick={() => setActiveTab('manage')}
                             className="group relative flex-1 transition-all duration-200 active:translate-y-2 active:shadow-none"
@@ -371,12 +437,15 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                                   active:translate-y-[8px] active:shadow-none
                                 `}
                                 style={{ 
-                                  ...mono, textTransform: 'uppercase', letterSpacing: 2, background: '#64d9ff',
-                                  color: '#09203F', border: '4px solid #FFF', boxShadow: '0 8px 0 #007099, 0 15px 20px rgba(0,0,0,0.3)'
+                                  ...mono, textTransform: 'uppercase', letterSpacing: 2, 
+                                  background: isEditing ? '#ff99c4' : '#64d9ff',
+                                  color: isEditing ? '#fff' : '#09203F', 
+                                  border: '4px solid #FFF', 
+                                  boxShadow: isEditing ? '0 8px 0 #b34774, 0 15px 20px rgba(0,0,0,0.3)' : '0 8px 0 #007099, 0 15px 20px rgba(0,0,0,0.3)'
                                 }}
                               >
-                                <span className="text-2xl drop-shadow-md">🎀</span>
-                                <span>{isSubmitting ? 'ĐANG LẶN XUỐNG BIỂN...' : 'THẢ BỌT BIỂN XANH'}</span>
+                                <span className="text-2xl drop-shadow-md">{isSubmitting ? '🎀' : (isEditing ? '🎀' : '🎀')}</span>
+                                <span>{isSubmitting ? 'ĐANG LẶN XUỐNG BIỂN...' : (isEditing ? 'LƯU LỜI YÊU THƯƠNG' : 'THẢ BỌT BIỂN XANH')}</span>
                               </button>
                               {formNote && (
                                 <div style={{ ...mono, fontSize: 13, textAlign: 'center', color: formNote.includes('lỗi') ? '#ffb6c1' : '#fff', fontWeight: 'bold', textShadow: '0 2px 4px rgba(0,0,0,0.4)', flexShrink: 0 }}>
@@ -386,27 +455,42 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                             </div>
                           ) : (
                             <div className="cute-scroll" style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1, overflowY: 'auto', maxHeight: '100%', paddingRight: '12px', paddingBottom: '20px' }}>
-                              {wishes.filter(w => myWishesIds?.includes(w.id)).length === 0 ? (
+                              {wishes.filter(w => myWishesIds?.some(item => item.id === w.id)).length === 0 ? (
                                 <div style={{ color: '#FFF', textAlign: 'center', padding: '60px 0', ...mono, fontSize: 16, fontWeight: 'bold' }}>
                                   <span style={{ fontSize: '60px', display: 'block', marginBottom: '20px' }}>🪹</span>
                                   Hộp thư của bạn đang trống trơn!<br/>Hãy thả một chiếc bọt biển xuống nhé!
                                 </div>
                               ) : (
-                                wishes.filter(w => myWishesIds?.includes(w.id)).map((wish) => (
-                                  <div key={wish.id} style={{ 
-                                    background: '#FFF', border: '4px solid #ff99c4', borderRadius: '24px', padding: '20px',
-                                    boxShadow: '0 6px 0 #b34774', transform: 'translateY(0)', transition: '0.2s ease-in-out', flexShrink: 0 
-                                  }}
-                                  className="hover:-translate-y-1 hover:shadow-[0_10px_0_#b34774]"
-                                  >
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-                                      <div style={{ color: '#b34774', fontWeight: '900', fontSize: '18px' }}>💌 {wish.name}</div>
+                                wishes.filter(w => myWishesIds?.some(item => item.id === w.id)).map((wish) => {
+                                  const wishMeta = myWishesIds.find(item => item.id === wish.id);
+                                  const canEdit = !!(wishMeta && wishMeta.edit_token);
+
+                                  return (
+                                    <div key={wish.id} style={{ 
+                                      background: '#FFF', border: '4px solid #ff99c4', borderRadius: '24px', padding: '20px',
+                                      boxShadow: '0 6px 0 #b34774', transform: 'translateY(0)', transition: '0.2s ease-in-out', flexShrink: 0 
+                                    }}
+                                    className="hover:-translate-y-1 hover:shadow-[0_10px_0_#b34774]"
+                                    >
+                                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                                        <div style={{ color: '#b34774', fontWeight: '900', fontSize: '18px' }}>💌 {wish.name}</div>
+                                        {canEdit && (
+                                          <div style={{ display: 'flex', gap: '10px' }}>
+                                            <button onClick={() => handleEditClick(wish)}
+                                              className="active:translate-y-1 active:shadow-none transition-all"
+                                              style={{ background: '#64d9ff', color: '#09203F', border: '3px solid #007099', padding: '6px 16px', borderRadius: '16px', fontSize: '13px', cursor: 'pointer', fontWeight: '900', boxShadow: '0 4px 0 #007099' }}>SỬA</button>
+                                            <button onClick={() => handleDeleteWish(wish.id, wishMeta.edit_token)}
+                                              className="active:translate-y-1 active:shadow-none transition-all"
+                                              style={{ background: '#ff99c4', color: '#FFF', border: '3px solid #b34774', padding: '6px 16px', borderRadius: '16px', fontSize: '13px', cursor: 'pointer', fontWeight: '900', boxShadow: '0 4px 0 #b34774' }}>XÓA</button>
+                                          </div>
+                                        )}
+                                      </div>
+                                      <div style={{ color: '#1A548B', fontSize: '15px', lineHeight: 1.6, whiteSpace: 'pre-wrap', fontWeight: '600' }}>
+                                        {wish.message}
+                                      </div>
                                     </div>
-                                    <div style={{ color: '#1A548B', fontSize: '15px', lineHeight: 1.6, whiteSpace: 'pre-wrap', fontWeight: '600' }}>
-                                      {wish.message}
-                                    </div>
-                                  </div>
-                                ))
+                                  );
+                                })
                               )}
                             </div>
                           )}
