@@ -50,6 +50,7 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
   // Lắng nghe phím Space để Play/Pause
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (activeTab !== 2) return;
       if (!openCurtain || !playerRef.current) return;
       if (e.key === ' ') {
         e.preventDefault();
@@ -58,7 +59,7 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [openCurtain, isPlaying]);
+  }, [openCurtain, isPlaying, activeTab]);
 
   // Liên tục cập nhật thanh thời gian khi video đang phát
   useEffect(() => {

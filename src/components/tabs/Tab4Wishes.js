@@ -417,6 +417,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                           {activeTab === 'create' ? (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', height: '100%', flex: 1, overflow: 'hidden' }}>      
                               <input value={newName} onChange={e => setNewName(e.target.value)} placeholder="Tên của bạn là gì nè?" maxLength={30}
+                                onKeyDown={e => e.stopPropagation()}
                                 className="transition-all duration-200 focus:scale-[1.01]"
                                 style={{ 
                                   ...mono, background: '#FFF', borderRadius: '20px', border: '4px solid #64d9ff', color: '#1A548B', 
@@ -424,6 +425,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                                   boxShadow: 'inset 0 4px 8px rgba(0,0,0,0.08)'
                                 }} />
                               <textarea value={newMsg} onChange={e => setNewMsg(e.target.value)} placeholder="Hãy viết điều gì đó dễ thương vào đây nhé... 🐚" 
+                                onKeyDown={e => e.stopPropagation()}
                                 className="transition-all duration-200 focus:scale-[1.01] scrollbar-none"
                                 style={{ 
                                   ...mono, flex: 1, minHeight: '120px', background: '#FFF', borderRadius: '24px', 
@@ -532,6 +534,7 @@ export default function Tab4Wishes({ isUnlocked, setIsUnlocked }) {
                     </div>
 
                     <input type="text" placeholder="Tìm tên hoặc nội dung..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+                      onKeyDown={e => e.stopPropagation()}
                       style={{ 
                         background: '#FFFFFF', border: 'none', color: '#0277BD', fontSize: '14px', padding: '14px 18px', 
                         borderRadius: '16px', outline: 'none', boxShadow: '0 4px 12px rgba(2, 119, 189, 0.1)', fontWeight: '600'
