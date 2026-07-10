@@ -4,7 +4,7 @@ import gsap from 'gsap';
 import { useState, useEffect, useRef } from 'react';
 import SecretLockUI from '@/components/ui/SecretLockUI';
 import { motion } from 'framer-motion';
-
+import YouTube from 'react-youtube';
 
 // July 10, 2026 00:00 Vietnam (UTC+7) = July 9, 2026 17:00:00 UTC
 // Using Date.UTC() instead of an ISO string with +07:00 offset because
@@ -15,52 +15,85 @@ const UNLOCK_TIME = new Date(Date.UTC(2026, 6, 9, 17, 0, 0));
 
 export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise }) {
   const [openCurtain, setOpenCurtain] = useState(false);
-  const videoRef = useRef(null);
+  const playerRef = useRef(null);
   // isLocked is now driven by curtainLocked time gate — no separate state needed
 
   // null = not yet determined (SSR safe), then boolean on client
   const [curtainLocked, setCurtainLocked] = useState(null);
   const [countdown, setCountdown] = useState('');
 
-  useEffect(() => {
-    const tick = () => {
-      const now = new Date();
-      const diff = UNLOCK_TIME - now;
-      if (diff <= 0) {
-        setCurtainLocked(false);
-        setCountdown('');
-      } else {
-        setCurtainLocked(true);
-        const totalSec = Math.floor(diff / 1000);
-        const d = Math.floor(totalSec / 86400);
-        const h = Math.floor((totalSec % 86400) / 3600);
-        const m = Math.floor((totalSec % 3600) / 60);
-        const s = totalSec % 60;
-        const parts = [];
-        if (d > 0) parts.push(`${d}n`);
-        parts.push(`${String(h).padStart(2,'0')}h`);
-        parts.push(`${String(m).padStart(2,'0')}m`);
-        parts.push(`${String(s).padStart(2,'0')}s`);
-        setCountdown(parts.join(' '));
-      }
-    };
-    tick();
-    const id = setInterval(tick, 1000);
-    return () => clearInterval(id);
-  }, []);
 
+  // --- THÊM ĐOẠN NÀY VÀO ---
+  const [progress, setProgress] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const ytOpts = {
+    height: '100%',
+    width: '100%',
+    playerVars: {
+      controls: 0,       // Ẩn thanh điều khiển mặc định của YT
+      disablekb: 1,      // Tắt phím tắt mặc định
+      rel: 0,            // Không hiện video liên quan từ kênh khác
+      modestbranding: 1, // Giảm thiểu logo YouTube
+      showinfo: 0,
+      fs: 0,             // Tắt nút tràn màn hình mặc định
+      autoplay: 0,
+    },
+  };
+  // Hàm chuyển đổi giây thành định dạng phút:giây (ví dụ 1:05)
+  const formatTime = (time) => {
+    if (!time || isNaN(time)) return "0:00";
+    const m = Math.floor(time / 60);
+    const s = Math.floor(time % 60);
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+  // Lắng nghe phím Space để Play/Pause
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (!openCurtain || !videoRef.current) return;
+      if (!openCurtain || !playerRef.current) return;
       if (e.key === ' ') {
         e.preventDefault();
-        if (videoRef.current.paused) videoRef.current.play();
-        else videoRef.current.pause();
+        togglePlay();
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [openCurtain, isPlaying]);
+
+  // Liên tục cập nhật thanh thời gian khi video đang phát
+  useEffect(() => {
+    let interval;
+    if (openCurtain) {
+      interval = setInterval(() => {
+        if (playerRef.current && playerRef.current.getPlayerState() === 1) {
+          setProgress(playerRef.current.getCurrentTime());
+          setDuration(playerRef.current.getDuration());
+        }
+      }, 400); // cập nhật mỗi 0.4 giây cho mượt
+    }
+    return () => clearInterval(interval);
   }, [openCurtain]);
+
+  const togglePlay = () => {
+    if (!playerRef.current) return;
+    const state = playerRef.current.getPlayerState();
+    if (state === 1) { // 1 là đang Play
+      playerRef.current.pauseVideo();
+      setIsPlaying(false);
+    } else {
+      playerRef.current.playVideo();
+      setIsPlaying(true);
+    }
+  };
+
+  // --- THÊM HÀM NÀY VÀO ĐỂ TUA VIDEO ---
+  const handleSeek = (e) => {
+    const seekTime = parseFloat(e.target.value);
+    setProgress(seekTime);
+    if (playerRef.current) {
+      playerRef.current.seekTo(seekTime, true);
+    }
+  };
 
   return (
     /* LỚP 1: NỀN FULL MÀN HÌNH - Bổ sung 'inset-0' và màu nền đại dương kẹo ngọt che kín trang chủ */
@@ -266,11 +299,11 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
               relative
               w-full
               aspect-video
-              rounded-[36px]
-              bg-[#01060f]
-              border-[12px] border-[#253346]
               overflow-hidden
-              shadow-[0_0_0_4px_rgba(0,0,0,0.5),inset_0_0_40px_rgba(0,0,0,1),0_20px_50px_rgba(0,0,0,0.8)]
+              rounded-none
+              bg-transparent
+              border-0
+              shadow-none
             "
           >
             {/* ================= BẮT ĐẦU: RÈM BONG BÓNG ĐẠI DƯƠNG (BẢN ĐẶC BIỆT) ================= */}
@@ -279,12 +312,13 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
                 openCurtain ? 'pointer-events-none' : curtainLocked ? 'cursor-not-allowed' : 'cursor-pointer'
               }`}
               onClick={() => {
-                if (curtainLocked) return;
-                setOpenCurtain(true);
-                if (videoRef.current) {
-                  videoRef.current.play().catch(err => console.log('Autoplay blocked:', err));
-                }
-              }}
+              if (curtainLocked) return;
+              setOpenCurtain(true);
+              if (playerRef.current) {
+                playerRef.current.playVideo();
+                setIsPlaying(true);
+              }
+            }}
             >
               {/* Rèm Trái (Nước biển lấp lánh) */}
               <div className={`absolute top-0 left-0 w-1/2 h-full bg-gradient-to-br from-cyan-300 via-blue-400 to-sky-500 border-r-[6px] border-white/60 transition-transform duration-[1500ms] ease-[cubic-bezier(0.4,0,0.2,1)] origin-left shadow-[10px_0_30px_rgba(34,211,238,0.6)] flex items-center justify-end overflow-hidden ${openCurtain ? '-translate-x-full' : 'translate-x-0'}`}>
@@ -563,54 +597,52 @@ export default function Tab3Cinema({ activeTab, showSurprise, setShowSurprise })
             </div>
             {/* ================= KẾT THÚC: RÈM BONG BÓNG ĐẠI DƯƠNG (BẢN ĐẶC BIỆT) ================= */}
 
-            <video
-              ref={videoRef}
-              className="absolute top-0 left-0 w-full h-full z-10 object-cover pointer-events-none"
-              src="/Teaser.mp4"
-              playsInline
-              loop
-            />
-
-            {/* BẢNG ĐIỀU KHIỂN VIDEO (MINI CONTROL PANEL) */}
-            {openCurtain && (
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center gap-6 px-6 py-3 bg-[#0a192f]/60 backdrop-blur-xl rounded-full border border-cyan-500/30 shadow-[0_0_20px_rgba(100,255,218,0.2)] opacity-70 hover:opacity-100 transition-all duration-300">
-                <button 
-                  onClick={(e) => { e.stopPropagation(); if(videoRef.current) videoRef.current.currentTime = Math.max(videoRef.current.currentTime - 5, 0); }}
-                  className="flex items-center gap-1 text-cyan-50 hover:text-cyan-300 text-sm font-bold tracking-wider transition-colors"
-                  title="Lùi 5 giây"
-                >
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" /></svg>
-                  -5s
-                </button>
-                
-                <button 
-                  onClick={(e) => { 
-                    e.stopPropagation(); 
-                    if(videoRef.current) {
-                      if (videoRef.current.paused) videoRef.current.play(); 
-                      else videoRef.current.pause();
-                    }
+           {/* KHUNG CHỨA YOUTUBE VIDEO */}
+            <div className="absolute top-0 left-0 w-full h-full z-10 bg-black overflow-hidden">
+              {/* scale-[1.2] để tràn viền che đi viền đen lề trái/phải nếu có */}
+              <div className="w-full h-full pointer-events-none">
+                <YouTube
+                  videoId="hbydeKJJQyY"
+                  opts={ytOpts}
+                  onReady={(e) => {
+                    playerRef.current = e.target;
+                    setDuration(e.target.getDuration());
                   }}
-                  className="text-pink-200 hover:text-pink-400 transition-colors p-2 bg-pink-500/10 rounded-full hover:bg-pink-500/20"
-                  title="Phát/Tạm dừng (Space)"
-                >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </button>
-
-                <button 
-                  onClick={(e) => { e.stopPropagation(); if(videoRef.current) videoRef.current.currentTime = Math.min(videoRef.current.currentTime + 5, videoRef.current.duration || 0); }}
-                  className="flex items-center gap-1 text-cyan-50 hover:text-cyan-300 text-sm font-bold tracking-wider transition-colors"
-                  title="Tiến 5 giây"
-                >
-                  +5s
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 5l7 7-7 7M5 5l7 7-7 7" /></svg>
-                </button>
+                  onStateChange={(e) => {
+                    // Cập nhật lại icon Play/Pause nếu người dùng dùng phím tắt hoặc chuyển trạng thái video
+                    setIsPlaying(e.data === 1);
+                  }}
+                  className="w-full h-full"
+                  iframeClassName="w-full h-full"
+                />
               </div>
-            )}
+
+              {/* LỚP PHỦ TRONG SUỐT ĐỂ NGƯỜI DÙNG CLICK XEM / DỪNG */}
+              {openCurtain && (
+                <div 
+                  onClick={togglePlay}
+                  className="absolute inset-0 z-20 cursor-pointer bg-transparent"
+                />
+              )}
+            </div>
           </div>
+
+          {/* --- THANH THỜI GIAN TÙY CHỈNH (Đã chuyển ra ngoài lớp phủ click) --- */}
+          {openCurtain && (
+            <div className="relative mt-6 mx-auto w-[85%] z-30 flex items-center gap-4 bg-black/50 backdrop-blur-md px-5 py-3 rounded-2xl border border-white/20 shadow-[0_4px_20px_rgba(0,0,0,0.5)] transition-opacity duration-300 hover:opacity-100 opacity-60">
+              <span className="text-white/90 text-sm font-mono min-w-[40px] text-right">{formatTime(progress)}</span>
+              <input
+                type="range"
+                min="0"
+                max={duration || 100}
+                value={progress}
+                onChange={handleSeek}
+                className="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer accent-cyan-400 hover:accent-cyan-300"
+              />
+              <span className="text-white/90 text-sm font-mono min-w-[40px] text-left">{formatTime(duration)}</span>
+            </div>
+          )}
+          {/* ------------------------------------------------ */}
         </div>
       </div>
 
