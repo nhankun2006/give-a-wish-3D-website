@@ -10,11 +10,11 @@ Dự án là một trang web tương tác sinh động mang chủ đề đại d
 
 ## 📸 Hình ảnh & Demo (Screenshots & Demo)
 
-* **Link Demo Trực Tuyến:** [Xem Demo tại đây](https://your-demo-link.vercel.app) *(Thay đổi link nếu đã deploy)*
+* **Link Demo Trực Tuyến:** [Xem Demo tại đây](https://tamtrieudang28th.tech)
 
-*(Bạn có thể chèn ảnh chụp màn hình dự án tại đây để tăng tính trực quan)*
-<!-- ![Landing Page](public/screenshot.png) -->
-
+![Database usage](.github/docs_assets/metric/supabase.png)
+![Deployment usage](.github/docs_assets/metric/vercel_metric.png)
+![Dashboard usage](.github/docs_assets/metric/vercel_dashboard.png)
 ---
 
 ## 🛠️ Công nghệ Sử dụng (Tech Stack)
@@ -64,6 +64,7 @@ Tạo một file `.env.local` ở thư mục gốc của dự án và cấu hìn
 ```env
 # Supabase Configuration
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=your_supabase_publishable_key
 SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
 
 # Mistral AI Configuration
