@@ -4,7 +4,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-black?logo=next.js)](https://nextjs.org/)
 [![GSAP](https://img.shields.io/badge/GSAP-green?logo=greensock)](https://greensock.com/)
 
-Dự án là một trang web tương tác sinh động mang chủ đề đại dương, được thiết kế đặc biệt như một món quà sinh nhật bất ngờ dành cho chị **Tam Triều Dâng**. Trải nghiệm người dùng đi từ một màn hình chờ (Landing Page) lấp lánh ánh sáng biển sâu, cho đến khi "lặn xuống" không gian đại dương tương tác chứa đựng các kỷ niệm, hành trình sự nghiệp, rạp chiếu phim mini và khu vực gửi lời chúc bí mật của fan hâm mộ.
+Dự án là một trang web tương tác sinh động mang chủ đề đại dương, được thiết kế đặc biệt như một món quà sinh nhật bất ngờ dành cho chị diễn viên  **Tam Triều Dâng**. Trải nghiệm người dùng đi từ một màn hình chờ (Landing Page) lấp lánh ánh sáng biển sâu, cho đến khi "lặn xuống" không gian đại dương tương tác chứa đựng các kỷ niệm, khu vực tri ân 16 fan cứng xuất sắc nhất, rạp chiếu phim mini và khu vực gửi lời chúc bí mật của fan hâm mộ.
 
 ---
 
@@ -18,15 +18,13 @@ Dự án là một trang web tương tác sinh động mang chủ đề đại d
 ---
 
 ## 🛠️ Công nghệ Sử dụng (Tech Stack)
-
-Dự án được xây dựng dựa trên các công nghệ và thư viện Front-end/Back-end hiện đại nhất để đảm bảo hiệu năng và trải nghiệm mượt mà:
-* **Next.js (App Router):** Framework React tối ưu hóa hiệu suất, SEO, Route Handlers (API Routes).
+* **Next.js (App Router):** Framework React
   * **`next/dynamic`:** Được áp dụng để tải bất đồng bộ (Lazy Loading) các thành phần giao diện nặng ở phía Client, tối ưu hóa tốc độ tải trang ban đầu.
-* **GSAP (GreenSock):** Thư viện animation mạnh mẽ xử lý các hiệu ứng chuyển động trôi nổi, bơi lội tự nhiên của các sinh vật biển SVG.
+* **GSAP (GreenSock):** Thư viện animation tốt xử lý ảnh SVG.
 * **Framer Motion:** Xử lý các hiệu ứng chuyển động mượt mà cho các phần tử UI overlays và chuyển cảnh.
-* **Tailwind CSS:** Thiết kế giao diện nhanh chóng, linh hoạt với phong cách Glassmorphism (hiệu ứng kính mờ) hiện đại.
-* **Supabase:** Sử dụng làm Database lưu trữ các lời chúc từ fan hâm mộ một cách bảo mật và nhanh chóng.
-* **Mistral AI:** Tích hợp kiểm duyệt nội dung thông minh bằng AI qua API của Mistral.
+* **Tailwind CSS:**
+* **Supabase:** Database chứa lời chúc của fan, 1 table duy nhất.
+* **Mistral AI:** Kiểm duyệt nội dung lời chúc bằng AI qua API call đến Mistral AI.
 
 ---
 
@@ -41,14 +39,12 @@ Dự án được xây dựng dựa trên các công nghệ và thư viện Fron
 
 ## ✨ Tính năng Nổi bật (Noticeable Features)
 
-* **Cinematic Landing Page Tách Biệt:** Màn hình chào mừng độc lập với hiệu ứng nền `radial-gradient` mô phỏng ánh sáng rọi xuống mặt nước, cùng nút "Lặn Xuống" tích hợp hiệu ứng sóng âm lôi cuốn.
-* **Hệ sinh thái đại dương sinh động:** Hàng loạt loài sinh vật biển (Cá, Sứa, Cua, Sao biển) được thiết kế bằng SVG và gắn animation GSAP để di chuyển lơ lửng, lắc lư tự nhiên theo các chu kỳ thời gian ngẫu nhiên.
-* **Trải nghiệm đại dương tương tác:** Hệ thống chuyển Tab mượt mà giữa các khu vực chức năng thông qua menu điều hướng trực quan.
-* **Giao diện 4 Khu vực chức năng (Tabs):**
+* 🌊 **Trải nghiệm Đại dương Tương tác:** Giao diện đại dương sinh động chuyển tiếp mượt mà (Landing Page và các sinh vật biển SVG được gắn chuyển động bằng GSAP & Framer Motion).
+* 🗂️ **Giao diện 4 Khu vực Chức năng (Tabs):**
   * 🌸 *Góc Nhỏ Của Dâng:* Layout Album ảnh kỷ niệm.
-  * 🚀 *Hành Trình Sự Nghiệp:* Timeline các cột mốc nổi bật thả nổi.
+  * 🚀 *Tri Ân Fan Cứng:* Không gian tri ân 16 lời chúc và tâm tình xuất sắc nhất của các fan cứng gửi tới diễn viên Dâng.
   * 🎬 *Rạp Phim Đại Dương:* Video Modal tích hợp nút mở quà pháo hoa bất ngờ.
-  * 💬 *Khu Vực Fan:* Bản đồ radar sonar (Canvas 2D) hiển thị các lời chúc dưới dạng bong bóng phát sáng, được bảo vệ bằng Passcode bảo mật (Mật khẩu: `1007`) để lại lời chúc.
+  * 💬 *Khu Vực Fan:* Bản đồ bọt biển (Canvas 2D) hiển thị các lời chúc của fan rơi ồ ạt từ trên xuống dưới dạng bong bóng phát sáng, bảo vệ bằng Passcode bảo mật (Mật khẩu: `1007`) để gửi lời chúc mới.
 
 ---
 
