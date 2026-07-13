@@ -42,9 +42,9 @@ Dự án là một trang web tương tác sinh động mang chủ đề đại d
 * 🌊 **Trải nghiệm Đại dương Tương tác:** Giao diện đại dương sinh động chuyển tiếp mượt mà (Landing Page và các sinh vật biển SVG được gắn chuyển động bằng GSAP & Framer Motion).
 * 🗂️ **Giao diện 4 Khu vực Chức năng (Tabs):**
   * 🌸 *Góc Nhỏ Của Dâng:* Layout Album ảnh kỷ niệm.
-  * 🚀 *Tri Ân Fan Cứng:* Không gian tri ân 16 lời chúc và tâm tình xuất sắc nhất của các fan cứng gửi tới diễn viên Dâng.
-  * 🎬 *Rạp Phim Đại Dương:* Video Modal tích hợp nút mở quà pháo hoa bất ngờ.
-  * 💬 *Khu Vực Fan:* Bản đồ bọt biển (Canvas 2D) hiển thị các lời chúc của fan rơi ồ ạt từ trên xuống dưới dạng bong bóng phát sáng, bảo vệ bằng Passcode bảo mật (Mật khẩu: `1007`) để gửi lời chúc mới.
+  * 🚀 *Tri Ân Fan Cứng:* Không gian tri ân 16 lời chúc và tâm tình xuất sắc nhất của các fan cứng.
+  * 🎬 *Rạp Phim Đại Dương:* Video hành trình sự nghiệp của diễn viên Dâng, embed link youtube.
+  * 💬 *Khu Vực Fan:* Hiển thị các lời chúc của fan rơi ồ ạt từ trên xuống dưới dạng bong bóng phát sáng, (nhập mật khẩu: `1007`) để xem và gửi lời chúc mới.
 
 ---
 
