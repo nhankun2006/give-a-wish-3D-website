@@ -4,7 +4,7 @@
 [![Next.js](https://img.shields.io/badge/Next.js-black?logo=next.js)](https://nextjs.org/)
 [![GSAP](https://img.shields.io/badge/GSAP-green?logo=greensock)](https://greensock.com/)
 
-Dự án là một trang web tương tác sinh động mang chủ đề đại dương, được thiết kế đặc biệt như một món quà sinh nhật bất ngờ dành cho chị diễn viên  **Tam Triều Dâng**. Trải nghiệm người dùng đi từ một màn hình chờ (Landing Page) lấp lánh biển sâu, cho đến khi "lặn xuống" đại dương tương tác chứa đựng các kỷ niệm, khu vực tri ân 16 fan cứng xuất sắc nhất, rạp chiếu phim mini và khu vực gửi lời chúc bí mật của fan hâm mộ.
+Một website mang chủ đề đại dương, được thiết kế đặc biệt như một món quà sinh nhật bất ngờ dành cho chị diễn viên  **Tam Triều Dâng**. UX flow đi từ một màn hình chờ (Landing Page) lấp lánh biển sâu, cho đến khi "lặn xuống" đại dương (chia thành 4 slide chung 1 tab) chứa đựng các kỷ niệm, khu vực tri ân 16 fan cứng xuất sắc nhất, rạp chiếu phim mini và khu vực gửi lời chúc bí mật dành cho fan.
 
 ---
 
@@ -21,7 +21,7 @@ Dự án là một trang web tương tác sinh động mang chủ đề đại d
 * **Next.js (App Router):** Framework React
   * **`next/dynamic`:** Được áp dụng để tải bất đồng bộ (Lazy Loading) các thành phần giao diện nặng ở phía Client, tối ưu hóa tốc độ tải trang ban đầu.
 * **GSAP (GreenSock):** Thư viện animation tốt xử lý ảnh SVG.
-* **Framer Motion:** Xử lý các hiệu ứng chuyển động mượt mà cho các phần tử UI overlays và chuyển cảnh.
+* **Framer Motion:** Xử lý các hiệu ứng chuyển động mượt.
 * **Tailwind CSS:**
 * **Supabase:** Database chứa lời chúc của fan, 1 table duy nhất.
 * **Mistral AI:** Kiểm duyệt nội dung lời chúc bằng AI qua API call đến Mistral AI.
